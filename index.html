@@ -1,768 +1,651 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>AI COMMANDER | Enterprise Intelligence</title>
+  <title>NEXUS COMMAND AI | Enterprise Intelligence</title>
 
-  <meta name="description"
-        content="AI COMMANDER — Enterprise AI early-warning and decision intelligence platform. Detect risk, predict impact, recommend action and measure recovery.">
+  <meta
+    name="description"
+    content="NEXUS COMMAND AI — Enterprise early-warning and decision intelligence platform."
+  >
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  >
 
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-  <!-- =========================================
-       APP SHELL
-  ========================================== -->
+<div class="app-shell">
 
-  <div class="app-shell">
+  <!-- =====================================================
+       SIDEBAR
+  ====================================================== -->
 
-    <!-- SIDEBAR -->
+  <aside class="sidebar">
 
-    <aside class="sidebar">
+    <div class="brand">
 
-      <div class="brand">
+      <div class="brand-mark">
+        NX
+      </div>
 
-        <div class="brand-mark">
-          AI
+      <div>
+        <div class="brand-name">
+          NEXUS COMMAND
         </div>
 
+        <div class="brand-subtitle">
+          Enterprise Intelligence
+        </div>
+      </div>
+
+    </div>
+
+
+    <nav class="navigation">
+
+      <a href="#dashboard" class="nav-item active">
+        <span>⌂</span>
+        <span>Command Center</span>
+      </a>
+
+      <a href="#signals" class="nav-item">
+        <span>◉</span>
+        <span>Live Signals</span>
+      </a>
+
+      <a href="#risk" class="nav-item">
+        <span>◈</span>
+        <span>Risk Intelligence</span>
+      </a>
+
+      <a href="#signal-lab" class="nav-item">
+        <span>◌</span>
+        <span>Signal Lab</span>
+      </a>
+
+      <a href="#actions" class="nav-item">
+        <span>⚡</span>
+        <span>AI Actions</span>
+      </a>
+
+      <a href="#recovery" class="nav-item">
+        <span>↗</span>
+        <span>Recovery & ROI</span>
+      </a>
+
+      <a href="#investigation" class="nav-item">
+        <span>⌕</span>
+        <span>AI Investigation</span>
+      </a>
+
+    </nav>
+
+
+    <div class="sidebar-bottom">
+
+      <div class="system-status">
+
+        <span class="status-dot"></span>
+
         <div>
-          <div class="brand-name">COMMANDER</div>
-          <div class="brand-subtitle">Enterprise Intelligence</div>
+          <strong>Signal Engine Online</strong>
+          <small>V2 monitoring active</small>
         </div>
 
       </div>
 
+      <button class="settings-btn">
+        ⚙ Settings
+      </button>
 
-      <nav class="navigation">
+    </div>
 
-        <a href="#dashboard" class="nav-item active">
-          <span>⌂</span>
-          <span>Command Center</span>
-        </a>
-
-        <a href="#signals" class="nav-item">
-          <span>◉</span>
-          <span>Live Signals</span>
-        </a>
-
-        <a href="#risk" class="nav-item">
-          <span>◈</span>
-          <span>Risk Intelligence</span>
-        </a>
-
-        <a href="#actions" class="nav-item">
-          <span>⚡</span>
-          <span>AI Actions</span>
-        </a>
-
-        <a href="#recovery" class="nav-item">
-          <span>↗</span>
-          <span>Recovery & ROI</span>
-        </a>
-
-        <a href="#investigation" class="nav-item">
-          <span>⌕</span>
-          <span>AI Investigation</span>
-        </a>
-
-      </nav>
+  </aside>
 
 
-      <div class="sidebar-bottom">
+  <!-- =====================================================
+       MAIN
+  ====================================================== -->
 
-        <div class="system-status">
+  <main class="main-content">
 
-          <span class="status-dot"></span>
+
+    <!-- TOP BAR -->
+
+    <header class="topbar">
+
+      <div>
+
+        <div class="eyebrow">
+          NEXUS COMMAND AI · V2
+        </div>
+
+        <h1>
+          Business Intelligence
+          <span>Before the Crisis</span>
+        </h1>
+
+      </div>
+
+
+      <div class="topbar-right">
+
+        <div class="live-indicator">
+          <span></span>
+          LIVE SIGNAL ENGINE
+        </div>
+
+        <button class="notification-btn">
+          🔔
+          <span class="notification-count">3</span>
+        </button>
+
+        <div class="user-profile">
+
+          <div class="avatar">
+            MC
+          </div>
 
           <div>
-            <strong>AI Engine Online</strong>
-            <small>Monitoring continuously</small>
+            <strong>Executive</strong>
+            <small>Administrator</small>
           </div>
 
         </div>
 
-        <button class="settings-btn">
-          ⚙ Settings
+      </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         DEMO DATA NOTICE
+    ====================================================== -->
+
+    <div class="demo-notice">
+
+      <span>DEMO ENVIRONMENT</span>
+
+      <p>
+        Current values are simulated business signals.
+        No real company data or external action is connected.
+      </p>
+
+    </div>
+
+
+    <!-- =====================================================
+         CRITICAL ALERT
+    ====================================================== -->
+
+    <section
+      class="critical-alert"
+      id="signals"
+    >
+
+      <div class="alert-icon">
+        !
+      </div>
+
+      <div class="alert-content">
+
+        <div class="alert-label">
+          BUSINESS SIGNAL DETECTED
+        </div>
+
+        <h2>
+          Multiple signals indicate elevated revenue exposure.
+        </h2>
+
+        <p>
+          NEXUS has identified connected changes across
+          conversion, cancellations and fulfillment.
+        </p>
+
+      </div>
+
+
+      <div class="alert-action">
+
+        <div class="confidence">
+
+          <span>
+            AI Confidence
+          </span>
+
+          <strong id="confidenceValue">
+            91%
+          </strong>
+
+        </div>
+
+        <button
+          class="primary-btn"
+          onclick="investigateRisk()"
+        >
+          Investigate Risk →
         </button>
 
       </div>
 
-    </aside>
+    </section>
 
 
-    <!-- MAIN AREA -->
+    <!-- =====================================================
+         KPI GRID
+    ====================================================== -->
 
-    <main class="main-content">
+    <section
+      class="kpi-grid"
+      id="dashboard"
+    >
 
-      <!-- TOP BAR -->
+      <div class="kpi-card">
 
-      <header class="topbar">
+        <div class="kpi-top">
 
-        <div>
+          <span>
+            REVENUE AT RISK
+          </span>
 
-          <div class="eyebrow">
-            ENTERPRISE COMMAND CENTER
-          </div>
-
-          <h1>
-            Business Intelligence
-            <span>Before the Crisis</span>
-          </h1>
-
-        </div>
-
-
-        <div class="topbar-right">
-
-          <div class="live-indicator">
-            <span></span>
-            LIVE MONITORING
-          </div>
-
-          <button class="notification-btn">
-            🔔
-            <span class="notification-count">3</span>
-          </button>
-
-          <div class="user-profile">
-
-            <div class="avatar">
-              MC
-            </div>
-
-            <div>
-              <strong>Executive</strong>
-              <small>Administrator</small>
-            </div>
-
-          </div>
+          <span class="risk-badge">
+            HIGH
+          </span>
 
         </div>
 
-      </header>
-
-
-      <!-- =========================================
-           CRITICAL SIGNAL
-      ========================================== -->
-
-      <section class="critical-alert" id="signals">
-
-        <div class="alert-icon">
-          !
+        <div
+          class="kpi-value"
+          id="revenueRisk"
+        >
+          $2.4M
         </div>
 
-        <div class="alert-content">
+        <div class="kpi-footer">
 
-          <div class="alert-label">
-            CRITICAL BUSINESS SIGNAL DETECTED
-          </div>
+          <span
+            class="negative"
+            id="revenueTrend"
+          >
+            ↑ 18.7%
+          </span>
 
-          <h2>
-            Revenue risk is increasing across
-            multiple business signals.
-          </h2>
-
-          <p>
-            AI Commander detected abnormal changes in
-            conversion, cancellations and fulfillment performance.
-          </p>
+          <span>
+            calculated exposure
+          </span>
 
         </div>
 
-        <div class="alert-action">
-
-          <div class="confidence">
-            <span>AI Confidence</span>
-            <strong>91%</strong>
-          </div>
-
-          <button class="primary-btn" onclick="investigateRisk()">
-            Investigate Risk →
-          </button>
-
-        </div>
-
-      </section>
+      </div>
 
 
-      <!-- =========================================
-           KPI GRID
-      ========================================== -->
+      <div class="kpi-card">
 
-      <section class="kpi-grid" id="dashboard">
+        <div class="kpi-top">
 
-        <div class="kpi-card">
+          <span>
+            RECOVERABLE REVENUE
+          </span>
 
-          <div class="kpi-top">
-            <span>REVENUE AT RISK</span>
-            <span class="risk-badge">HIGH</span>
-          </div>
-
-          <div class="kpi-value">
-            $2.4M
-          </div>
-
-          <div class="kpi-footer">
-            <span class="negative">↑ 18.7%</span>
-            <span>vs previous period</span>
-          </div>
+          <span class="positive-badge">
+            OPPORTUNITY
+          </span>
 
         </div>
 
+        <div
+          class="kpi-value"
+          id="recoverableRevenue"
+        >
+          $730K
+        </div>
 
-        <div class="kpi-card">
+        <div class="kpi-footer">
 
-          <div class="kpi-top">
-            <span>RECOVERABLE REVENUE</span>
-            <span class="positive-badge">OPPORTUNITY</span>
-          </div>
+          <span class="positive">
+            AI estimated
+          </span>
 
-          <div class="kpi-value">
-            $730K
-          </div>
-
-          <div class="kpi-footer">
-            <span class="positive">AI estimated</span>
-            <span>recovery potential</span>
-          </div>
+          <span>
+            recovery potential
+          </span>
 
         </div>
 
+      </div>
 
-        <div class="kpi-card">
 
-          <div class="kpi-top">
-            <span>CUSTOMERS AT RISK</span>
-            <span class="risk-badge">HIGH</span>
-          </div>
+      <div class="kpi-card">
 
-          <div class="kpi-value">
-            18,420
-          </div>
+        <div class="kpi-top">
 
-          <div class="kpi-footer">
-            <span class="negative">↑ 12.4%</span>
-            <span>risk population</span>
-          </div>
+          <span>
+            CUSTOMERS AT RISK
+          </span>
+
+          <span class="risk-badge">
+            HIGH
+          </span>
 
         </div>
 
+        <div
+          class="kpi-value"
+          id="customersRisk"
+        >
+          18,420
+        </div>
 
-        <div class="kpi-card">
+        <div class="kpi-footer">
 
-          <div class="kpi-top">
-            <span>BUSINESS HEALTH</span>
-            <span class="health-badge">STABLE</span>
+          <span class="negative">
+            elevated
+          </span>
+
+          <span>
+            risk population
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <div class="kpi-card">
+
+        <div class="kpi-top">
+
+          <span>
+            BUSINESS HEALTH
+          </span>
+
+          <span
+            class="health-badge"
+            id="healthBadge"
+          >
+            ATTENTION
+          </span>
+
+        </div>
+
+        <div class="health-score">
+
+          <div class="score-ring">
+
+            <strong id="healthScore">
+              78
+            </strong>
+
+            <span>
+              /100
+            </span>
+
           </div>
 
-          <div class="health-score">
+          <div class="score-info">
 
-            <div class="score-ring">
-              <strong>78</strong>
-              <span>/100</span>
-            </div>
+            <strong id="healthText">
+              Good
+            </strong>
 
-            <div class="score-info">
-              <strong>Good</strong>
-              <small>Needs attention</small>
-            </div>
+            <small>
+              dynamic risk score
+            </small>
 
           </div>
 
         </div>
 
-      </section>
+      </div>
 
+    </section>
 
-      <!-- =========================================
-           INTELLIGENCE GRID
-      ========================================== -->
 
-      <section class="intelligence-grid" id="risk">
+    <!-- =====================================================
+         RISK INTELLIGENCE
+    ====================================================== -->
 
-        <!-- RISK OVERVIEW -->
+    <section
+      class="intelligence-grid"
+      id="risk"
+    >
 
-        <div class="panel risk-panel">
 
-          <div class="panel-header">
+      <!-- RISK PANEL -->
 
-            <div>
-              <div class="panel-label">
-                RISK INTELLIGENCE
-              </div>
-
-              <h3>
-                Where the business is exposed
-              </h3>
-            </div>
-
-            <button class="ghost-btn">
-              View all →
-            </button>
-
-          </div>
-
-
-          <div class="risk-list">
-
-            <div class="risk-row">
-
-              <div class="risk-type critical">
-                <span></span>
-              </div>
-
-              <div class="risk-description">
-
-                <strong>
-                  Conversion Rate Decline
-                </strong>
-
-                <small>
-                  Checkout conversion dropped 14.8%
-                </small>
-
-              </div>
-
-              <div class="risk-impact">
-                <strong>$840K</strong>
-                <small>risk</small>
-              </div>
-
-              <div class="risk-level critical-text">
-                CRITICAL
-              </div>
-
-            </div>
-
-
-            <div class="risk-row">
-
-              <div class="risk-type high">
-                <span></span>
-              </div>
-
-              <div class="risk-description">
-
-                <strong>
-                  Fulfillment Delays
-                </strong>
-
-                <small>
-                  Delivery SLA breach increasing
-                </small>
-
-              </div>
-
-              <div class="risk-impact">
-                <strong>$520K</strong>
-                <small>risk</small>
-              </div>
-
-              <div class="risk-level high-text">
-                HIGH
-              </div>
-
-            </div>
-
-
-            <div class="risk-row">
-
-              <div class="risk-type medium">
-                <span></span>
-              </div>
-
-              <div class="risk-description">
-
-                <strong>
-                  Customer Churn Signals
-                </strong>
-
-                <small>
-                  High-value customer activity declining
-                </small>
-
-              </div>
-
-              <div class="risk-impact">
-                <strong>$310K</strong>
-                <small>risk</small>
-              </div>
-
-              <div class="risk-level medium-text">
-                MEDIUM
-              </div>
-
-            </div>
-
-
-            <div class="risk-row">
-
-              <div class="risk-type low">
-                <span></span>
-              </div>
-
-              <div class="risk-description">
-
-                <strong>
-                  Support Backlog
-                </strong>
-
-                <small>
-                  Response time slightly above target
-                </small>
-
-              </div>
-
-              <div class="risk-impact">
-                <strong>$82K</strong>
-                <small>risk</small>
-              </div>
-
-              <div class="risk-level low-text">
-                LOW
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <!-- AI DECISION -->
-
-        <div class="panel ai-panel">
-
-          <div class="panel-header">
-
-            <div>
-              <div class="panel-label">
-                AI DECISION ENGINE
-              </div>
-
-              <h3>
-                What should happen next?
-              </h3>
-            </div>
-
-            <div class="ai-status">
-              ● AI READY
-            </div>
-
-          </div>
-
-
-          <div class="decision-box">
-
-            <div class="decision-number">
-              01
-            </div>
-
-            <div class="decision-content">
-
-              <span class="priority">
-                PRIORITY ACTION
-              </span>
-
-              <h4>
-                Recover high-intent abandoned leads
-              </h4>
-
-              <p>
-                AI identified 3,820 high-intent customers
-                with recent purchase signals.
-              </p>
-
-              <div class="decision-meta">
-
-                <span>
-                  Estimated recovery
-                  <strong>$145K</strong>
-                </span>
-
-                <span>
-                  Confidence
-                  <strong>89%</strong>
-                </span>
-
-              </div>
-
-            </div>
-
-          </div>
-
-
-          <button class="action-btn" onclick="executeAction()">
-            Review AI Action →
-          </button>
-
-        </div>
-
-      </section>
-
-
-      <!-- =========================================
-           BUSINESS SIGNAL GRAPH
-      ========================================== -->
-
-      <section class="panel signal-graph" id="investigation">
+      <div class="panel risk-panel">
 
         <div class="panel-header">
 
           <div>
 
             <div class="panel-label">
-              SIGNAL RELATIONSHIP ENGINE
+              RISK INTELLIGENCE
             </div>
 
             <h3>
-              How signals connect
+              Where the business is exposed
             </h3>
 
           </div>
 
-          <span class="graph-status">
-            AI ANALYSIS ACTIVE
-          </span>
-
-        </div>
-
-
-        <div class="signal-flow">
-
-          <div class="signal-node">
-
-            <span class="node-icon">
-              01
-            </span>
-
-            <strong>
-              Response Delay
-            </strong>
-
-            <small>
-              +31%
-            </small>
-
-          </div>
-
-
-          <div class="flow-arrow">
-            →
-          </div>
-
-
-          <div class="signal-node">
-
-            <span class="node-icon">
-              02
-            </span>
-
-            <strong>
-              Lead Drop
-            </strong>
-
-            <small>
-              +18%
-            </small>
-
-          </div>
-
-
-          <div class="flow-arrow">
-            →
-          </div>
-
-
-          <div class="signal-node danger-node">
-
-            <span class="node-icon">
-              03
-            </span>
-
-            <strong>
-              Revenue Risk
-            </strong>
-
-            <small>
-              $2.4M
-            </small>
-
-          </div>
-
-
-          <div class="flow-arrow">
-            →
-          </div>
-
-
-          <div class="signal-node recovery-node">
-
-            <span class="node-icon">
-              04
-            </span>
-
-            <strong>
-              AI Recovery
-            </strong>
-
-            <small>
-              $730K
-            </small>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- =========================================
-           ROI
-      ========================================== -->
-
-      <section class="roi-grid" id="recovery">
-
-        <div class="panel roi-panel">
-
-          <div class="panel-label">
-            FINANCIAL IMPACT
-          </div>
-
-          <h3>
-            AI Recovery Performance
-          </h3>
-
-          <div class="roi-number">
-            $730,000
-          </div>
-
-          <p>
-            Estimated recoverable revenue identified by AI.
-          </p>
-
-          <div class="roi-progress">
-
-            <div class="progress-label">
-              <span>Recovery opportunity</span>
-              <strong>68%</strong>
-            </div>
-
-            <div class="progress-bar">
-              <span style="width:68%"></span>
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <div class="panel forecast-panel">
-
-          <div class="panel-label">
-            30-DAY FORECAST
-          </div>
-
-          <h3>
-            If no action is taken
-          </h3>
-
-          <div class="forecast-number">
-            -$680K
-          </div>
-
-          <p>
-            Estimated additional revenue exposure.
-          </p>
-
-          <div class="forecast-warning">
-            ⚠ Immediate intervention recommended
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- =========================================
-           AI QUERY
-      ========================================== -->
-
-      <section class="panel ai-query">
-
-        <div class="panel-label">
-          ASK AI COMMANDER
-        </div>
-
-        <h3>
-          Investigate your business
-        </h3>
-
-        <p>
-          Ask the AI about revenue, customers, risk,
-          operations or recovery.
-        </p>
-
-
-        <div class="query-box">
-
-          <input
-            type="text"
-            id="aiQuestion"
-            placeholder="Example: Why is revenue declining?"
-          >
-
-          <button onclick="askCommander()">
-            Ask AI →
+          <button class="ghost-btn">
+            Live analysis
           </button>
 
         </div>
 
 
         <div
-          id="aiResponse"
-          class="ai-response"
-        ></div>
+          class="risk-list"
+          id="riskList"
+        >
 
-      </section>
+          <div class="risk-row">
+
+            <div class="risk-type critical">
+              <span></span>
+            </div>
+
+            <div class="risk-description">
+
+              <strong>
+                Conversion Rate Decline
+              </strong>
+
+              <small>
+                Checkout conversion signal
+              </small>
+
+            </div>
+
+            <div class="risk-impact">
+
+              <strong>
+                $840K
+              </strong>
+
+              <small>
+                exposure
+              </small>
+
+            </div>
+
+            <div class="risk-level critical-text">
+              CRITICAL
+            </div>
+
+          </div>
 
 
-      <!-- FOOTER -->
+          <div class="risk-row">
 
-      <footer class="app-footer">
+            <div class="risk-type high">
+              <span></span>
+            </div>
 
-        <div>
-          <strong>AI COMMANDER</strong>
-          <span>Enterprise Intelligence Platform</span>
+            <div class="risk-description">
+
+              <strong>
+                Fulfillment Delays
+              </strong>
+
+              <small>
+                Delivery SLA signal
+              </small>
+
+            </div>
+
+            <div class="risk-impact">
+
+              <strong>
+                $520K
+              </strong>
+
+              <small>
+                exposure
+              </small>
+
+            </div>
+
+            <div class="risk-level high-text">
+              HIGH
+            </div>
+
+          </div>
+
+
+          <div class="risk-row">
+
+            <div class="risk-type medium">
+              <span></span>
+            </div>
+
+            <div class="risk-description">
+
+              <strong>
+                Customer Churn Signals
+              </strong>
+
+              <small>
+                High-value activity decline
+              </small>
+
+            </div>
+
+            <div class="risk-impact">
+
+              <strong>
+                $310K
+              </strong>
+
+              <small>
+                exposure
+              </small>
+
+            </div>
+
+            <div class="risk-level medium-text">
+              MEDIUM
+            </div>
+
+          </div>
+
+
+          <div class="risk-row">
+
+            <div class="risk-type low">
+              <span></span>
+            </div>
+
+            <div class="risk-description">
+
+              <strong>
+                Support Backlog
+              </strong>
+
+              <small>
+                Response-time signal
+              </small>
+
+            </div>
+
+            <div class="risk-impact">
+
+              <strong>
+                $82K
+              </strong>
+
+              <small>
+                exposure
+              </small>
+
+            </div>
+
+            <div class="risk-level low-text">
+              LOW
+            </div>
+
+          </div>
+
         </div>
 
-        <div>
-          System Status:
-          <span class="online-text">● Operational</span>
+      </div>
+
+
+      <!-- AI DECISION -->
+
+      <div
+        class="panel ai-panel"
+        id="actions"
+      >
+
+        <div class="panel-header">
+
+          <div>
+
+            <div class="panel-label">
+              AI DECISION ENGINE
+            </div>
+
+            <h3>
+              What should happen next?
+            </h3>
+
+          </div>
+
+          <div class="ai-status">
+            ● READY
+          </div>
+
         </div>
 
-      </footer>
 
-    </main>
+        <div class="decision-box">
 
-  </div>
+          <div class="decision-number">
+            01
+          </div>
 
+          <div class="decision-content">
 
-  <!-- JAVASCRIPT -->
+            <span class="priority">
+              PRIORITY ACTION
+            </span>
 
-  <script src="script.js"></script>
+            <h4>
+              Recover high-intent abandoned leads
+            </h4>
 
-</body>
-</html>
+            <p>
+              Signal engine identified a high
