@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -8,14 +8,14 @@
 
   <meta
     name="description"
-    content="NEXUS COMMAND AI — Enterprise early-warning and decision intelligence platform."
+    content="NEXUS COMMAND AI — Enterprise Signal Intelligence and Business Risk Detection Platform."
   >
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
     rel="stylesheet"
   >
 
@@ -24,87 +24,69 @@
 
 <body>
 
-<div class="app-shell">
+<div class="app">
 
   <!-- SIDEBAR -->
 
   <aside class="sidebar">
 
     <div class="brand">
-
-      <div class="brand-mark">
-        NX
-      </div>
+      <div class="brand-logo">NX</div>
 
       <div>
-        <div class="brand-name">
-          NEXUS COMMAND
-        </div>
-
-        <div class="brand-subtitle">
-          Enterprise Intelligence
-        </div>
+        <strong>NEXUS COMMAND</strong>
+        <span>Enterprise Intelligence</span>
       </div>
-
     </div>
 
+    <nav>
 
-    <nav class="navigation">
-
-      <a href="#dashboard" class="nav-item active">
+      <a href="#dashboard" class="nav-link active">
         <span>⌂</span>
-        <span>Command Center</span>
+        Command Center
       </a>
 
-      <a href="#signals" class="nav-item">
+      <a href="#signals" class="nav-link">
         <span>◉</span>
-        <span>Live Signals</span>
+        Live Signals
       </a>
 
-      <a href="#risk" class="nav-item">
+      <a href="#risk" class="nav-link">
         <span>◈</span>
-        <span>Risk Intelligence</span>
+        Risk Intelligence
       </a>
 
-      <a href="#signal-lab" class="nav-item">
+      <a href="#signal-lab" class="nav-link">
         <span>◌</span>
-        <span>Signal Lab</span>
+        Signal Lab
       </a>
 
-      <a href="#actions" class="nav-item">
+      <a href="#actions" class="nav-link">
         <span>⚡</span>
-        <span>AI Actions</span>
+        AI Actions
       </a>
 
-      <a href="#recovery" class="nav-item">
+      <a href="#recovery" class="nav-link">
         <span>↗</span>
-        <span>Recovery & ROI</span>
-      </a>
-
-      <a href="#investigation" class="nav-item">
-        <span>⌕</span>
-        <span>AI Investigation</span>
+        Recovery & ROI
       </a>
 
     </nav>
 
-
     <div class="sidebar-bottom">
 
       <div class="system-status">
-
-        <span class="status-dot"></span>
+        <span class="online-dot"></span>
 
         <div>
           <strong>Signal Engine Online</strong>
           <small>V2 monitoring active</small>
         </div>
-
       </div>
 
-      <button class="settings-btn">
-        ⚙ Settings
-      </button>
+      <div class="version">
+        NEXUS V2.0
+      </div>
 
     </div>
 
@@ -113,15 +95,13 @@
 
   <!-- MAIN -->
 
-  <main class="main-content">
+  <main class="main">
 
-
-    <!-- TOPBAR -->
+    <!-- HEADER -->
 
     <header class="topbar">
 
       <div>
-
         <div class="eyebrow">
           NEXUS COMMAND AI · V2
         </div>
@@ -130,33 +110,17 @@
           Business Intelligence
           <span>Before the Crisis</span>
         </h1>
-
       </div>
 
+      <div class="top-actions">
 
-      <div class="topbar-right">
-
-        <div class="live-indicator">
+        <div class="live">
           <span></span>
           LIVE SIGNAL ENGINE
         </div>
 
-        <button class="notification-btn">
-          🔔
-          <span class="notification-count">3</span>
-        </button>
-
-        <div class="user-profile">
-
-          <div class="avatar">
-            MC
-          </div>
-
-          <div>
-            <strong>Executive</strong>
-            <small>Administrator</small>
-          </div>
-
+        <div class="avatar">
+          NX
         </div>
 
       </div>
@@ -167,23 +131,17 @@
     <!-- DEMO NOTICE -->
 
     <div class="demo-notice">
+      <strong>DEMO ENVIRONMENT</strong>
 
-      <span>DEMO ENVIRONMENT</span>
-
-      <p>
-        Current values are simulated business signals.
-        No real company data or external action is connected.
-      </p>
-
+      <span>
+        Signals and financial values are simulated for demonstration.
+      </span>
     </div>
 
 
-    <!-- CRITICAL ALERT -->
+    <!-- ALERT -->
 
-    <section
-      class="critical-alert"
-      id="signals"
-    >
+    <section class="alert" id="signals">
 
       <div class="alert-icon">
         !
@@ -200,29 +158,21 @@
         </h2>
 
         <p>
-          NEXUS has identified connected changes across
-          conversion, cancellations and fulfillment.
+          NEXUS has connected changes across conversion,
+          cancellations, fulfillment and response time.
         </p>
 
       </div>
 
+      <div class="alert-side">
 
-      <div class="alert-action">
-
-        <div class="confidence">
-
-          <span>
-            AI Confidence
-          </span>
-
-          <strong id="confidenceValue">
-            91%
-          </strong>
-
+        <div>
+          <small>AI CONFIDENCE</small>
+          <strong id="confidence">91%</strong>
         </div>
 
         <button
-          class="primary-btn"
+          class="primary"
           onclick="investigateRisk()"
         >
           Investigate Risk →
@@ -233,162 +183,83 @@
     </section>
 
 
-    <!-- KPI GRID -->
+    <!-- KPI -->
 
-    <section
-      class="kpi-grid"
-      id="dashboard"
-    >
+    <section class="kpi-grid" id="dashboard">
 
-      <div class="kpi-card">
+      <div class="kpi">
 
-        <div class="kpi-top">
-
-          <span>
-            REVENUE AT RISK
-          </span>
-
-          <span class="risk-badge">
-            HIGH
-          </span>
-
+        <div class="kpi-header">
+          <span>REVENUE AT RISK</span>
+          <b class="red-badge">HIGH</b>
         </div>
 
-        <div
-          class="kpi-value"
-          id="revenueRisk"
-        >
-          $2.4M
-        </div>
+        <strong id="revenueRisk">
+          $2.40M
+        </strong>
 
-        <div class="kpi-footer">
-
-          <span class="negative">
-            ↑ 18.7%
-          </span>
-
-          <span>
-            calculated exposure
-          </span>
-
-        </div>
+        <small>
+          <em>↑ 18.7%</em> calculated exposure
+        </small>
 
       </div>
 
 
-      <div class="kpi-card">
+      <div class="kpi">
 
-        <div class="kpi-top">
-
-          <span>
-            RECOVERABLE REVENUE
-          </span>
-
-          <span class="positive-badge">
-            OPPORTUNITY
-          </span>
-
+        <div class="kpi-header">
+          <span>RECOVERABLE REVENUE</span>
+          <b class="green-badge">OPPORTUNITY</b>
         </div>
 
-        <div
-          class="kpi-value"
-          id="recoverableRevenue"
-        >
+        <strong id="recoverableRevenue">
           $730K
-        </div>
+        </strong>
 
-        <div class="kpi-footer">
-
-          <span class="positive">
-            AI estimated
-          </span>
-
-          <span>
-            recovery potential
-          </span>
-
-        </div>
+        <small>
+          AI estimated recovery potential
+        </small>
 
       </div>
 
 
-      <div class="kpi-card">
+      <div class="kpi">
 
-        <div class="kpi-top">
-
-          <span>
-            CUSTOMERS AT RISK
-          </span>
-
-          <span class="risk-badge">
-            HIGH
-          </span>
-
+        <div class="kpi-header">
+          <span>CUSTOMERS AT RISK</span>
+          <b class="red-badge">HIGH</b>
         </div>
 
-        <div
-          class="kpi-value"
-          id="customersRisk"
-        >
+        <strong id="customersRisk">
           18,420
-        </div>
+        </strong>
 
-        <div class="kpi-footer">
-
-          <span class="negative">
-            elevated
-          </span>
-
-          <span>
-            risk population
-          </span>
-
-        </div>
+        <small>
+          elevated risk population
+        </small>
 
       </div>
 
 
-      <div class="kpi-card">
+      <div class="kpi">
 
-        <div class="kpi-top">
-
-          <span>
-            BUSINESS HEALTH
-          </span>
-
-          <span
-            class="health-badge"
-            id="healthBadge"
-          >
+        <div class="kpi-header">
+          <span>BUSINESS HEALTH</span>
+          <b id="healthBadge" class="yellow-badge">
             ATTENTION
-          </span>
-
+          </b>
         </div>
 
-        <div class="health-score">
+        <div class="health">
 
-          <div class="score-ring">
-
-            <strong id="healthScore">
-              78
-            </strong>
-
-            <span>
-              /100
-            </span>
-
+          <div class="health-circle">
+            <strong id="healthScore">78</strong>
+            <span>/100</span>
           </div>
 
-          <div class="score-info">
-
-            <strong id="healthText">
-              Good
-            </strong>
-
-            <small>
-              dynamic risk score
-            </small>
-
+          <div>
+            <strong id="healthText">Good</strong>
+            <small>dynamic risk score</small>
           </div>
 
         </div>
@@ -398,186 +269,93 @@
     </section>
 
 
-    <!-- RISK INTELLIGENCE -->
+    <!-- RISK + AI -->
 
-    <section
-      class="intelligence-grid"
-      id="risk"
-    >
+    <section class="two-column" id="risk">
 
+      <!-- RISK PANEL -->
 
-      <div class="panel risk-panel">
+      <div class="panel">
 
-        <div class="panel-header">
+        <div class="panel-heading">
 
           <div>
-
-            <div class="panel-label">
-              RISK INTELLIGENCE
-            </div>
+            <label>RISK INTELLIGENCE</label>
 
             <h3>
               Where the business is exposed
             </h3>
-
           </div>
 
-          <button class="ghost-btn">
-            Live analysis
-          </button>
+          <span class="mini-status">
+            LIVE
+          </span>
 
         </div>
 
 
-        <div
-          class="risk-list"
-          id="riskList"
-        >
+        <div class="risk-list">
 
           <div class="risk-row">
 
-            <div class="risk-type critical">
-              <span></span>
+            <span class="risk-dot critical"></span>
+
+            <div>
+              <strong>Conversion Rate Decline</strong>
+              <small>Checkout conversion signal</small>
             </div>
 
-            <div class="risk-description">
+            <b id="conversionRiskMoney">$840K</b>
 
-              <strong>
-                Conversion Rate Decline
-              </strong>
-
-              <small>
-                Checkout conversion signal
-              </small>
-
-            </div>
-
-            <div class="risk-impact">
-
-              <strong>
-                $840K
-              </strong>
-
-              <small>
-                exposure
-              </small>
-
-            </div>
-
-            <div class="risk-level critical-text">
-              CRITICAL
-            </div>
+            <em class="critical-text">CRITICAL</em>
 
           </div>
 
 
           <div class="risk-row">
 
-            <div class="risk-type high">
-              <span></span>
+            <span class="risk-dot high"></span>
+
+            <div>
+              <strong>Fulfillment Delays</strong>
+              <small>Delivery SLA signal</small>
             </div>
 
-            <div class="risk-description">
+            <b>$520K</b>
 
-              <strong>
-                Fulfillment Delays
-              </strong>
-
-              <small>
-                Delivery SLA signal
-              </small>
-
-            </div>
-
-            <div class="risk-impact">
-
-              <strong>
-                $520K
-              </strong>
-
-              <small>
-                exposure
-              </small>
-
-            </div>
-
-            <div class="risk-level high-text">
-              HIGH
-            </div>
+            <em class="high-text">HIGH</em>
 
           </div>
 
 
           <div class="risk-row">
 
-            <div class="risk-type medium">
-              <span></span>
+            <span class="risk-dot medium"></span>
+
+            <div>
+              <strong>Customer Churn Signals</strong>
+              <small>High-value activity decline</small>
             </div>
 
-            <div class="risk-description">
+            <b>$310K</b>
 
-              <strong>
-                Customer Churn Signals
-              </strong>
-
-              <small>
-                High-value activity decline
-              </small>
-
-            </div>
-
-            <div class="risk-impact">
-
-              <strong>
-                $310K
-              </strong>
-
-              <small>
-                exposure
-              </small>
-
-            </div>
-
-            <div class="risk-level medium-text">
-              MEDIUM
-            </div>
+            <em class="medium-text">MEDIUM</em>
 
           </div>
 
 
           <div class="risk-row">
 
-            <div class="risk-type low">
-              <span></span>
+            <span class="risk-dot low"></span>
+
+            <div>
+              <strong>Support Backlog</strong>
+              <small>Response-time signal</small>
             </div>
 
-            <div class="risk-description">
+            <b>$82K</b>
 
-              <strong>
-                Support Backlog
-              </strong>
-
-              <small>
-                Response-time signal
-              </small>
-
-            </div>
-
-            <div class="risk-impact">
-
-              <strong>
-                $82K
-              </strong>
-
-              <small>
-                exposure
-              </small>
-
-            </div>
-
-            <div class="risk-level low-text">
-              LOW
-            </div>
+            <em class="low-text">LOW</em>
 
           </div>
 
@@ -586,69 +364,57 @@
       </div>
 
 
-      <!-- AI DECISION ENGINE -->
+      <!-- AI DECISION -->
 
-      <div
-        class="panel ai-panel"
-        id="actions"
-      >
+      <div class="panel" id="actions">
 
-        <div class="panel-header">
+        <div class="panel-heading">
 
           <div>
-
-            <div class="panel-label">
-              AI DECISION ENGINE
-            </div>
+            <label>AI DECISION ENGINE</label>
 
             <h3>
               What should happen next?
             </h3>
-
           </div>
 
-          <div class="ai-status">
+          <span class="ready">
             ● READY
-          </div>
+          </span>
 
         </div>
 
 
-        <div class="decision-box">
+        <div class="decision">
 
           <div class="decision-number">
             01
           </div>
 
-          <div class="decision-content">
+          <div>
 
             <span class="priority">
               PRIORITY ACTION
             </span>
 
             <h4>
-              Recover high-intent abandoned leads
+              Recover high-intent opportunities
             </h4>
 
             <p>
-              Signal engine identified a high-value
-              recovery opportunity.
+              NEXUS identified a high-value recovery opportunity.
             </p>
 
             <div class="decision-meta">
 
               <span>
-                Estimated recovery
-                <strong id="decisionRecovery">
-                  $145K
-                </strong>
+                Recovery
+                <b id="decisionRecovery">$145K</b>
               </span>
 
               <span>
                 Confidence
-                <strong id="decisionConfidence">
-                  89%
-                </strong>
+                <b id="decisionConfidence">89%</b>
               </span>
 
             </div>
@@ -659,7 +425,7 @@
 
 
         <button
-          class="action-btn"
+          class="action-button"
           onclick="executeAction()"
         >
           Review AI Action →
@@ -672,459 +438,4 @@
 
     <!-- SIGNAL LAB -->
 
-    <section
-      class="panel signal-lab"
-      id="signal-lab"
-    >
-
-      <div class="panel-header">
-
-        <div>
-
-          <div class="panel-label">
-            SIGNAL LAB
-          </div>
-
-          <h3>
-            Business Signal Simulation
-          </h3>
-
-          <p class="section-description">
-            Adjust simulated signals and observe how
-            the intelligence engine recalculates risk.
-          </p>
-
-        </div>
-
-        <span class="graph-status">
-          SIMULATION MODE
-        </span>
-
-      </div>
-
-
-      <div class="signal-input-grid">
-
-
-        <!-- SIGNAL 01 -->
-
-        <div class="signal-input-card">
-
-          <div class="signal-input-header">
-
-            <div>
-
-              <span>
-                CONVERSION RATE
-              </span>
-
-              <strong id="conversionValue">
-                2.84%
-              </strong>
-
-            </div>
-
-            <span class="signal-state">
-              SIGNAL 01
-            </span>
-
-          </div>
-
-          <input
-            type="range"
-            id="conversionInput"
-            min="0.5"
-            max="5"
-            step="0.01"
-            value="2.84"
-          >
-
-          <div class="range-labels">
-
-            <span>
-              0.5%
-            </span>
-
-            <span>
-              5%
-            </span>
-
-          </div>
-
-        </div>
-
-
-        <!-- SIGNAL 02 -->
-
-        <div class="signal-input-card">
-
-          <div class="signal-input-header">
-
-            <div>
-
-              <span>
-                CANCELLATION RATE
-              </span>
-
-              <strong id="cancellationValue">
-                8.7%
-              </strong>
-
-            </div>
-
-            <span class="signal-state">
-              SIGNAL 02
-            </span>
-
-          </div>
-
-          <input
-            type="range"
-            id="cancellationInput"
-            min="0"
-            max="20"
-            step="0.1"
-            value="8.7"
-          >
-
-          <div class="range-labels">
-
-            <span>
-              0%
-            </span>
-
-            <span>
-              20%
-            </span>
-
-          </div>
-
-        </div>
-
-
-        <!-- SIGNAL 03 -->
-
-        <div class="signal-input-card">
-
-          <div class="signal-input-header">
-
-            <div>
-
-              <span>
-                FULFILLMENT DELAY
-              </span>
-
-              <strong id="fulfillmentValue">
-                12.4%
-              </strong>
-
-            </div>
-
-            <span class="signal-state">
-              SIGNAL 03
-            </span>
-
-          </div>
-
-          <input
-            type="range"
-            id="fulfillmentInput"
-            min="0"
-            max="30"
-            step="0.1"
-            value="12.4"
-          >
-
-          <div class="range-labels">
-
-            <span>
-              0%
-            </span>
-
-            <span>
-              30%
-            </span>
-
-          </div>
-
-        </div>
-
-
-        <!-- SIGNAL 04 -->
-
-        <div class="signal-input-card">
-
-          <div class="signal-input-header">
-
-            <div>
-
-              <span>
-                RESPONSE DELAY
-              </span>
-
-              <strong id="responseValue">
-                +31%
-              </strong>
-
-            </div>
-
-            <span class="signal-state">
-              SIGNAL 04
-            </span>
-
-          </div>
-
-          <input
-            type="range"
-            id="responseInput"
-            min="0"
-            max="100"
-            step="1"
-            value="31"
-          >
-
-          <div class="range-labels">
-
-            <span>
-              0%
-            </span>
-
-            <span>
-              100%
-            </span>
-
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <!-- SIGNAL RESULT -->
-
-      <div class="signal-result">
-
-        <div class="signal-result-item">
-
-          <span>
-            COMBINED RISK SCORE
-          </span>
-
-          <strong id="liveRiskScore">
-            64/100
-          </strong>
-
-        </div>
-
-
-        <div class="signal-result-item">
-
-          <span>
-            ESTIMATED EXPOSURE
-          </span>
-
-          <strong id="liveExposure">
-            $2.4M
-          </strong>
-
-        </div>
-
-
-        <div class="signal-result-item">
-
-          <span>
-            RECOVERY OPPORTUNITY
-          </span>
-
-          <strong
-            class="recovery-value"
-            id="liveRecovery"
-          >
-            $730K
-          </strong>
-
-        </div>
-
-
-        <div class="signal-result-action">
-
-          <button
-            class="primary-btn"
-            onclick="runSignalScan()"
-          >
-            Run Signal Scan →
-          </button>
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- SIGNAL RELATIONSHIP -->
-
-    <section
-      class="panel signal-graph"
-      id="investigation"
-    >
-
-      <div class="panel-header">
-
-        <div>
-
-          <div class="panel-label">
-            SIGNAL RELATIONSHIP ENGINE
-          </div>
-
-          <h3>
-            How business signals connect
-          </h3>
-
-        </div>
-
-        <span class="graph-status">
-          ANALYSIS ACTIVE
-        </span>
-
-      </div>
-
-
-      <div class="signal-flow">
-
-        <div class="signal-node">
-
-          <span class="node-icon">
-            01
-          </span>
-
-          <strong>
-            Response Delay
-          </strong>
-
-          <small id="graphResponse">
-            +31%
-          </small>
-
-        </div>
-
-
-        <div class="flow-arrow">
-          →
-        </div>
-
-
-        <div class="signal-node">
-
-          <span class="node-icon">
-            02
-          </span>
-
-          <strong>
-            Lead Drop
-          </strong>
-
-          <small>
-            Conversion ↓
-          </small>
-
-        </div>
-
-
-        <div class="flow-arrow">
-          →
-        </div>
-
-
-        <div class="signal-node danger-node">
-
-          <span class="node-icon">
-            03
-          </span>
-
-          <strong>
-            Revenue Risk
-          </strong>
-
-          <small id="graphRisk">
-            $2.4M
-          </small>
-
-        </div>
-
-
-        <div class="flow-arrow">
-          →
-        </div>
-
-
-        <div class="signal-node recovery-node">
-
-          <span class="node-icon">
-            04
-          </span>
-
-          <strong>
-            AI Recovery
-          </strong>
-
-          <small id="graphRecovery">
-            $730K
-          </small>
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- FINANCIAL IMPACT -->
-
-    <section
-      class="roi-grid"
-      id="recovery"
-    >
-
-
-      <div class="panel roi-panel">
-
-        <div class="panel-label">
-          FINANCIAL IMPACT
-        </div>
-
-        <h3>
-          AI Recovery Opportunity
-        </h3>
-
-        <div
-          class="roi-number"
-          id="roiNumber"
-        >
-          $730,000
-        </div>
-
-        <p>
-          Estimated opportunity based on current
-          simulated business signals.
-        </p>
-
-
-        <div class="roi-progress">
-
-          <div class="progress-label">
-
-            <span>
-              Recovery opportunity
-            </span>
-
-            <strong id="recoveryPercent">
-              68%
-            </strong>
-
-          </div>
-
-          <div class="progress-bar">
-
-            <span
-              id="
+    <section class="panel signal
