@@ -1,31 +1,24 @@
- /* =========================================================
+ "use strict";
+
+/* =========================================================
    NEXUS COMMAND AI — V2
    Enterprise Signal Intelligence Engine
 ========================================================= */
 
-"use strict";
-
-
-/* =========================================================
-   CONFIG
-========================================================= */
-
 const CONFIG = {
   baseRevenue: 2400000,
-  baseRecovery: 730000,
-  baseCustomers: 18420,
-  minHealth: 0,
-  maxHealth: 100
+  baseCustomers: 18420
 };
 
 
-/* =========================================================
-   DOM HELPERS
-========================================================= */
+/* =========================
+   HELPERS
+========================= */
 
-const $ = (id) => document.getElementById(id);
+const $ = id => document.getElementById(id);
 
-const formatMoney = (value) => {
+function money(value) {
+
   if (value >= 1000000) {
     return "$" + (value / 1000000).toFixed(2) + "M";
   }
@@ -35,85 +28,53 @@ const formatMoney = (value) => {
   }
 
   return "$" + Math.round(value);
-};
+}
 
 
-/* =========================================================
-   DOM ELEMENTS
-========================================================= */
+function num(element, fallback) {
+
+  if (!element) return fallback;
+
+  const n = parseFloat(element.value);
+
+  return Number.isFinite(n) ? n : fallback;
+}
+
+
+/* =========================
+   SIGNAL INPUTS
+========================= */
 
 const conversionInput = $("conversionInput");
 const cancellationInput = $("cancellationInput");
 const fulfillmentInput = $("fulfillmentInput");
 const responseInput = $("responseInput");
 
-const conversionValue = $("conversionValue");
-const cancellationValue = $("cancellationValue");
-const fulfillmentValue = $("fulfillmentValue");
-const responseValue = $("responseValue");
 
-const liveRiskScore = $("liveRiskScore");
-const liveExposure = $("liveExposure");
-const liveRecovery = $("liveRecovery");
-
-const healthScore = $("healthScore");
-const healthText = $("healthText");
-const healthBadge = $("healthBadge");
-
-const revenueRisk = $("revenueRisk");
-const recoverableRevenue = $("recoverableRevenue");
-const customersRisk = $("customersRisk");
-
-const graphResponse = $("graphResponse");
-const graphRisk = $("graphRisk");
-const graphRecovery = $("graphRecovery");
-
-const roiNumber = $("roiNumber");
-const recoveryPercent = $("recoveryPercent");
-const recoveryProgress = $("recoveryProgress");
-
-const forecastNumber = $("forecastNumber");
-
-const decisionRecovery = $("decisionRecovery");
-const decisionConfidence = $("decisionConfidence");
-
-const confidenceValue = $("confidenceValue");
-
-
-/* =========================================================
-   SAFE NUMBER
-========================================================= */
-
-function numberValue(element, fallback = 0) {
-
-  if (!element) {
-    return fallback;
-  }
-
-  const value = parseFloat(element.value);
-
-  return Number.isFinite(value) ? value : fallback;
-}
-
-
-/* =========================================================
-   SIGNAL ENGINE
-========================================================= */
+/* =========================
+   CALCULATE ENGINE
+========================= */
 
 function calculateSignals() {
 
-  const conversion = numberValue(conversionInput, 2.84);
-  const cancellation = numberValue(cancellationInput, 8.7);
-  const fulfillment = numberValue(fulfillmentInput, 12.4);
-  const response = numberValue(responseInput, 31);
+  const conversion =
+    num(conversionInput, 2.84);
 
+  const cancellation =
+    num(cancellationInput, 8.7);
 
-  /* -----------------------------------------
-     SIGNAL SCORES
-  ----------------------------------------- */
+  const fulfillment =
+    num(fulfillmentInput, 12.4);
+
+  const response =
+    num(responseInput, 31);
+
 
   const conversionRisk =
-    Math.max(0, (3.8 - conversion) / 3.3) * 35;
+    Math.max(
+      0,
+      (3.8 - conversion) / 3.3
+    ) * 35;
 
   const cancellationRisk =
     (cancellation / 20) * 25;
@@ -137,44 +98,19 @@ function calculateSignals() {
   );
 
 
-  /* -----------------------------------------
-     EXPOSURE
-  ----------------------------------------- */
-
-  const exposureMultiplier =
-    0.65 + (risk / 100) * 0.65;
-
   const exposure =
-    CONFIG.baseRevenue * exposureMultiplier;
+    CONFIG.baseRevenue *
+    (0.65 + risk / 100 * 0.65);
 
-
-  /* -----------------------------------------
-     RECOVERY
-  ----------------------------------------- */
-
-  const recoveryRate =
-    0.18 + (risk / 100) * 0.14;
 
   const recovery =
-    exposure * recoveryRate;
+    exposure *
+    (0.18 + risk / 100 * 0.14);
 
-
-  /* -----------------------------------------
-     HEALTH
-  ----------------------------------------- */
 
   const health =
-    Math.round(
-      Math.max(
-        CONFIG.minHealth,
-        CONFIG.maxHealth - risk
-      )
-    );
+    Math.max(0, 100 - risk);
 
-
-  /* -----------------------------------------
-     CUSTOMERS
-  ----------------------------------------- */
 
   const customers =
     Math.round(
@@ -183,39 +119,13 @@ function calculateSignals() {
     );
 
 
-  /* -----------------------------------------
-     CONFIDENCE
-  ----------------------------------------- */
-
   const confidence =
     Math.round(
       Math.min(
         98,
-        78 +
-        Math.abs(risk - 50) * 0.35
+        78 + Math.abs(risk - 50) * 0.35
       )
     );
-
-
-  /* -----------------------------------------
-     UPDATE UI
-  ----------------------------------------- */
-
-  updateSignalValues(
-    conversion,
-    cancellation,
-    fulfillment,
-    response
-  );
-
-  updateResults(
-    risk,
-    exposure,
-    recovery,
-    health,
-    customers,
-    confidence
-  );
 
 
   return {
@@ -233,81 +143,530 @@ function calculateSignals() {
 }
 
 
-/* =========================================================
-   UPDATE SIGNAL VALUES
-========================================================= */
+/* =========================
+   UPDATE DASHBOARD
+========================= */
 
-function updateSignalValues(
-  conversion,
-  cancellation,
-  fulfillment,
-  response
-) {
+function updateDashboard() {
 
-  if (conversionValue) {
-    conversionValue.textContent =
-      conversion.toFixed(2) + "%";
+  const data =
+    calculateSignals();
+
+
+  /* SIGNAL VALUES */
+
+  if ($("conversionValue"))
+    $("conversionValue").textContent =
+      data.conversion.toFixed(2) + "%";
+
+
+  if ($("cancellationValue"))
+    $("cancellationValue").textContent =
+      data.cancellation.toFixed(1) + "%";
+
+
+  if ($("fulfillmentValue"))
+    $("fulfillmentValue").textContent =
+      data.fulfillment.toFixed(1) + "%";
+
+
+  if ($("responseValue"))
+    $("responseValue").textContent =
+      "+" + Math.round(data.response) + "%";
+
+
+  /* KPI */
+
+  if ($("revenueRisk"))
+    $("revenueRisk").textContent =
+      money(data.exposure);
+
+
+  if ($("recoverableRevenue"))
+    $("recoverableRevenue").textContent =
+      money(data.recovery);
+
+
+  if ($("customersRisk"))
+    $("customersRisk").textContent =
+      data.customers.toLocaleString();
+
+
+  /* HEALTH */
+
+  if ($("healthScore"))
+    $("healthScore").textContent =
+      data.health;
+
+
+  if ($("healthText")) {
+
+    $("healthText").textContent =
+      data.health >= 80
+        ? "Healthy"
+        : data.health >= 60
+        ? "Good"
+        : data.health >= 40
+        ? "Attention"
+        : "Critical";
   }
 
-  if (cancellationValue) {
-    cancellationValue.textContent =
-      cancellation.toFixed(1) + "%";
+
+  if ($("healthBadge")) {
+
+    $("healthBadge").textContent =
+      data.health >= 80
+        ? "HEALTHY"
+        : data.health >= 60
+        ? "ATTENTION"
+        : data.health >= 40
+        ? "HIGH RISK"
+        : "CRITICAL";
   }
 
-  if (fulfillmentValue) {
-    fulfillmentValue.textContent =
-      fulfillment.toFixed(1) + "%";
-  }
 
-  if (responseValue) {
-    responseValue.textContent =
-      "+" + Math.round(response) + "%";
-  }
+  /* CONFIDENCE */
 
-  if (graphResponse) {
-    graphResponse.textContent =
-      "+" + Math.round(response) + "%";
-  }
+  if ($("confidence"))
+    $("confidence").textContent =
+      data.confidence + "%";
+
+
+  /* SIGNAL RESULT */
+
+  if ($("liveRiskScore"))
+    $("liveRiskScore").textContent =
+      data.risk + "/100";
+
+
+  if ($("liveExposure"))
+    $("liveExposure").textContent =
+      money(data.exposure);
+
+
+  if ($("liveRecovery"))
+    $("liveRecovery").textContent =
+      money(data.recovery);
+
+
+  /* SIGNAL RELATIONSHIP */
+
+  if ($("graphResponse"))
+    $("graphResponse").textContent =
+      "+" + Math.round(data.response) + "%";
+
+
+  if ($("graphRisk"))
+    $("graphRisk").textContent =
+      money(data.exposure);
+
+
+  if ($("graphRecovery"))
+    $("graphRecovery").textContent =
+      money(data.recovery);
+
+
+  /* AI DECISION */
+
+  if ($("decisionRecovery"))
+    $("decisionRecovery").textContent =
+      money(data.recovery * 0.20);
+
+
+  if ($("decisionConfidence"))
+    $("decisionConfidence").textContent =
+      data.confidence + "%";
+
+
+  /* ROI */
+
+  if ($("roiNumber"))
+    $("roiNumber").textContent =
+      "$" + Math.round(data.recovery).toLocaleString();
+
+
+  const recoveryPercent =
+    Math.round(
+      Math.min(
+        95,
+        45 + data.risk * 0.35
+      )
+    );
+
+
+  if ($("recoveryPercent"))
+    $("recoveryPercent").textContent =
+      recoveryPercent + "%";
+
+
+  if ($("recoveryProgress"))
+    $("recoveryProgress").style.width =
+      recoveryPercent + "%";
+
+
+  /* FORECAST */
+
+  if ($("forecastNumber"))
+    $("forecastNumber").textContent =
+      "-" + money(data.exposure * 0.28);
+
+
+  return data;
 }
 
 
-/* =========================================================
-   UPDATE RESULTS
-========================================================= */
+/* =========================
+   SIGNAL SCAN
+========================= */
 
-function updateResults(
-  risk,
-  exposure,
-  recovery,
-  health,
-  customers,
-  confidence
-) {
+function runSignalScan() {
 
-  if (liveRiskScore) {
-    liveRiskScore.textContent =
-      risk + "/100";
+  const button =
+    document.querySelector(
+      ".signal-result button"
+    );
+
+
+  if (!button) {
+    updateDashboard();
+    return;
   }
 
-  if (liveExposure) {
-    liveExposure.textContent =
-      formatMoney(exposure);
+
+  button.disabled = true;
+
+  button.textContent =
+    "Scanning Signals...";
+
+
+  setTimeout(() => {
+
+    updateDashboard();
+
+    button.textContent =
+      "✓ Scan Complete";
+
+
+    setTimeout(() => {
+
+      button.disabled = false;
+
+      button.textContent =
+        "Run Signal Scan →";
+
+    }, 1400);
+
+  }, 700);
+}
+
+
+/* =========================
+   INVESTIGATE RISK
+========================= */
+
+function investigateRisk() {
+
+  const data =
+    updateDashboard();
+
+
+  showAI(
+`NEXUS INVESTIGATION COMPLETE
+
+Combined Risk: ${data.risk}/100
+
+Revenue Exposure: ${money(data.exposure)}
+
+Recovery Opportunity: ${money(data.recovery)}
+
+Customers At Risk: ${data.customers.toLocaleString()}
+
+AI Confidence: ${data.confidence}%
+
+Priority:
+Investigate the strongest connected signal first.`
+  );
+}
+
+
+/* =========================
+   AI ACTION
+========================= */
+
+function executeAction() {
+
+  const data =
+    updateDashboard();
+
+
+  const button =
+    document.querySelector(
+      ".action-button"
+    );
+
+
+  if (!button) return;
+
+
+  button.disabled = true;
+
+  button.textContent =
+    "Analyzing...";
+
+
+  setTimeout(() => {
+
+    button.disabled = false;
+
+    button.textContent =
+      "✓ AI Action Ready";
+
+
+    showAI(
+`AI ACTION PLAN
+
+Priority:
+Recover high-intent opportunities.
+
+Estimated Recovery:
+${money(data.recovery * 0.20)}
+
+Confidence:
+${data.confidence}%
+
+Recommended Next Step:
+Prioritize the highest-value affected segment.`
+    );
+
+  }, 800);
+}
+
+
+/* =========================
+   ASK NEXUS
+========================= */
+
+function askCommander() {
+
+  const input =
+    $("aiQuestion");
+
+  if (!input) return;
+
+
+  const question =
+    input.value.trim();
+
+
+  if (!question) {
+
+    showAI(
+      "Please enter a business question."
+    );
+
+    return;
   }
 
-  if (liveRecovery) {
-    liveRecovery.textContent =
-      formatMoney(recovery);
+
+  const data =
+    updateDashboard();
+
+
+  const q =
+    question.toLowerCase();
+
+
+  let answer;
+
+
+  if (
+    q.includes("risk") ||
+    q.includes("danger")
+  ) {
+
+    answer =
+`RISK ANALYSIS
+
+Current Risk:
+${data.risk}/100
+
+Business Health:
+${data.health}/100
+
+Revenue Exposure:
+${money(data.exposure)}
+
+Priority:
+Investigate the strongest connected signal first.`;
+
   }
 
-  if (revenueRisk) {
-    revenueRisk.textContent =
-      formatMoney(exposure);
+  else if (
+    q.includes("revenue") ||
+    q.includes("sales")
+  ) {
+
+    answer =
+`REVENUE ANALYSIS
+
+Revenue Exposure:
+${money(data.exposure)}
+
+Recovery Opportunity:
+${money(data.recovery)}
+
+Priority:
+Investigate conversion and response-time signals.`;
+
   }
 
-  if (recoverableRevenue) {
-    recoverableRevenue.textContent =
-      formatMoney(recovery);
+  else if (
+    q.includes("recover")
+  ) {
+
+    answer =
+`RECOVERY ANALYSIS
+
+Recovery Opportunity:
+${money(data.recovery)}
+
+Recommended Strategy:
+Prioritize high-intent customers and leads showing negative signals.`;
+
   }
 
-  if (customersRisk) {
-    customersRisk.textContent =
+  else if (
+    q.includes("customer") ||
+    q.includes("churn")
+  ) {
+
+    answer =
+`CUSTOMER ANALYSIS
+
+Modeled Customers At Risk:
+${data.customers.toLocaleString()}
+
+Priority:
+Identify high-value customers with declining engagement.`;
+
+  }
+
+  else {
+
+    answer =
+`NEXUS BUSINESS ANALYSIS
+
+Risk:
+${data.risk}/100
+
+Health:
+${data.health}/100
+
+Revenue Exposure:
+${money(data.exposure)}
+
+Recovery Opportunity:
+${money(data.recovery)}
+
+Try asking:
+
+"What is the biggest risk?"
+
+"How much revenue is exposed?"
+
+"What can we recover?"
+
+"What should we do next?"`;
+
+  }
+
+
+  showAI(answer);
+}
+
+
+/* =========================
+   SHOW AI RESPONSE
+========================= */
+
+function showAI(message) {
+
+  const box =
+    $("aiResponse");
+
+
+  if (!box) return;
+
+
+  box.style.display =
+    "block";
+
+  box.textContent =
+    message;
+}
+
+
+/* =========================
+   LIVE SLIDERS
+========================= */
+
+[
+  conversionInput,
+  cancellationInput,
+  fulfillmentInput,
+  responseInput
+]
+.forEach(input => {
+
+  if (input) {
+
+    input.addEventListener(
+      "input",
+      updateDashboard
+    );
+
+  }
+
+});
+
+
+/* =========================
+   ENTER KEY
+========================= */
+
+const questionInput =
+  $("aiQuestion");
+
+
+if (questionInput) {
+
+  questionInput.addEventListener(
+    "keydown",
+    event => {
+
+      if (event.key === "Enter") {
+        askCommander();
+      }
+
+    }
+  );
+
+}
+
+
+/* =========================
+   INITIALIZE
+========================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  () => {
+
+    updateDashboard();
+
+    console.log(
+      "NEXUS COMMAND AI V2 — ONLINE"
+    );
+
+  }
+);
