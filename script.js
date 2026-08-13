@@ -1,7 +1,7 @@
- /* =========================================================
-   NEXUS COMMAND AI — V10.2
-   EXECUTIVE INTELLIGENCE EDITION
-   Dynamic Revenue Intelligence + What-If Engine
+/* =========================================================
+   NEXUS COMMAND AI — V10.3
+   CEO INTELLIGENCE EDITION
+   Dynamic Revenue Intelligence + CEO AI Insight
 ========================================================= */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -314,11 +314,123 @@ function updateDashboard() {
 
 
   if ($("confidence")) {
-
     $("confidence").textContent =
       confidence + "%";
-
   }
+
+
+  /* =========================
+     CEO AI INSIGHT
+  ========================= */
+
+  updateCEOInsight(
+    conversion,
+    cancellation,
+    fulfillment,
+    response,
+    health,
+    revenueRisk,
+    recoverable
+  );
+}
+
+
+/* =========================
+   CEO AI INSIGHT ENGINE
+========================= */
+
+function updateCEOInsight(
+  conversion,
+  cancellation,
+  fulfillment,
+  response,
+  health,
+  revenueRisk,
+  recoverable
+) {
+
+  if (!$("ceoInsight")) {
+    return;
+  }
+
+
+  let title =
+    "Business signals are within manageable range.";
+
+  let text =
+    "NEXUS recommends controlled optimization while monitoring revenue and customer behavior.";
+
+
+  /* CONVERSION RISK */
+
+  if (conversion < 2.5) {
+
+    title =
+      "Revenue leakage is being driven by conversion pressure.";
+
+    text =
+      "The highest-value move is to recover high-intent customers before increasing acquisition spend. Estimated exposure is " +
+      money(revenueRisk) +
+      " with approximately " +
+      money(recoverable) +
+      " in recoverable revenue potential.";
+  }
+
+
+  /* CANCELLATION RISK */
+
+  else if (cancellation > 10) {
+
+    title =
+      "Customer cancellation is becoming a material revenue risk.";
+
+    text =
+      "NEXUS recommends immediate retention intervention. Reduce preventable cancellations before scaling new customer acquisition.";
+  }
+
+
+  /* FULFILLMENT RISK */
+
+  else if (fulfillment > 18) {
+
+    title =
+      "Fulfillment pressure may become a customer-retention problem.";
+
+    text =
+      "Stabilize operational delivery and SLA performance before increasing demand. Operational recovery should be prioritized.";
+  }
+
+
+  /* RESPONSE RISK */
+
+  else if (response > 50) {
+
+    title =
+      "Response latency is creating avoidable business exposure.";
+
+    text =
+      "Accelerate response workflows and prioritize high-value customer interactions to reduce potential revenue leakage.";
+  }
+
+
+  /* HEALTHY STATE */
+
+  else if (health >= 85) {
+
+    title =
+      "Business operating conditions are strong.";
+
+    text =
+      "NEXUS recommends controlled growth optimization while protecting current conversion, retention and fulfillment performance.";
+  }
+
+
+  $("ceoInsight").textContent =
+    title;
+
+
+  $("ceoInsightText").textContent =
+    text;
 }
 
 
@@ -338,12 +450,9 @@ function runSimulation(showToast = true) {
     target.toFixed(2) + "%";
 
 
-  /* =========================
-     PROJECTED HEALTH
-  ========================= */
-
   let simulatedHealth =
-    100 - Math.max(
+    100 -
+    Math.max(
       0,
       (4.5 - target) * 10
     );
@@ -365,10 +474,6 @@ function runSimulation(showToast = true) {
     simulatedHealth;
 
 
-  /* =========================
-     REVENUE IMPACT
-  ========================= */
-
   const currentConversion =
     parseFloat(
       $("conversion").value
@@ -388,19 +493,15 @@ function runSimulation(showToast = true) {
     );
 
 
-  /* =========================
-     EXECUTIVE INSIGHT
-  ========================= */
-
   let message;
 
 
   if (improvement >= 1) {
 
     message =
-      "Strong recovery scenario — conversion improvement could unlock approximately " +
+      "Strong recovery scenario — approximately " +
       money(monthlyRevenueOpportunity) +
-      " in additional monthly revenue potential.";
+      " monthly revenue upside may be available.";
 
   } else if (improvement >= 0.5) {
 
@@ -410,7 +511,7 @@ function runSimulation(showToast = true) {
   } else {
 
     message =
-      "Limited improvement — focus on fixing the highest-risk signal first.";
+      "Limited improvement — focus on the highest-risk signal first.";
   }
 
 
@@ -420,7 +521,6 @@ function runSimulation(showToast = true) {
       "NEXUS simulation complete — " +
       message
     );
-
   }
 }
 
@@ -536,8 +636,8 @@ function submitLead(event) {
 
   /*
     IMPORTANT:
-    Replace this email with your
-    real business email.
+    Replace YOUR_EMAIL@example.com
+    with your real business email.
   */
 
   const destination =
@@ -579,7 +679,8 @@ function showToastMessage(message) {
     $("toast");
 
 
-  container.innerHTML = "";
+  container.innerHTML =
+    "";
 
 
   const toast =
@@ -626,6 +727,5 @@ document.addEventListener(
       closeLeadForm();
 
     }
-
   }
 );
