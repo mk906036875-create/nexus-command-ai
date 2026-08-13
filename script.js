@@ -1,53 +1,38 @@
- /* =========================================================
-   NEXUS COMMAND AI — V4
-   Revenue Intelligence Scanner
+/* =========================================================
+   NEXUS COMMAND AI — V5
+   Enterprise Signal Intelligence Engine
 ========================================================= */
 
 "use strict";
-
 
 /* =========================================================
    CONFIG
 ========================================================= */
 
 const CONFIG = {
-  defaultRevenue: 2400000,
-  recoveryRate: 0.30,
-  highRiskThreshold: 65,
-  mediumRiskThreshold: 40
+  baseRevenue: 2400000,
+  baseCustomers: 18420,
+  baseRecoveryRate: 0.30,
+  maxRisk: 100
 };
 
 
 /* =========================================================
-   STATE
-========================================================= */
-
-let scanData = {
-  records: [],
-  scanned: false,
-  revenueRisk: 0,
-  recovery: 0,
-  highRiskRecords: 0,
-  riskScore: 0,
-  leaks: []
-};
-
-
-/* =========================================================
-   DOM
+   HELPERS
 ========================================================= */
 
 const $ = (id) => document.getElementById(id);
 
+function numberValue(element, fallback = 0) {
+  if (!element) return fallback;
 
-/* =========================================================
-   FORMATTERS
-========================================================= */
+  const value = parseFloat(element.value);
+
+  return Number.isFinite(value) ? value : fallback;
+}
+
 
 function money(value) {
-
-  value = Number(value) || 0;
-
   if (value >= 1000000) {
     return "$" + (value / 1000000).toFixed(2) + "M";
   }
@@ -60,1109 +45,1080 @@ function money(value) {
 }
 
 
-function number(value) {
-
-  const n = parseFloat(value);
-
-  return Number.isFinite(n) ? n : 0;
-}
-
-
 function clamp(value, min, max) {
-
   return Math.max(min, Math.min(max, value));
 }
 
 
 /* =========================================================
-   CSV PARSER
+   SIGNAL INPUTS
 ========================================================= */
 
-function parseCSV(text) {
-
-  const rows = [];
-
-  let row = [];
-  let value = "";
-  let insideQuotes = false;
-
-  for (let i = 0; i < text.length; i++) {
-
-    const char = text[i];
-    const next = text[i + 1];
-
-    if (char === '"' && insideQuotes && next === '"') {
-      value += '"';
-      i++;
-      continue;
-    }
-
-    if (char === '"') {
-      insideQuotes = !insideQuotes;
-      continue;
-    }
-
-    if (char === "," && !insideQuotes) {
-      row.push(value.trim());
-      value = "";
-      continue;
-    }
-
-    if (
-      (char === "\n" || char === "\r") &&
-      !insideQuotes
-    ) {
-
-      if (char === "\r" && next === "\n") {
-        i++;
-      }
-
-      row.push(value.trim());
-
-      if (row.some(cell => cell !== "")) {
-        rows.push(row);
-      }
-
-      row = [];
-      value = "";
-
-      continue;
-    }
-
-    value += char;
-  }
-
-  if (value !== "" || row.length) {
-
-    row.push(value.trim());
-
-    if (row.some(cell => cell !== "")) {
-      rows.push(row);
-    }
-  }
-
-  if (rows.length < 2) {
-    return [];
-  }
-
-  const headers = rows[0].map(header =>
-    header
-      .toLowerCase()
-      .trim()
-      .replace(/\s+/g, "_")
-  );
-
-  return rows.slice(1).map(row => {
-
-    const object = {};
-
-    headers.forEach((header, index) => {
-      object[header] = row[index] || "";
-    });
-
-    return object;
-  });
-}
+const conversionInput = $("conversionInput");
+const cancellationInput = $("cancellationInput");
+const fulfillmentInput = $("fulfillmentInput");
+const responseInput = $("responseInput");
 
 
 /* =========================================================
-   FIND COLUMN
+   SIGNAL OUTPUTS
 ========================================================= */
 
-function findColumn(record, possibleNames) {
+const conversionValue = $("conversionValue");
+const cancellationValue = $("cancellationValue");
+const fulfillmentValue = $("fulfillmentValue");
+const responseValue = $("responseValue");
 
-  for (const name of possibleNames) {
+const liveRiskScore = $("liveRiskScore");
+const liveExposure = $("liveExposure");
+const liveRecovery = $("liveRecovery");
 
-    if (
-      Object.prototype.hasOwnProperty.call(
-        record,
-        name
-      )
-    ) {
-      return name;
-    }
-  }
+const revenueRisk = $("revenueRisk");
+const recoverableRevenue = $("recoverableRevenue");
+const customersRisk = $("customersRisk");
 
-  return null;
-}
+const healthScore = $("healthScore");
+const healthText = $("healthText");
+const healthBadge = $("healthBadge");
+
+const confidenceValue = $("confidenceValue");
+
+const decisionRecovery = $("decisionRecovery");
+const decisionConfidence = $("decisionConfidence");
+
+const roiNumber = $("roiNumber");
+const recoveryPercent = $("recoveryPercent");
+const recoveryProgress = $("recoveryProgress");
+
+const forecastNumber = $("forecastNumber");
 
 
 /* =========================================================
-   NORMALIZE RECORD
+   CORE ENGINE
 ========================================================= */
 
-function normalizeRecord(record, index) {
+function calculateNexus() {
 
-  const revenueColumn = findColumn(record, [
-    "revenue",
-    "amount",
-    "sales",
-    "deal_value",
-    "order_value",
-    "value"
-  ]);
+  const conversion =
+    numberValue(conversionInput, 2.84);
 
-  const conversionColumn = findColumn(record, [
-    "conversion",
-    "conversion_rate",
-    "conversionrate"
-  ]);
+  const cancellation =
+    numberValue(cancellationInput, 8.7);
 
-  const cancellationColumn = findColumn(record, [
-    "cancellation",
-    "cancellation_rate",
-    "cancel_rate",
-    "cancellations"
-  ]);
-
-  const fulfillmentColumn = findColumn(record, [
-    "fulfillment",
-    "fulfillment_delay",
-    "delay",
-    "delivery_delay"
-  ]);
-
-  const responseColumn = findColumn(record, [
-    "response_time",
-    "response",
-    "response_rate"
-  ]);
-
-  const statusColumn = findColumn(record, [
-    "status",
-    "customer_status",
-    "deal_status"
-  ]);
-
-  return {
-
-    id:
-      record.id ||
-      record.customer_id ||
-      record.order_id ||
-      "REC-" + String(index + 1).padStart(4, "0"),
-
-    revenue:
-      number(
-        revenueColumn
-          ? record[revenueColumn]
-          : 0
-      ),
-
-    conversion:
-      number(
-        conversionColumn
-          ? record[conversionColumn]
-          : 0
-      ),
-
-    cancellation:
-      number(
-        cancellationColumn
-          ? record[cancellationColumn]
-          : 0
-      ),
-
-    fulfillment:
-      number(
-        fulfillmentColumn
-          ? record[fulfillmentColumn]
-          : 0
-      ),
-
-    response:
-      number(
-        responseColumn
-          ? record[responseColumn]
-          : 0
-      ),
-
-    status:
-      String(
-        statusColumn
-          ? record[statusColumn]
-          : ""
-      ).toLowerCase(),
-
-    original: record
-  };
-}
-
-
-/* =========================================================
-   RECORD RISK
-========================================================= */
-
-function calculateRecordRisk(record) {
-
-  let score = 0;
-
-  /*
-    Conversion
-  */
-
-  if (record.conversion > 0) {
-
-    if (record.conversion < 1) {
-      score += 35;
-    }
-
-    else if (record.conversion < 2) {
-      score += 25;
-    }
-
-    else if (record.conversion < 3) {
-      score += 12;
-    }
-  }
-
-
-  /*
-    Cancellation
-  */
-
-  if (record.cancellation >= 15) {
-    score += 30;
-  }
-
-  else if (record.cancellation >= 10) {
-    score += 22;
-  }
-
-  else if (record.cancellation >= 5) {
-    score += 12;
-  }
-
-
-  /*
-    Fulfillment
-  */
-
-  if (record.fulfillment >= 25) {
-    score += 20;
-  }
-
-  else if (record.fulfillment >= 15) {
-    score += 14;
-  }
-
-  else if (record.fulfillment >= 8) {
-    score += 7;
-  }
-
-
-  /*
-    Response
-  */
-
-  if (record.response >= 60) {
-    score += 20;
-  }
-
-  else if (record.response >= 40) {
-    score += 14;
-  }
-
-  else if (record.response >= 25) {
-    score += 7;
-  }
-
-
-  /*
-    Status
-  */
-
-  const riskyStatus =
-    record.status.includes("cancel") ||
-    record.status.includes("lost") ||
-    record.status.includes("refund") ||
-    record.status.includes("churn") ||
-    record.status.includes("failed");
-
-  if (riskyStatus) {
-    score += 15;
-  }
-
-
-  return clamp(
-    Math.round(score),
-    0,
-    100
-  );
-}
-
-
-/* =========================================================
-   DETECT LEAKS
-========================================================= */
-
-function detectLeaks(records) {
-
-  let conversionLoss = 0;
-  let cancellationLoss = 0;
-  let fulfillmentLoss = 0;
-  let responseLoss = 0;
-
-  records.forEach(record => {
-
-    const revenue =
-      record.revenue || 0;
-
-    if (
-      record.conversion > 0 &&
-      record.conversion < 2
-    ) {
-      conversionLoss +=
-        revenue * 0.25;
-    }
-
-    if (
-      record.cancellation >= 10
-    ) {
-      cancellationLoss +=
-        revenue * 0.20;
-    }
-
-    if (
-      record.fulfillment >= 15
-    ) {
-      fulfillmentLoss +=
-        revenue * 0.15;
-    }
-
-    if (
-      record.response >= 40
-    ) {
-      responseLoss +=
-        revenue * 0.10;
-    }
-  });
-
-
-  const leaks = [
-
-    {
-      name: "Conversion Leakage",
-      description:
-        "Low conversion signals are reducing potential revenue.",
-      amount: conversionLoss,
-      level: conversionLoss > 100000 ? "CRITICAL" : "HIGH"
-    },
-
-    {
-      name: "Cancellation Leakage",
-      description:
-        "Elevated cancellations indicate avoidable revenue loss.",
-      amount: cancellationLoss,
-      level: cancellationLoss > 100000 ? "HIGH" : "MEDIUM"
-    },
-
-    {
-      name: "Fulfillment Leakage",
-      description:
-        "Delivery or fulfillment delays may be driving lost value.",
-      amount: fulfillmentLoss,
-      level: fulfillmentLoss > 100000 ? "HIGH" : "MEDIUM"
-    },
-
-    {
-      name: "Response-Time Leakage",
-      description:
-        "Slow response signals may be causing opportunity loss.",
-      amount: responseLoss,
-      level: responseLoss > 100000 ? "HIGH" : "MEDIUM"
-    }
-
-  ];
-
-  return leaks
-    .filter(item => item.amount > 0)
-    .sort(
-      (a, b) =>
-        b.amount - a.amount
-    );
-}
-
-
-/* =========================================================
-   RUN SCAN
-========================================================= */
-
-function runScan(records) {
-
-  if (!records || !records.length) {
-
-    updateStatus(
-      "No valid business records found.",
-      true
-    );
-
-    return;
-  }
-
-
-  const normalized =
-    records.map(normalizeRecord);
-
-
-  const totalRevenue =
-    normalized.reduce(
-      (sum, record) =>
-        sum + record.revenue,
-      0
-    );
-
-
-  const enriched =
-    normalized.map(record => ({
-      ...record,
-      risk:
-        calculateRecordRisk(record)
-    }));
-
-
-  const highRisk =
-    enriched.filter(
-      record =>
-        record.risk >=
-        CONFIG.highRiskThreshold
-    );
-
-
-  const averageRisk =
-    enriched.reduce(
-      (sum, record) =>
-        sum + record.risk,
-      0
-    ) / enriched.length;
-
-
-  const leaks =
-    detectLeaks(enriched);
-
-
-  const calculatedLeakage =
-    leaks.reduce(
-      (sum, item) =>
-        sum + item.amount,
-      0
-    );
-
-
-  const revenueRisk =
-    calculatedLeakage > 0
-      ? calculatedLeakage
-      : totalRevenue *
-        (averageRisk / 100) *
-        0.25;
-
-
-  const recovery =
-    revenueRisk *
-    CONFIG.recoveryRate;
-
-
-  scanData = {
-
-    records: enriched,
-
-    scanned: true,
-
-    revenueRisk:
-      Math.max(0, revenueRisk),
-
-    recovery:
-      Math.max(0, recovery),
-
-    highRiskRecords:
-      highRisk.length,
-
-    riskScore:
-      Math.round(averageRisk),
-
-    leaks
-  };
-
-
-  updateDashboard();
-
-  updateLeakageList();
-
-  updatePriority();
-
-  updateRecovery();
-
-  updateExecutiveSignal();
-
-  updateStatus(
-    "Scan complete. Revenue intelligence generated successfully."
-  );
-}
-
-
-/* =========================================================
-   UPDATE DASHBOARD
-========================================================= */
-
-function updateDashboard() {
-
-  const records =
-    scanData.records.length;
-
-  const revenueRisk =
-    scanData.revenueRisk;
-
-  const recovery =
-    scanData.recovery;
-
-  const highRisk =
-    scanData.highRiskRecords;
-
-
-  if ($("recordsScanned")) {
-    $("recordsScanned").textContent =
-      records.toLocaleString();
-  }
-
-  if ($("scannerRevenueRisk")) {
-    $("scannerRevenueRisk").textContent =
-      money(revenueRisk);
-  }
-
-  if ($("scannerRecovery")) {
-    $("scannerRecovery").textContent =
-      money(recovery);
-  }
-
-  if ($("highRiskRecords")) {
-    $("highRiskRecords").textContent =
-      highRisk.toLocaleString();
-  }
-}
-
-
-/* =========================================================
-   LEAKAGE UI
-========================================================= */
-
-function updateLeakageList() {
-
-  const container =
-    $("leakageList");
-
-  if (!container) {
-    return;
-  }
-
-
-  if (!scanData.leaks.length) {
-
-    container.innerHTML = `
-      <div class="empty-state">
-        No major leakage pattern detected.
-      </div>
-    `;
-
-    return;
-  }
-
-
-  container.innerHTML =
-    scanData.leaks
-      .map(item => `
-
-        <div class="leakage-row">
-
-          <span class="leakage-dot"></span>
-
-          <div>
-
-            <strong>
-              ${escapeHTML(item.name)}
-            </strong>
-
-            <small>
-              ${escapeHTML(item.description)}
-            </small>
-
-          </div>
-
-          <b>
-            ${money(item.amount)}
-          </b>
-
-          <em class="leakage-level">
-            ${item.level}
-          </em>
-
-        </div>
-
-      `)
-      .join("");
-}
-
-
-/* =========================================================
-   PRIORITY ACTION
-========================================================= */
-
-function updatePriority() {
-
-  const container =
-    $("priorityAction");
-
-  if (!container) {
-    return;
-  }
-
-
-  if (!scanData.scanned) {
-    return;
-  }
-
-
-  const topLeak =
-    scanData.leaks[0];
-
-
-  if (!topLeak) {
-
-    container.innerHTML = `
-
-      <div class="priority-number">
-        01
-      </div>
-
-      <div>
-
-        <span>
-          LOW EXPOSURE
-        </span>
-
-        <h4>
-          No urgent leakage detected
-        </h4>
-
-        <p>
-          Continue monitoring business signals.
-        </p>
-
-      </div>
-
-    `;
-
-    return;
-  }
-
-
-  container.innerHTML = `
-
-    <div class="priority-number">
-      01
-    </div>
-
-    <div>
-
-      <span>
-        PRIORITY RECOVERY ACTION
-      </span>
-
-      <h4>
-        Attack ${escapeHTML(topLeak.name)}
-      </h4>
-
-      <p>
-        Estimated exposure:
-        <strong>
-          ${money(topLeak.amount)}
-        </strong>
-      </p>
-
-    </div>
-
-  `;
-}
-
-
-/* =========================================================
-   RECOVERY
-========================================================= */
-
-function updateRecovery() {
-
-  if ($("roiNumber")) {
-    $("roiNumber").textContent =
-      money(scanData.recovery);
-  }
-
-
-  const rate =
-    scanData.revenueRisk > 0
-      ? Math.round(
-          (scanData.recovery /
-            scanData.revenueRisk) *
-          100
-        )
-      : 0;
-
-
-  if ($("recoveryPercent")) {
-    $("recoveryPercent").textContent =
-      rate + "%";
-  }
-
-
-  if ($("recoveryProgress")) {
-    $("recoveryProgress").style.width =
-      clamp(rate, 0, 100) + "%";
-  }
-
-
-  if ($("nextBestAction")) {
-
-    $("nextBestAction").textContent =
-      scanData.leaks.length
-        ? "RECOVER"
-        : "MONITOR";
-  }
-}
-
-
-/* =========================================================
-   EXECUTIVE SIGNAL
-========================================================= */
-
-function updateExecutiveSignal() {
-
-  if (!scanData.scanned) {
-    return;
-  }
-
-
-  if ($("executiveSignal")) {
-
-    $("executiveSignal").textContent =
-      `${scanData.highRiskRecords} high-risk records detected with ${money(scanData.revenueRisk)} potential revenue exposure.`;
-  }
-
-
-  if ($("executiveDescription")) {
-
-    const top =
-      scanData.leaks[0];
-
-    $("executiveDescription").textContent =
-      top
-        ? `${top.name} is currently the highest-value leakage signal. Estimated recovery opportunity: ${money(scanData.recovery)}.`
-        : "No major leakage category crossed the detection threshold.";
-  }
-}
-
-
-/* =========================================================
-   RECOVERY PLAN
-========================================================= */
-
-function generateRecoveryPlan() {
+  const fulfillment =
+    numberValue(fulfillmentInput, 12.4);
 
   const response =
-    $("aiResponse");
-
-  if (!response) {
-    return;
-  }
+    numberValue(responseInput, 31);
 
 
-  if (!scanData.scanned) {
+  /* -----------------------------------------
+     NORMALIZED SIGNALS
+  ----------------------------------------- */
 
-    response.textContent =
-      "Run a business scan first. NEXUS needs detected signals before generating a recovery plan.";
+  const conversionRisk =
+    clamp(
+      ((3.8 - conversion) / 3.8) * 100,
+      0,
+      100
+    );
 
-    return;
-  }
+  const cancellationRisk =
+    clamp(
+      (cancellation / 20) * 100,
+      0,
+      100
+    );
+
+  const fulfillmentRisk =
+    clamp(
+      (fulfillment / 30) * 100,
+      0,
+      100
+    );
+
+  const responseRisk =
+    clamp(
+      (response / 100) * 100,
+      0,
+      100
+    );
 
 
-  const top =
-    scanData.leaks[0];
+  /* -----------------------------------------
+     WEIGHTED RISK
+  ----------------------------------------- */
+
+  let risk =
+    conversionRisk * 0.35 +
+    cancellationRisk * 0.25 +
+    fulfillmentRisk * 0.20 +
+    responseRisk * 0.20;
+
+  risk = Math.round(
+    clamp(risk, 0, CONFIG.maxRisk)
+  );
 
 
-  if (!top) {
+  /* -----------------------------------------
+     FINANCIAL EXPOSURE
+  ----------------------------------------- */
 
-    response.textContent =
-      "NEXUS recommends continuous monitoring because no major revenue leakage signal was detected.";
+  const exposureMultiplier =
+    0.55 + risk / 100 * 0.75;
 
-    return;
-  }
+  const exposure =
+    CONFIG.baseRevenue *
+    exposureMultiplier;
 
 
-  response.textContent =
+  /* -----------------------------------------
+     RECOVERY OPPORTUNITY
+  ----------------------------------------- */
 
-`NEXUS RECOVERY PLAN
+  const recoveryRate =
+    CONFIG.baseRecoveryRate -
+    (risk < 25 ? 0.05 : 0) +
+    (risk > 70 ? 0.04 : 0);
 
-1. PRIORITY
-Focus immediately on ${top.name}.
+  const recovery =
+    exposure *
+    clamp(recoveryRate, 0.15, 0.40);
 
-2. DETECTED EXPOSURE
-${money(top.amount)}
 
-3. ESTIMATED RECOVERY
-${money(scanData.recovery)}
+  /* -----------------------------------------
+     CUSTOMERS
+  ----------------------------------------- */
 
-4. FIRST ACTION
-Identify the highest-value records contributing to this signal and contact or remediate them first.
+  const customers =
+    Math.round(
+      CONFIG.baseCustomers *
+      (0.60 + risk / 100 * 0.40)
+    );
 
-5. SECOND ACTION
-Create a targeted operational intervention for the affected workflow.
 
-6. THIRD ACTION
-Monitor the same signal after intervention and compare the new leakage rate.
+  /* -----------------------------------------
+     HEALTH
+  ----------------------------------------- */
 
-EXECUTIVE TARGET
-Recover the highest-value opportunities first rather than treating every record equally.`;
+  const health =
+    Math.round(
+      100 - risk
+    );
+
+
+  /* -----------------------------------------
+     CONFIDENCE
+  ----------------------------------------- */
+
+  const confidence =
+    Math.round(
+      clamp(
+        78 +
+        Math.abs(risk - 50) * 0.35 +
+        (risk > 70 ? 4 : 0),
+        78,
+        98
+      )
+    );
+
+
+  /* -----------------------------------------
+     ROI MODEL
+  ----------------------------------------- */
+
+  const estimatedInvestment =
+    Math.max(
+      25000,
+      recovery * 0.08
+    );
+
+  const roi =
+    Math.round(
+      ((recovery - estimatedInvestment) /
+      estimatedInvestment) * 100
+    );
+
+
+  /* -----------------------------------------
+     FORECAST
+  ----------------------------------------- */
+
+  const forecast =
+    Math.round(
+      recovery * 12
+    );
+
+
+  /* -----------------------------------------
+     UPDATE
+  ----------------------------------------- */
+
+  updateUI({
+    conversion,
+    cancellation,
+    fulfillment,
+    response,
+    risk,
+    exposure,
+    recovery,
+    customers,
+    health,
+    confidence,
+    roi,
+    forecast
+  });
+
+
+  return {
+    risk,
+    exposure,
+    recovery,
+    customers,
+    health,
+    confidence,
+    roi,
+    forecast
+  };
 }
+
+
+/* =========================================================
+   UPDATE UI
+========================================================= */
+
+function updateUI(data) {
+
+  const {
+    conversion,
+    cancellation,
+    fulfillment,
+    response,
+    risk,
+    exposure,
+    recovery,
+    customers,
+    health,
+    confidence,
+    roi,
+    forecast
+  } = data;
+
+
+  /* SIGNAL VALUES */
+
+  if (conversionValue)
+    conversionValue.textContent =
+      conversion.toFixed(2) + "%";
+
+  if (cancellationValue)
+    cancellationValue.textContent =
+      cancellation.toFixed(1) + "%";
+
+  if (fulfillmentValue)
+    fulfillmentValue.textContent =
+      fulfillment.toFixed(1) + "%";
+
+  if (responseValue)
+    responseValue.textContent =
+      "+" + Math.round(response) + "%";
+
+
+  /* LIVE ENGINE */
+
+  if (liveRiskScore)
+    liveRiskScore.textContent =
+      risk + "/100";
+
+  if (liveExposure)
+    liveExposure.textContent =
+      money(exposure);
+
+  if (liveRecovery)
+    liveRecovery.textContent =
+      money(recovery);
+
+
+  /* KPI */
+
+  if (revenueRisk)
+    revenueRisk.textContent =
+      money(exposure);
+
+  if (recoverableRevenue)
+    recoverableRevenue.textContent =
+      money(recovery);
+
+  if (customersRisk)
+    customersRisk.textContent =
+      customers.toLocaleString();
+
+
+  /* HEALTH */
+
+  if (healthScore)
+    healthScore.textContent =
+      health;
+
+  updateHealth(health);
+
+
+  /* CONFIDENCE */
+
+  if (confidenceValue)
+    confidenceValue.textContent =
+      confidence + "%";
+
+
+  /* DECISION */
+
+  if (decisionRecovery)
+    decisionRecovery.textContent =
+      money(recovery * 0.20);
+
+  if (decisionConfidence)
+    decisionConfidence.textContent =
+      Math.max(82, confidence - 3) + "%";
+
+
+  /* ROI */
+
+  if (roiNumber)
+    roiNumber.textContent =
+      roi.toLocaleString() + "%";
+
+  if (recoveryPercent)
+    recoveryPercent.textContent =
+      Math.round(
+        clamp(
+          recovery / exposure * 100,
+          0,
+          100
+        )
+      ) + "%";
+
+  if (recoveryProgress)
+    recoveryProgress.style.width =
+      clamp(
+        recovery / exposure * 100,
+        0,
+        100
+      ) + "%";
+
+
+  /* FORECAST */
+
+  if (forecastNumber)
+    forecastNumber.textContent =
+      money(forecast);
+}
+
+
+/* =========================================================
+   HEALTH STATE
+========================================================= */
+
+function updateHealth(score) {
+
+  if (!healthText || !healthBadge)
+    return;
+
+
+  let text;
+  let badge;
+
+
+  if (score >= 80) {
+
+    text = "Excellent";
+    badge = "STABLE";
+
+  } else if (score >= 65) {
+
+    text = "Good";
+    badge = "ATTENTION";
+
+  } else if (score >= 45) {
+
+    text = "At Risk";
+    badge = "HIGH RISK";
+
+  } else {
+
+    text = "Critical";
+    badge = "CRITICAL";
+  }
+
+
+  healthText.textContent =
+    text;
+
+  healthBadge.textContent =
+    badge;
+}
+
+
+/* =========================================================
+   LIVE SIGNAL LAB
+========================================================= */
+
+[
+  conversionInput,
+  cancellationInput,
+  fulfillmentInput,
+  responseInput
+].forEach((input) => {
+
+  if (!input) return;
+
+  input.addEventListener(
+    "input",
+    calculateNexus
+  );
+
+});
+
+
+/* =========================================================
+   INVESTIGATE RISK
+========================================================= */
+
+window.investigateRisk = function () {
+
+  const result =
+    calculateNexus();
+
+
+  const message =
+`NEXUS RISK INVESTIGATION
+
+Risk Score: ${result.risk}/100
+
+Revenue Exposure:
+${money(result.exposure)}
+
+Recoverable Revenue:
+${money(result.recovery)}
+
+Customers At Risk:
+${result.customers.toLocaleString()}
+
+AI Confidence:
+${result.confidence}%
+
+Recommended Priority:
+Recover high-intent opportunities first.`;
+
+
+  showModal(
+    "Risk Intelligence Report",
+    message
+  );
+};
+
+
+/* =========================================================
+   EXECUTE AI ACTION
+========================================================= */
+
+window.executeAction = function () {
+
+  const result =
+    calculateNexus();
+
+
+  const recovery =
+    result.recovery * 0.20;
+
+
+  showModal(
+    "AI Action Ready",
+`NEXUS ACTION PLAN
+
+Priority:
+Recover high-intent opportunities.
+
+Estimated Recovery:
+${money(recovery)}
+
+Confidence:
+${Math.max(82, result.confidence - 3)}%
+
+Recommended execution:
+1. Identify high-intent customers.
+2. Prioritize highest-value opportunities.
+3. Trigger recovery workflow.
+4. Monitor conversion response.
+5. Recalculate risk after intervention.
+
+Status:
+READY FOR HUMAN REVIEW`
+  );
+};
 
 
 /* =========================================================
    AI ANALYST
 ========================================================= */
 
-function askCommander() {
+const aiInput =
+  $("aiInput");
 
-  const input =
-    $("aiQuestion");
+const aiResponse =
+  $("aiResponse");
 
-  const response =
-    $("aiResponse");
+const aiButton =
+  $("aiButton");
 
 
-  if (!input || !response) {
-    return;
-  }
-
+function runAIAnalyst() {
 
   const question =
-    input.value
-      .trim()
-      .toLowerCase();
+    aiInput
+      ? aiInput.value.trim()
+      : "";
+
+
+  const result =
+    calculateNexus();
+
+
+  if (!aiResponse)
+    return;
 
 
   if (!question) {
 
-    response.textContent =
-      "Ask a business question first.";
+    aiResponse.textContent =
+`NEXUS ANALYST
+
+Ask a business question such as:
+
+• Where is my biggest revenue risk?
+• What should I fix first?
+• How much revenue can be recovered?
+• Why is business health declining?`;
 
     return;
   }
 
 
-  if (!scanData.scanned) {
-
-    response.textContent =
-      "NEXUS needs a completed business scan before answering data-based questions.";
-
-    return;
-  }
+  let answer = "";
 
 
-  const top =
-    scanData.leaks[0];
+  const q =
+    question.toLowerCase();
 
 
   if (
-    question.includes("most money") ||
-    question.includes("biggest risk") ||
-    question.includes("largest risk")
+    q.includes("revenue") ||
+    q.includes("money") ||
+    q.includes("risk")
   ) {
 
-    response.textContent =
-      top
-        ? `The biggest detected exposure is ${top.name}, representing approximately ${money(top.amount)} in potential leakage.`
-        : "No major leakage category was detected.";
-
-    return;
-  }
-
-
-  if (
-    question.includes("recover") ||
-    question.includes("recovery")
-  ) {
-
-    response.textContent =
-      `NEXUS estimates ${money(scanData.recovery)} of recovery opportunity from ${money(scanData.revenueRisk)} of potential revenue exposure.`;
-
-    return;
-  }
-
-
-  if (
-    question.includes("risk") ||
-    question.includes("danger")
-  ) {
-
-    response.textContent =
-      `Current average business risk is ${scanData.riskScore}/100. ${scanData.highRiskRecords} records are classified as high risk.`;
-
-    return;
-  }
-
-
-  if (
-    question.includes("action") ||
-    question.includes("next")
-  ) {
-
-    response.textContent =
-      top
-        ? `The next best action is to address ${top.name} first because it represents the highest detected leakage value.`
-        : "The next best action is continued monitoring.";
-
-    return;
-  }
-
-
-  response.textContent =
+    answer =
 `NEXUS ANALYSIS
 
-Records scanned:
-${scanData.records.length.toLocaleString()}
+Your current estimated exposure is ${money(result.exposure)}.
 
-Revenue at risk:
-${money(scanData.revenueRisk)}
+Estimated recoverable opportunity:
+${money(result.recovery)}.
+
+Priority should be placed on the signals producing the highest financial exposure.`;
+
+  } else if (
+    q.includes("health")
+  ) {
+
+    answer =
+`BUSINESS HEALTH
+
+Current score:
+${result.health}/100.
+
+Risk score:
+${result.risk}/100.
+
+AI confidence:
+${result.confidence}%.
+
+The fastest improvement path is to reduce the highest-weight signal first.`;
+
+  } else if (
+    q.includes("customer") ||
+    q.includes("churn")
+  ) {
+
+    answer =
+`CUSTOMER INTELLIGENCE
+
+Estimated customers at risk:
+${result.customers.toLocaleString()}.
+
+Recommended action:
+Prioritize high-value customers showing declining activity before broad campaigns.`;
+
+  } else {
+
+    answer =
+`NEXUS RECOMMENDATION
+
+Current risk:
+${result.risk}/100
+
+Exposure:
+${money(result.exposure)}
 
 Recovery opportunity:
-${money(scanData.recovery)}
+${money(result.recovery)}
 
-High-risk records:
-${scanData.highRiskRecords.toLocaleString()}
+Next best action:
+Investigate the highest-impact revenue signal and launch a targeted recovery workflow.`;
+  }
 
-Current risk score:
-${scanData.riskScore}/100
 
-Top signal:
-${top ? top.name : "No major leakage detected"}
+  aiResponse.textContent =
+    answer;
+}
 
-Ask:
-"Where are we losing the most money?"
-"How much can we recover?"
-"What is the biggest risk?"
-"What should we do next?"`;
+
+if (aiButton) {
+
+  aiButton.addEventListener(
+    "click",
+    runAIAnalyst
+  );
+
+}
+
+
+if (aiInput) {
+
+  aiInput.addEventListener(
+    "keydown",
+    (event) => {
+
+      if (event.key === "Enter") {
+        runAIAnalyst();
+      }
+
+    }
+  );
+
 }
 
 
 /* =========================================================
-   SAMPLE DATA
+   MODAL
 ========================================================= */
 
-function generateSampleData() {
+function showModal(title, message) {
 
-  return [
+  const existing =
+    document.getElementById(
+      "nexusModal"
+    );
 
-    {
-      id: "ORD-1001",
-      revenue: 185000,
-      conversion: 1.4,
-      cancellation: 14,
-      fulfillment: 19,
-      response: 47,
-      status: "active"
-    },
+  if (existing)
+    existing.remove();
 
-    {
-      id: "ORD-1002",
-      revenue: 240000,
-      conversion: 2.7,
-      cancellation: 4,
-      fulfillment: 7,
-      response: 18,
-      status: "active"
-    },
 
-    {
-      id: "ORD-1003",
-      revenue: 315000,
-      conversion: 0.9,
-      cancellation: 17,
-      fulfillment: 22,
-      response: 64,
-      status: "at-risk"
-    },
+  const modal =
+    document.createElement("div");
 
-    {
-      id: "ORD-1004",
-      revenue: 125000,
-      conversion: 3.4,
-      cancellation: 2,
-      fulfillment: 5,
-      response: 15,
-      status: "active"
-    },
+  modal.id =
+    "nexusModal";
 
-    {
-      id: "ORD-1005",
-      revenue: 290000,
-      conversion: 1.7,
-      cancellation: 11,
-      fulfillment: 16,
-      response: 42,
-      status: "at-risk"
-    },
 
-    {
-      id: "ORD-1006",
-      revenue: 410000,
-      conversion: 0.8,
-      cancellation: 19,
-      fulfillment: 27,
-      response: 72,
-      status: "lost"
-    },
+  modal.innerHTML = `
+    <div class="nexus-modal-backdrop">
 
-    {
-      id: "ORD-1007",
-      revenue: 160000,
-      conversion: 2.1,
-      cancellation: 6,
-      fulfillment: 11,
-      response: 28,
-      status: "active"
-    },
+      <div class="nexus-modal">
 
-    {
-      id: "ORD-1008",
-      revenue: 375000,
-      conversion: 1.2,
-      cancellation: 13,
-      fulfillment: 18,
-      response: 55,
-      status: "at-risk"
+        <button
+          class="nexus-modal-close"
+          aria-label="Close"
+        >
+          ×
+        </button>
+
+        <div class="nexus-modal-kicker">
+          NEXUS COMMAND AI
+        </div>
+
+        <h3>${title}</h3>
+
+        <pre>${message}</pre>
+
+        <button
+          class="nexus-modal-action"
+        >
+          Acknowledge
+        </button>
+
+      </div>
+
+    </div>
+  `;
+
+
+  document.body.appendChild(modal);
+
+
+  const close =
+    modal.querySelector(
+      ".nexus-modal-close"
+    );
+
+  const action =
+    modal.querySelector(
+      ".nexus-modal-action"
+    );
+
+  const backdrop =
+    modal.querySelector(
+      ".nexus-modal-backdrop"
+    );
+
+
+  close.onclick =
+    () => modal.remove();
+
+  action.onclick =
+    () => modal.remove();
+
+  backdrop.onclick =
+    (event) => {
+
+      if (
+        event.target === backdrop
+      ) {
+        modal.remove();
+      }
+
+    };
+}
+
+
+/* =========================================================
+   MODAL STYLE INJECTION
+========================================================= */
+
+function injectModalStyles() {
+
+  if (
+    document.getElementById(
+      "nexusModalStyles"
+    )
+  ) return;
+
+
+  const style =
+    document.createElement("style");
+
+  style.id =
+    "nexusModalStyles";
+
+
+  style.textContent = `
+    .nexus-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+
+      display: grid;
+      place-items: center;
+
+      padding: 20px;
+
+      background:
+        rgba(0,0,0,.72);
+
+      backdrop-filter:
+        blur(10px);
     }
 
-  ];
+    .nexus-modal {
+      position: relative;
+
+      width: min(560px, 100%);
+
+      padding: 26px;
+
+      border:
+        1px solid
+        rgba(94,231,255,.18);
+
+      border-radius: 16px;
+
+      background:
+        #0b1119;
+
+      box-shadow:
+        0 30px 100px
+        rgba(0,0,0,.6);
+    }
+
+    .nexus-modal-kicker {
+      color:
+        #5ee7ff;
+
+      font-size: 8px;
+      font-weight: 900;
+
+      letter-spacing:
+        1.3px;
+    }
+
+    .nexus-modal h3 {
+      margin-top: 7px;
+
+      color:
+        #f4f8fc;
+
+      font-size: 19px;
+    }
+
+    .nexus-modal pre {
+      white-space:
+        pre-wrap;
+
+      margin-top: 18px;
+
+      padding: 15px;
+
+      border:
+        1px solid
+        rgba(255,255,255,.07);
+
+      border-radius: 10px;
+
+      color:
+        #aeb9c6;
+
+      background:
+        rgba(0,0,0,.22);
+
+      font-family:
+        Inter,
+        Arial,
+        sans-serif;
+
+      font-size: 10px;
+
+      line-height: 1.7;
+    }
+
+    .nexus-modal-close {
+      position: absolute;
+
+      top: 13px;
+      right: 13px;
+
+      width: 30px;
+      height: 30px;
+
+      border: 0;
+
+      border-radius: 8px;
+
+      color:
+        #8b98a8;
+
+      background:
+        rgba(255,255,255,.04);
+
+      font-size: 20px;
+    }
+
+    .nexus-modal-action {
+      width: 100%;
+
+      margin-top: 14px;
+
+      padding: 11px;
+
+      border: 0;
+
+      border-radius: 8px;
+
+      color:
+        #041016;
+
+      background:
+        #5ee7ff;
+
+      font-weight: 900;
+
+      font-size: 10px;
+    }
+  `;
+
+
+  document.head.appendChild(style);
 }
 
 
 /* =========================================================
-   SAMPLE SCAN
+   NAVIGATION
 ========================================================= */
 
-function runSampleScan() {
+function setupNavigation() {
 
-  updateStatus(
-    "Loading sample business data..."
+  const links =
+    document.querySelectorAll(
+      ".nav-item"
+    );
+
+
+  links.forEach((link) => {
+
+    link.addEventListener(
+      "click",
+      () => {
+
+        links.forEach(
+          (item) =>
+            item.classList.remove(
+              "active"
+            )
+        );
+
+        link.classList.add(
+          "active"
+        );
+
+      }
+    );
+
+  });
+}
+
+
+/* =========================================================
+   SCROLL REVEAL
+========================================================= */
+
+function setupReveal() {
+
+  const elements =
+    document.querySelectorAll(
+      ".panel, .kpi-card, .command-hero, .executive-alert"
+    );
+
+
+  elements.forEach(
+    (element) => {
+
+      element.style.opacity = "0";
+
+      element.style.transform =
+        "translateY(10px)";
+
+      element.style.transition =
+        "opacity .5s ease, transform .5s ease";
+    }
   );
 
 
-  setTimeout(() => {
+  if (
+    !("IntersectionObserver" in window)
+  ) {
 
-    runScan(
-      generateSampleData()
+    elements.forEach(
+      (element) => {
+
+        element.style.opacity = "1";
+
+        element.style.transform =
+          "translateY(0)";
+      }
     );
 
-  }, 500);
+    return;
+  }
+
+
+  const observer =
+    new IntersectionObserver(
+      (entries) => {
+
+        entries.forEach(
+          (entry) => {
+
+            if (
+              entry.isIntersecting
+            ) {
+
+              entry.target.style.opacity =
+                "1";
+
+              entry.target.style.transform =
+                "translateY(0)";
+
+              observer.unobserve(
+                entry.target
+              );
+            }
+
+          }
+        );
+
+      },
+      {
+        threshold: 0.08
+      }
+    );
+
+
+  elements.forEach(
+    (element) =>
+      observer.observe(element)
+  );
 }
 
 
 /* =========================================================
-   FILE UPLOAD
-============================
+   KEYBOARD SHORTCUT
+========================================================= */
+
+document.addEventListener(
+  "keydown",
+  (event) => {
+
+    if (
+      event.ctrlKey &&
+      event.key.toLowerCase() === "k"
+    ) {
+
+      event.preventDefault();
+
+      if (aiInput) {
+
+        aiInput.focus();
+
+      }
+    }
+
+  }
+);
+
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  () => {
+
+    injectModalStyles();
+
+    setupNavigation();
+
+    setupReveal();
+
+    calculateNexus();
+
+  }
+);
