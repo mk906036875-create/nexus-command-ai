@@ -1,19 +1,21 @@
- /* =========================================================
+/* =========================================================
    NEXUS COMMAND AI — V8.1
    Enterprise Autonomous Decision Intelligence Engine
 
-   FIXES:
+   FEATURES:
    - Full initialization
    - Live signal calculations
    - Dynamic risk status
-   - Dynamic exposure breakdown
+   - Revenue exposure breakdown
+   - AI decision engine
+   - Early warning system
    - AI action center
    - What-If simulator
    - AI Analyst
-   - Navigation + scroll spy
+   - Navigation + Scroll Spy
    - Toast notifications
    - Keyboard shortcut
-   - HTML-safe analyst output
+   - HTML-safe output
    - Compatible with existing V8 HTML
 ========================================================= */
 
@@ -40,7 +42,8 @@ const CONFIG = {
    DOM HELPERS
 ========================================================= */
 
-const $ = (id) => document.getElementById(id);
+const $ = (id) =>
+  document.getElementById(id);
 
 const qs = (selector) =>
   document.querySelector(selector);
@@ -53,68 +56,135 @@ const qsa = (selector) =>
    DOM REFERENCES
 ========================================================= */
 
-const conversionInput = $("conversionInput");
-const cancellationInput = $("cancellationInput");
-const fulfillmentInput = $("fulfillmentInput");
-const responseInput = $("responseInput");
+let conversionInput;
+let cancellationInput;
+let fulfillmentInput;
+let responseInput;
 
-const conversionValue = $("conversionValue");
-const cancellationValue = $("cancellationValue");
-const fulfillmentValue = $("fulfillmentValue");
-const responseValue = $("responseValue");
+let conversionValue;
+let cancellationValue;
+let fulfillmentValue;
+let responseValue;
 
-const conversionStatus = $("conversionStatus");
-const cancellationStatus = $("cancellationStatus");
-const fulfillmentStatus = $("fulfillmentStatus");
-const responseStatus = $("responseStatus");
+let conversionStatus;
+let cancellationStatus;
+let fulfillmentStatus;
+let responseStatus;
 
-const conversionExposure = $("conversionExposure");
-const fulfillmentExposure = $("fulfillmentExposure");
-const cancellationExposure = $("cancellationExposure");
-const responseExposure = $("responseExposure");
+let conversionExposure;
+let fulfillmentExposure;
+let cancellationExposure;
+let responseExposure;
 
-const healthScore = $("healthScore");
-const healthStatus = $("healthStatus");
-const healthText = $("healthText");
-const healthBadge = $("healthBadge");
+let healthScore;
+let healthStatus;
+let healthText;
+let healthBadge;
 
-const revenueRisk = $("revenueRisk");
-const recoverableRevenue = $("recoverableRevenue");
-const customersRisk = $("customersRisk");
+let revenueRisk;
+let recoverableRevenue;
+let customersRisk;
 
-const confidenceValue = $("confidenceValue");
+let confidenceValue;
 
-const decisionTitle = $("decisionTitle");
-const decisionDescription = $("decisionDescription");
-const decisionRecovery = $("decisionRecovery");
-const decisionConfidence = $("decisionConfidence");
+let decisionTitle;
+let decisionDescription;
+let decisionRecovery;
+let decisionConfidence;
 
-const forecastNumber = $("forecastNumber");
-const recoveryPercent = $("recoveryPercent");
-const recoveryProgress = $("recoveryProgress");
+let forecastNumber;
+let recoveryPercent;
+let recoveryProgress;
 
-const alertTitle = $("alertTitle");
-const alertDescription = $("alertDescription");
+let alertTitle;
+let alertDescription;
 
-const aiResponse = $("aiResponse");
-const analystInput = $("analystInput");
+let aiResponse;
+let analystInput;
 
-const actionResult = $("actionResult");
+let actionResult;
 
-const targetConversion = $("targetConversion");
-const targetCancellation = $("targetCancellation");
+let targetConversion;
+let targetCancellation;
 
-const targetConversionValue = $("targetConversionValue");
-const targetCancellationValue = $("targetCancellationValue");
-const simulatedHealth = $("simulatedHealth");
+let targetConversionValue;
+let targetCancellationValue;
+let simulatedHealth;
 
 
 /* =========================================================
-   UTILITY FUNCTIONS
+   INITIALIZE DOM
+========================================================= */
+
+function initializeDOM() {
+
+  conversionInput = $("conversionInput");
+  cancellationInput = $("cancellationInput");
+  fulfillmentInput = $("fulfillmentInput");
+  responseInput = $("responseInput");
+
+  conversionValue = $("conversionValue");
+  cancellationValue = $("cancellationValue");
+  fulfillmentValue = $("fulfillmentValue");
+  responseValue = $("responseValue");
+
+  conversionStatus = $("conversionStatus");
+  cancellationStatus = $("cancellationStatus");
+  fulfillmentStatus = $("fulfillmentStatus");
+  responseStatus = $("responseStatus");
+
+  conversionExposure = $("conversionExposure");
+  fulfillmentExposure = $("fulfillmentExposure");
+  cancellationExposure = $("cancellationExposure");
+  responseExposure = $("responseExposure");
+
+  healthScore = $("healthScore");
+  healthStatus = $("healthStatus");
+  healthText = $("healthText");
+  healthBadge = $("healthBadge");
+
+  revenueRisk = $("revenueRisk");
+  recoverableRevenue = $("recoverableRevenue");
+  customersRisk = $("customersRisk");
+
+  confidenceValue = $("confidenceValue");
+
+  decisionTitle = $("decisionTitle");
+  decisionDescription = $("decisionDescription");
+  decisionRecovery = $("decisionRecovery");
+  decisionConfidence = $("decisionConfidence");
+
+  forecastNumber = $("forecastNumber");
+  recoveryPercent = $("recoveryPercent");
+  recoveryProgress = $("recoveryProgress");
+
+  alertTitle = $("alertTitle");
+  alertDescription = $("alertDescription");
+
+  aiResponse = $("aiResponse");
+  analystInput = $("analystInput");
+
+  actionResult = $("actionResult");
+
+  targetConversion = $("targetConversion");
+  targetCancellation = $("targetCancellation");
+
+  targetConversionValue = $("targetConversionValue");
+  targetCancellationValue = $("targetCancellationValue");
+  simulatedHealth = $("simulatedHealth");
+}
+
+
+/* =========================================================
+   UTILITIES
 ========================================================= */
 
 function clamp(value, min, max) {
-  return Math.min(Math.max(value, min), max);
+
+  return Math.min(
+    Math.max(value, min),
+    max
+  );
 }
 
 
@@ -125,24 +195,35 @@ function money(value) {
   }
 
   if (value >= 1000000) {
-    return "$" + (value / 1000000).toFixed(2) + "M";
+
+    return "$" +
+      (value / 1000000).toFixed(2) +
+      "M";
   }
 
   if (value >= 1000) {
-    return "$" + Math.round(value / 1000) + "K";
+
+    return "$" +
+      Math.round(value / 1000) +
+      "K";
   }
 
-  return "$" + Math.round(value);
+  return "$" +
+    Math.round(value);
 }
 
 
-function numberValue(element, fallback = 0) {
+function numberValue(
+  element,
+  fallback = 0
+) {
 
   if (!element) {
     return fallback;
   }
 
-  const value = parseFloat(element.value);
+  const value =
+    parseFloat(element.value);
 
   return Number.isFinite(value)
     ? value
@@ -162,10 +243,14 @@ function escapeHTML(value) {
 
 
 /* =========================================================
-   SIGNAL STATUS HELPERS
+   STATUS HELPER
 ========================================================= */
 
-function setStatus(element, text, level) {
+function setStatus(
+  element,
+  text,
+  level
+) {
 
   if (!element) return;
 
@@ -181,70 +266,79 @@ function setStatus(element, text, level) {
 
 function calculateSignals() {
 
-  const conversion = numberValue(
-    conversionInput,
-    2.84
-  );
+  const conversion =
+    numberValue(
+      conversionInput,
+      2.84
+    );
 
-  const cancellation = numberValue(
-    cancellationInput,
-    8.7
-  );
+  const cancellation =
+    numberValue(
+      cancellationInput,
+      8.7
+    );
 
-  const fulfillment = numberValue(
-    fulfillmentInput,
-    12.4
-  );
+  const fulfillment =
+    numberValue(
+      fulfillmentInput,
+      12.4
+    );
 
-  const response = numberValue(
-    responseInput,
-    31
-  );
+  const response =
+    numberValue(
+      responseInput,
+      31
+    );
 
 
   /* =======================================================
-     INDIVIDUAL RISK
+     INDIVIDUAL RISKS
   ======================================================= */
 
-  const conversionRisk = clamp(
-    ((3.8 - conversion) / 3.3) * 35,
-    0,
-    35
-  );
+  const conversionRisk =
+    clamp(
+      ((3.8 - conversion) / 3.3) * 35,
+      0,
+      35
+    );
 
-  const cancellationRisk = clamp(
-    (cancellation / 20) * 25,
-    0,
-    25
-  );
+  const cancellationRisk =
+    clamp(
+      (cancellation / 20) * 25,
+      0,
+      25
+    );
 
-  const fulfillmentRisk = clamp(
-    (fulfillment / 30) * 20,
-    0,
-    20
-  );
+  const fulfillmentRisk =
+    clamp(
+      (fulfillment / 30) * 20,
+      0,
+      20
+    );
 
-  const responseRisk = clamp(
-    (response / 100) * 20,
-    0,
-    20
-  );
+  const responseRisk =
+    clamp(
+      (response / 100) * 20,
+      0,
+      20
+    );
 
 
   /* =======================================================
      TOTAL RISK
   ======================================================= */
 
-  const risk = Math.round(
-    clamp(
-      conversionRisk +
-      cancellationRisk +
-      fulfillmentRisk +
-      responseRisk,
-      0,
-      100
-    )
-  );
+  const risk =
+    Math.round(
+      clamp(
+        conversionRisk +
+        cancellationRisk +
+        fulfillmentRisk +
+        responseRisk,
+        0,
+        100
+      )
+    );
 
 
   /* =======================================================
@@ -277,43 +371,47 @@ function calculateSignals() {
      HEALTH
   ======================================================= */
 
-  const health = Math.round(
-    clamp(
-      100 - risk,
-      CONFIG.minHealth,
-      CONFIG.maxHealth
-    )
-  );
+  const health =
+    Math.round(
+      clamp(
+        100 - risk,
+        CONFIG.minHealth,
+        CONFIG.maxHealth
+      )
+    );
 
 
   /* =======================================================
      CUSTOMER RISK
   ======================================================= */
 
-  const customers = Math.round(
-    CONFIG.baseCustomers *
-    (
-      0.55 +
-      (risk / 100) * 0.45
-    )
-  );
+  const customers =
+    Math.round(
+      CONFIG.baseCustomers *
+      (
+        0.55 +
+        (risk / 100) * 0.45
+      )
+    );
 
 
   /* =======================================================
      AI CONFIDENCE
   ======================================================= */
 
-  const confidenceScore = Math.round(
-    clamp(
-      78 +
-      Math.abs(risk - 50) * 0.42,
-      78,
-      98
-    )
-  );
+  const confidenceScore =
+    Math.round(
+      clamp(
+        78 +
+        Math.abs(risk - 50) * 0.42,
+        78,
+        98
+      )
+    );
 
 
   const result = {
+
     conversion,
     cancellation,
     fulfillment,
@@ -351,23 +449,32 @@ function calculateSignals() {
 function updateSignalValues(result) {
 
   if (conversionValue) {
+
     conversionValue.textContent =
-      result.conversion.toFixed(2) + "%";
+      result.conversion.toFixed(2) +
+      "%";
   }
 
   if (cancellationValue) {
+
     cancellationValue.textContent =
-      result.cancellation.toFixed(1) + "%";
+      result.cancellation.toFixed(1) +
+      "%";
   }
 
   if (fulfillmentValue) {
+
     fulfillmentValue.textContent =
-      result.fulfillment.toFixed(1) + "%";
+      result.fulfillment.toFixed(1) +
+      "%";
   }
 
   if (responseValue) {
+
     responseValue.textContent =
-      "+" + Math.round(result.response) + "%";
+      "+" +
+      Math.round(result.response) +
+      "%";
   }
 }
 
@@ -645,32 +752,38 @@ function updateResults(result) {
   if (confidenceValue) {
 
     confidenceValue.textContent =
-      result.confidenceScore + "%";
+      result.confidenceScore +
+      "%";
   }
 
 
   /* FORECAST */
 
-  const recoveryPct = Math.round(
-    clamp(
-      (result.recovery / result.exposure) * 100,
-      0,
-      100
-    )
-  );
+  const recoveryPct =
+    Math.round(
+      clamp(
+        (result.recovery /
+          Math.max(result.exposure, 1)) *
+          100,
+        0,
+        100
+      )
+    );
 
 
   if (recoveryPercent) {
 
     recoveryPercent.textContent =
-      recoveryPct + "%";
+      recoveryPct +
+      "%";
   }
 
 
   if (recoveryProgress) {
 
     recoveryProgress.style.width =
-      recoveryPct + "%";
+      recoveryPct +
+      "%";
   }
 
 
@@ -696,16 +809,20 @@ function updateRiskExposure(result) {
 
 
   const conversionShare =
-    result.conversionRisk / totalRisk;
+    result.conversionRisk /
+    totalRisk;
 
   const cancellationShare =
-    result.cancellationRisk / totalRisk;
+    result.cancellationRisk /
+    totalRisk;
 
   const fulfillmentShare =
-    result.fulfillmentRisk / totalRisk;
+    result.fulfillmentRisk /
+    totalRisk;
 
   const responseShare =
-    result.responseRisk / totalRisk;
+    result.responseRisk /
+    totalRisk;
 
 
   if (conversionExposure) {
@@ -807,12 +924,15 @@ function updateDecision(result) {
       Math.max(
         82,
         result.confidenceScore - 4
-      ) + "%";
+      ) +
+      "%";
   }
 
 
-  if (!decisionTitle ||
-      !decisionDescription) {
+  if (
+    !decisionTitle ||
+    !decisionDescription
+  ) {
 
     return;
   }
@@ -872,8 +992,10 @@ function updateDecision(result) {
 
 function updateAlert(result) {
 
-  if (!alertTitle ||
-      !alertDescription) {
+  if (
+    !alertTitle ||
+    !alertDescription
+  ) {
 
     return;
   }
@@ -918,21 +1040,24 @@ function updateAlert(result) {
    INPUT EVENTS
 ========================================================= */
 
-[
-  conversionInput,
-  cancellationInput,
-  fulfillmentInput,
-  responseInput
-]
-.forEach((input) => {
+function setupInputs() {
 
-  if (!input) return;
+  [
+    conversionInput,
+    cancellationInput,
+    fulfillmentInput,
+    responseInput
+  ]
+  .forEach((input) => {
 
-  input.addEventListener(
-    "input",
-    calculateSignals
-  );
-});
+    if (!input) return;
+
+    input.addEventListener(
+      "input",
+      calculateSignals
+    );
+  });
+}
 
 
 /* =========================================================
@@ -1027,83 +1152,4 @@ function executeAction() {
 
   const actionSection =
     $("actions");
-
-
-  if (actionSection) {
-
-    actionSection.scrollIntoView({
-      behavior: "smooth",
-      block: "center"
-    });
-  }
-}
-
-
-/* =========================================================
-   ACTION CENTER
-========================================================= */
-
-function runAction(type) {
-
-  const result =
-    calculateSignals();
-
-
-  let title = "";
-  let message = "";
-  let opportunity = 0;
-
-
-  switch (type) {
-
-    case "recovery":
-
-      title =
-        "ABANDONED DEMAND RECOVERY";
-
-      opportunity =
-        result.recovery * 0.35;
-
-      message =
-        "Target high-intent prospects with personalized recovery workflows, checkout reminders and fast follow-up.";
-
-      break;
-
-
-    case "response":
-
-      title =
-        "RESPONSE LEAKAGE REDUCTION";
-
-      opportunity =
-        result.recovery * 0.20;
-
-      message =
-        "Prioritize slow-response conversations and automate first-touch engagement for high-value leads.";
-
-      break;
-
-
-    case "fulfillment":
-
-      title =
-        "FULFILLMENT STABILIZATION";
-
-      opportunity =
-        result.recovery * 0.25;
-
-      message =
-        "Identify SLA pressure, prioritize delayed orders and trigger proactive customer communication.";
-
-      break;
-
-
-    default:
-
-      title =
-        "AI ACTION";
-
-      opportunity =
-        result.recovery * 0.20;
-
-   
+ 
