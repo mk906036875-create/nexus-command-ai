@@ -1,858 +1,499 @@
- /* =========================================================
-   NEXUS COMMAND AI V10
-   CEO ONE-SCREEN DECISION ENGINE
+/* =========================================================
+   NEXUS COMMAND AI — V10.1
+   CEO EDITION
+   LIVE SIMULATION + EXECUTIVE LEAD FORM
 ========================================================= */
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  /* =========================
-     STATE
-  ========================== */
-
-  const state = {
-
-    conversion: 2.84,
-
-    cancellation: 8.7,
-
-    fulfillment: 12.4,
-
-    response: 31,
-
-    actionsExecuted: 0,
-
-    approved: false
-
-  };
-
-
-  /* =========================
-     HELPER
-  ========================== */
-
-  const $ = id =>
-    document.getElementById(id);
-
-
-  /* =========================
-     TOAST
-  ========================== */
-
-  function toast(message) {
-
-    const old =
-      document.querySelector(".nexus-toast");
-
-    if (old) old.remove();
-
-    const box =
-      document.createElement("div");
-
-    box.className =
-      "nexus-toast";
-
-    box.textContent =
-      message;
-
-    document.body.appendChild(box);
-
-    setTimeout(() => {
-
-      box.style.opacity = "0";
-
-    }, 2300);
-
-    setTimeout(() => {
-
-      box.remove();
-
-    }, 2800);
-
-  }
-
-
-  /* =========================
-     MONEY FORMAT
-  ========================== */
-
-  function money(value) {
-
-    if (value >= 1000000) {
-
-      return "$" +
-        (value / 1000000)
-          .toFixed(2) +
-        "M";
-
-    }
-
-    if (value >= 1000) {
-
-      return "$" +
-        Math.round(value / 1000) +
-        "K";
-
-    }
-
-    return "$" +
-      Math.round(value);
-
-  }
-
-
-  /* =========================
-     BUSINESS HEALTH
-  ========================== */
-
-  function calculateHealth() {
-
-    let health = 100;
-
-
-    /*
-      Conversion
-    */
-
-    health -=
-      Math.max(
-        0,
-        (4.2 - state.conversion) * 7
-      );
-
-
-    /*
-      Cancellation
-    */
-
-    health -=
-      state.cancellation * 1.35;
-
-
-    /*
-      Fulfillment
-    */
-
-    health -=
-      state.fulfillment * .65;
-
-
-    /*
-      Response
-    */
-
-    health -=
-      state.response * .20;
-
-
-    return Math.round(
-
-      Math.max(
-        20,
-        Math.min(
-          98,
-          health
-        )
-      )
-
-    );
-
-  }
-
-
-  /* =========================
-     MAIN ENGINE
-  ========================== */
-
-  function updateDashboard() {
-
-    const health =
-      calculateHealth();
-
-    const risk =
-      100 - health;
-
-
-    /*
-      Revenue exposure
-    */
-
-    const revenueRisk =
-      Math.round(
-        1500000 +
-        risk * 22000
-      );
-
-
-    /*
-      Recovery
-    */
-
-    const recovery =
-      Math.round(
-        revenueRisk *
-        (
-          .20 +
-          risk / 500
-        )
-      );
-
-
-    /*
-      Customers
-    */
-
-    const customers =
-      Math.round(
-        8500 +
-        risk * 145
-      );
-
-
-    /* =====================
-       KPI
-    ===================== */
-
-    $("healthScore").textContent =
-      health;
-
-    $("revenueRisk").textContent =
-      money(revenueRisk);
-
-    $("recoverableRevenue").textContent =
-      money(recovery);
-
-    $("customersRisk").textContent =
-      customers.toLocaleString();
-
-
-    /* =====================
-       HEALTH
-    ===================== */
-
-    if (health >= 75) {
-
-      $("healthStatus").textContent =
-        "STABLE";
-
-    } else if (health >= 55) {
-
-      $("healthStatus").textContent =
-        "ATTENTION";
-
-    } else {
-
-      $("healthStatus").textContent =
-        "CRITICAL";
-
-    }
-
-
-    /* =====================
-       CONFIDENCE
-    ===================== */
-
-    const confidence =
-      Math.max(
-        78,
-        Math.min(
-          96,
-          Math.round(
-            91 -
-            Math.abs(
-              health - 70
-            ) * .15
-          )
-        )
-      );
-
-    $("aiConfidence").textContent =
-      confidence + "%";
-
-
-    /* =====================
-       SIGNAL STATUS
-    ===================== */
-
-    $("conversionValue").textContent =
-      state.conversion.toFixed(2) +
-      "%";
-
-    $("cancellationValue").textContent =
-      state.cancellation.toFixed(1) +
-      "%";
-
-    $("fulfillmentValue").textContent =
-      state.fulfillment.toFixed(1) +
-      "%";
-
-    $("responseValue").textContent =
-      "+" +
-      state.response +
-      "%";
-
-
-    $("conversionStatus").textContent =
-      state.conversion < 2.5
-        ? "CRITICAL"
-        : state.conversion < 3.5
-        ? "HIGH"
-        : "STABLE";
-
-
-    $("cancellationStatus").textContent =
-      state.cancellation > 10
-        ? "CRITICAL"
-        : state.cancellation > 7
-        ? "HIGH"
-        : state.cancellation > 4
-        ? "WATCH"
-        : "STABLE";
-
-
-    $("fulfillmentStatus").textContent =
-      state.fulfillment > 18
-        ? "CRITICAL"
-        : state.fulfillment > 10
-        ? "HIGH"
-        : state.fulfillment > 5
-        ? "WATCH"
-        : "STABLE";
-
-
-    $("responseStatus").textContent =
-      state.response > 50
-        ? "CRITICAL"
-        : state.response > 25
-        ? "WATCH"
-        : "STABLE";
-
-
-    /* =====================
-       PRIORITY
-    ===================== */
-
-    let priority =
-      "MEDIUM";
-
-    if (risk >= 50) {
-
-      priority =
-        "CRITICAL";
-
-    } else if (risk >= 30) {
-
-      priority =
-        "HIGH";
-
-    }
-
-
-    $("priorityLevel").textContent =
-      priority;
-
-
-    /* =====================
-       CEO ALERT
-    ===================== */
-
-    if (risk >= 50) {
-
-      $("alertTitle").textContent =
-        "High revenue exposure detected across multiple signals.";
-
-      $("alertDescription").textContent =
-        "NEXUS recommends immediate intervention before increasing acquisition spend.";
-
-    } else if (risk >= 30) {
-
-      $("alertTitle").textContent =
-        "Revenue leakage is developing.";
-
-      $("alertDescription").textContent =
-        "NEXUS recommends correcting the highest-impact operational signal.";
-
-    } else {
-
-      $("alertTitle").textContent =
-        "Business signals are operating within a healthy range.";
-
-      $("alertDescription").textContent =
-        "NEXUS recommends focusing on controlled revenue growth.";
-
-    }
-
-
-    /* =====================
-       AI DECISION
-    ===================== */
-
-    updateDecision(
-      recovery
-    );
-
-  }
-
-
-  /* =========================
-     AI DECISION
-  ========================== */
-
-  function updateDecision(
-    recoverable
-  ) {
-
-    let title;
-    let description;
-
-
-    if (
-      state.conversion <
-      2.8
-    ) {
-
-      title =
-        "Recover high-intent lost conversions";
-
-      description =
-        "Conversion is the strongest revenue signal. Prioritize checkout recovery and fast-response workflows.";
-
-    }
-
-    else if (
-      state.cancellation >
-      9
-    ) {
-
-      title =
-        "Reduce cancellation leakage";
-
-      description =
-        "High cancellation activity is exposing existing revenue. Focus on retention before acquisition.";
-
-    }
-
-    else if (
-      state.fulfillment >
-      12
-    ) {
-
-      title =
-        "Stabilize fulfillment performance";
-
-      description =
-        "Fulfillment pressure is creating customer risk. Reduce SLA exposure before it becomes churn.";
-
-    }
-
-    else {
-
-      title =
-        "Optimize controlled revenue growth";
-
-      description =
-        "Core signals are stable. Focus on conversion improvement and customer retention.";
-
-    }
-
-
-    $("decisionTitle").textContent =
-      title;
-
-    $("decisionDescription").textContent =
-      description;
-
-
-    $("decisionRecovery").textContent =
-      money(
-        recoverable * .25
-      );
-
-
-    $("decisionConfidence").textContent =
-      "87%";
-
-  }
-
-
-  /* =========================
-     LIVE SLIDERS
-  ========================== */
-
-  $("conversionInput")
-    .addEventListener(
-      "input",
-      event => {
-
-        state.conversion =
-          Number(
-            event.target.value
-          );
-
-        updateDashboard();
-
-      }
-    );
-
-
-  $("cancellationInput")
-    .addEventListener(
-      "input",
-      event => {
-
-        state.cancellation =
-          Number(
-            event.target.value
-          );
-
-        updateDashboard();
-
-      }
-    );
-
-
-  $("fulfillmentInput")
-    .addEventListener(
-      "input",
-      event => {
-
-        state.fulfillment =
-          Number(
-            event.target.value
-          );
-
-        updateDashboard();
-
-      }
-    );
-
-
-  $("responseInput")
-    .addEventListener(
-      "input",
-      event => {
-
-        state.response =
-          Number(
-            event.target.value
-          );
-
-        updateDashboard();
-
-      }
-    );
-
-
-  /* =========================
-     CEO APPROVAL
-  ========================== */
-
-  window.approveStrategy =
-    function () {
-
-      state.approved =
-        true;
-
-      $("executionStatus").textContent =
-        "✓ Strategy approved by CEO. AI execution is ready.";
-
-      $("approveButton").textContent =
-        "✓ STRATEGY APPROVED";
-
-      toast(
-        "AI strategy approved successfully."
-      );
-
-    };
-
-
-  /* =========================
-     RECOVERY ACTION
-  ========================== */
-
-  window.runRecoveryAction =
-    function () {
-
-      state.actionsExecuted++;
-
-      $("actionResult").textContent =
-        "✓ Recovery workflow activated. High-intent demand has been prioritized.";
-
-      toast(
-        "Recovery action executed."
-      );
-
-    };
-
-
-  /* =========================
-     WHAT-IF
-  ========================== */
-
-  function runSimulation() {
-
-    const targetConversion =
-      Number(
-        $("targetConversion").value
-      );
-
-    const targetCancellation =
-      Number(
-        $("targetCancellation").value
-      );
-
-
-    $("targetConversionValue")
-      .textContent =
-      targetConversion.toFixed(2) +
-      "%";
-
-
-    $("targetCancellationValue")
-      .textContent =
-      targetCancellation.toFixed(1) +
-      "%";
-
-
-    let simulated =
-      100;
-
-
-    simulated -=
-      Math.max(
-        0,
-        (4.5 -
-          targetConversion) * 7
-      );
-
-
-    simulated -=
-      targetCancellation * 1.1;
-
-
-    simulated -=
-      state.fulfillment * .35;
-
-
-    simulated -=
-      state.response * .12;
-
-
-    simulated =
-      Math.round(
-        Math.max(
-          20,
-          Math.min(
-            99,
-            simulated
-          )
-        )
-      );
-
-
-    $("simulatedHealth")
-      .textContent =
-      simulated;
-
-
-    /*
-      Potential upside
-    */
-
-    const currentHealth =
-      calculateHealth();
-
-
-    const healthGain =
-      Math.max(
-        0,
-        simulated -
-        currentHealth
-      );
-
-
-    const upside =
-      Math.round(
-        400000 +
-        healthGain *
-        145000
-      );
-
-
-    $("potentialUpside")
-      .textContent =
-      "+" +
-      money(upside);
-
-  }
-
-
-  $("targetConversion")
-    .addEventListener(
-      "input",
-      runSimulation
-    );
-
-
-  $("targetCancellation")
-    .addEventListener(
-      "input",
-      runSimulation
-    );
-
-
-  /* =========================
-     AI ANALYST
-  ========================== */
-
-  window.askNexus =
-    function () {
-
-      const input =
-        $("analystInput");
-
-      const response =
-        $("aiResponse");
-
-
-      const question =
-        input.value
-          .trim()
-          .toLowerCase();
-
-
-      if (!question) {
-
-        response.textContent =
-          "Ask NEXUS a strategic question.";
-
-        return;
-
-      }
-
-
-      let answer;
-
-
-      if (
-        question.includes(
-          "risk"
-        )
-      ) {
-
-        answer =
-          "Your primary risk is concentrated in the weakest live business signal. NEXUS recommends fixing the highest financial exposure first.";
-
-      }
-
-      else if (
-        question.includes(
-          "revenue"
-        ) ||
-        question.includes(
-          "money"
-        )
-      ) {
-
-        answer =
-          "Protect existing revenue before increasing acquisition spend. Recovery of high-intent demand currently represents the strongest opportunity.";
-
-      }
-
-      else if (
-        question.includes(
-          "customer"
-        )
-      ) {
-
-        answer =
-          "Prioritize customers showing cancellation, response-delay or fulfillment-risk behavior.";
-
-      }
-
-      else if (
-        question.includes(
-          "first"
-        ) ||
-        question.includes(
-          "action"
-        ) ||
-        question.includes(
-          "focus"
-        )
-      ) {
-
-        answer =
-          $("decisionTitle").textContent +
-          ". " +
-          $("decisionDescription").textContent;
-
-      }
-
-      else if (
-        question.includes(
-          "ceo"
-        )
-      ) {
-
-        answer =
-          "CEO priority: identify the largest revenue exposure, approve the highest-value intervention and measure recovered revenue.";
-
-      }
-
-      else {
-
-        answer =
-          "Based on the current signals, focus on the highest-risk revenue leakage before increasing acquisition spend.";
-
-      }
-
-
-      response.textContent =
-        answer;
-
-
-      toast(
-        "NEXUS analysis generated."
-      );
-
-    };
-
-
-  /* =========================
-     ENTER KEY
-  ========================== */
-
-  $("analystInput")
-    .addEventListener(
-      "keydown",
-      event => {
-
-        if (
-          event.key ===
-          "Enter"
-        ) {
-
-          event.preventDefault();
-
-          askNexus();
-
-        }
-
-      }
-    );
-
-
-  /* =========================
-     START ENGINE
-  ========================== */
-
   updateDashboard();
 
-  runSimulation();
+});
 
 
-  console.log(
-    "NEXUS COMMAND AI V10 — CEO ENGINE ONLINE"
+/* =========================
+   HELPERS
+========================= */
+
+function $(id){
+  return document.getElementById(id);
+}
+
+
+function money(value){
+
+  if(value >= 1000000){
+    return "$" + (value / 1000000).toFixed(2) + "M";
+  }
+
+  if(value >= 1000){
+    return "$" + Math.round(value / 1000) + "K";
+  }
+
+  return "$" + Math.round(value);
+}
+
+
+/* =========================
+   DASHBOARD ENGINE
+========================= */
+
+function updateDashboard(){
+
+  const conversion =
+    parseFloat($("conversion").value);
+
+  const cancellation =
+    parseFloat($("cancellation").value);
+
+  const fulfillment =
+    parseFloat($("fulfillment").value);
+
+  const response =
+    parseFloat($("response").value);
+
+
+  /* HEALTH MODEL */
+
+  let health = 100;
+
+  health -= Math.max(
+    0,
+    (4 - conversion) * 8
   );
 
-});
+  health -= cancellation * 1.4;
+
+  health -= fulfillment * .7;
+
+  health -= response * .22;
+
+  health = Math.round(
+    Math.max(
+      20,
+      Math.min(98, health)
+    )
+  );
+
+
+  const risk = 100 - health;
+
+
+  /* FINANCIAL MODEL */
+
+  const revenueRisk =
+    Math.round(
+      1800000 + risk * 18000
+    );
+
+  const recoverable =
+    Math.round(
+      revenueRisk *
+      (.20 + risk / 500)
+    );
+
+  const customers =
+    Math.round(
+      9000 + risk * 130
+    );
+
+
+  /* KPI */
+
+  $("healthScore").textContent = health;
+
+  $("healthBar").style.width =
+    health + "%";
+
+  $("revenueRisk").textContent =
+    money(revenueRisk);
+
+  $("recoverable").textContent =
+    money(recoverable);
+
+  $("customers").textContent =
+    customers.toLocaleString();
+
+
+  /* HEALTH */
+
+  if(health >= 75){
+
+    $("healthStatus").textContent =
+      "SYSTEM STABLE";
+
+  }else if(health >= 50){
+
+    $("healthStatus").textContent =
+      "ATTENTION REQUIRED";
+
+  }else{
+
+    $("healthStatus").textContent =
+      "HIGH RISK";
+  }
+
+
+  /* SIGNAL VALUES */
+
+  $("conversionValue").textContent =
+    conversion.toFixed(2) + "%";
+
+  $("cancelValue").textContent =
+    cancellation.toFixed(1) + "%";
+
+  $("fulfillValue").textContent =
+    fulfillment.toFixed(1) + "%";
+
+  $("responseValue").textContent =
+    response.toFixed(0) + "%";
+
+
+  /* SIGNAL STATUS */
+
+  $("conversionStatus").textContent =
+    conversion < 2.5
+      ? "CRITICAL"
+      : conversion < 3.5
+      ? "HIGH"
+      : "STABLE";
+
+
+  $("cancelStatus").textContent =
+    cancellation > 10
+      ? "CRITICAL"
+      : cancellation > 7
+      ? "HIGH"
+      : cancellation > 4
+      ? "WATCH"
+      : "STABLE";
+
+
+  $("fulfillStatus").textContent =
+    fulfillment > 18
+      ? "CRITICAL"
+      : fulfillment > 10
+      ? "HIGH"
+      : fulfillment > 5
+      ? "WATCH"
+      : "STABLE";
+
+
+  $("responseStatus").textContent =
+    response > 50
+      ? "CRITICAL"
+      : response > 25
+      ? "WATCH"
+      : "STABLE";
+
+
+  /* AI DECISION */
+
+  let decision =
+    "Optimize healthy revenue growth";
+
+  let decisionText =
+    "Signals are stable. Focus on conversion and retention.";
+
+  let priority =
+    "MEDIUM";
+
+  let priorityText =
+    "Growth optimization";
+
+
+  if(conversion < 2.8){
+
+    decision =
+      "Recover high-intent conversions";
+
+    decisionText =
+      "Prioritize checkout recovery before increasing acquisition spend.";
+
+    priority =
+      "HIGH";
+
+    priorityText =
+      "Conversion recovery";
+
+  }else if(cancellation > 9){
+
+    decision =
+      "Reduce cancellation leakage";
+
+    decisionText =
+      "Focus on retention and proactive cancellation prevention.";
+
+    priority =
+      "HIGH";
+
+    priorityText =
+      "Retention recovery";
+
+  }else if(fulfillment > 12){
+
+    decision =
+      "Stabilize fulfillment performance";
+
+    decisionText =
+      "Reduce SLA pressure before it becomes customer churn.";
+
+    priority =
+      "HIGH";
+
+    priorityText =
+      "Fulfillment recovery";
+
+  }
+
+
+  $("decision").textContent =
+    decision;
+
+  $("decisionText").textContent =
+    decisionText;
+
+  $("priority").textContent =
+    priority;
+
+  $("priorityText").textContent =
+    priorityText;
+
+  $("priorityRecovery").textContent =
+    money(recoverable * .25);
+
+}
+
+
+/* =========================
+   LIVE SIMULATION
+========================= */
+
+function runSimulation(showToast = true){
+
+  const target =
+    parseFloat($("targetConversion").value);
+
+  $("targetValue").textContent =
+    target.toFixed(2) + "%";
+
+
+  let simulated =
+    100 -
+    Math.max(0,(4.5-target)*10);
+
+
+  simulated =
+    Math.round(
+      Math.max(55,Math.min(98,simulated))
+    );
+
+
+  $("simHealth").textContent =
+    simulated;
+
+
+  if(showToast){
+
+    showToastMessage(
+      "NEXUS simulation complete — executive scenario updated."
+    );
+
+  }
+
+}
+
+
+/* =========================
+   EXECUTE STRATEGY
+========================= */
+
+function executeStrategy(){
+
+  const button =
+    document.querySelector(".execute");
+
+  button.textContent =
+    "✓ STRATEGY EXECUTED";
+
+  button.style.background =
+    "#75f5d5";
+
+  showToastMessage(
+    "AI strategy executed successfully in simulation mode."
+  );
+
+
+  setTimeout(() => {
+
+    button.textContent =
+      "EXECUTE RECOMMENDED STRATEGY →";
+
+    button.style.background =
+      "";
+
+  },3500);
+
+}
+
+
+/* =========================
+   MODAL
+========================= */
+
+function openLeadForm(){
+
+  $("leadModal").classList.add("show");
+
+  setTimeout(() => {
+
+    $("leadName").focus();
+
+  },100);
+
+}
+
+
+function closeLeadForm(){
+
+  $("leadModal").classList.remove("show");
+
+}
+
+
+function closeOutside(event){
+
+  if(event.target === $("leadModal")){
+
+    closeLeadForm();
+
+  }
+
+}
+
+
+/* =========================
+   LEAD SUBMISSION
+========================= */
+
+function submitLead(event){
+
+  event.preventDefault();
+
+
+  const name =
+    $("leadName").value.trim();
+
+  const company =
+    $("leadCompany").value.trim();
+
+  const email =
+    $("leadEmail").value.trim();
+
+  const interest =
+    $("leadInterest").value;
+
+
+  if(!name || !company || !email || !interest){
+
+    showToastMessage(
+      "Please complete all executive request fields."
+    );
+
+    return;
+  }
+
+
+  /*
+     DEMO MODE
+
+     This creates a mailto request.
+     Replace the email below with your
+     real business email.
+  */
+
+  const destination =
+    "mailto:YOUR_EMAIL@example.com" +
+    "?subject=" +
+    encodeURIComponent(
+      "NEXUS Executive Demo Request"
+    ) +
+    "&body=" +
+    encodeURIComponent(
+      "Name: " + name +
+      "\nCompany: " + company +
+      "\nEmail: " + email +
+      "\nInterest: " + interest
+    );
+
+
+  window.location.href =
+    destination;
+
+
+  showToastMessage(
+    "Executive request prepared successfully."
+  );
+
+
+  closeLeadForm();
+
+}
+
+
+/* =========================
+   TOAST
+========================= */
+
+function showToastMessage(message){
+
+  const container =
+    $("toast");
+
+  container.innerHTML = "";
+
+  const toast =
+    document.createElement("div");
+
+  toast.className =
+    "toast";
+
+  toast.textContent =
+    message;
+
+  container.appendChild(toast);
+
+
+  setTimeout(() => {
+
+    toast.style.opacity =
+      "0";
+
+  },2800);
+
+
+  setTimeout(() => {
+
+    toast.remove();
+
+  },3300);
+
+}
+
+
+/* =========================
+   ESC KEY
+========================= */
+
+document.addEventListener(
+  "keydown",
+  event => {
+
+    if(event.key === "Escape"){
+
+      closeLeadForm();
+
+    }
+
+  }
+);
