@@ -1,401 +1,360 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="NEXUS COMMAND AI — Executive Decision Intelligence Platform. Detect revenue risk, predict opportunities and prioritize high-value actions.">
 
-  <meta name="theme-color" content="#05080d">
+  <meta name="theme-color" content="#05070c">
 
-  <meta
-    name="description"
-    content="NEXUS COMMAND AI V10 — CEO One-Screen Revenue Decision Intelligence."
-  >
+  <title>NEXUS COMMAND AI — V10.1 CEO Edition</title>
 
-  <title>NEXUS COMMAND AI — V10 CEO</title>
-
-  <link rel="preconnect"
-        href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
-    rel="stylesheet"
-  >
+    rel="stylesheet">
 
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<div class="nexus-app">
+<div class="app">
 
-  <!-- =========================
-       TOP BAR
-  ========================== -->
-
+  <!-- TOP BAR -->
   <header class="topbar">
 
     <div class="brand">
-
-      <div class="brand-logo">
-        NX
-      </div>
+      <div class="logo">NX</div>
 
       <div>
-        <div class="brand-title">
-          NEXUS COMMAND AI
-        </div>
-
-        <div class="brand-subtitle">
-          CEO REVENUE DECISION INTELLIGENCE
-        </div>
+        <strong>NEXUS COMMAND AI</strong>
+        <span>EXECUTIVE DECISION INTELLIGENCE</span>
       </div>
-
     </div>
 
-    <div class="top-status">
-
-      <div class="live-status">
-        <span class="live-dot"></span>
+    <div class="top-right">
+      <div class="live">
+        <i></i>
         LIVE INTELLIGENCE
       </div>
 
-      <div class="ai-status">
-        AI ENGINE <strong>ONLINE</strong>
-      </div>
-
-      <div class="version">
-        V10
-      </div>
-
+      <button class="demo-btn" onclick="openLeadForm()">
+        REQUEST EXECUTIVE DEMO →
+      </button>
     </div>
 
   </header>
 
 
-  <!-- =========================
-       KPI ROW
-  ========================== -->
+  <!-- HERO -->
+  <main>
 
-  <section class="kpi-row">
+    <section class="hero">
 
-    <div class="kpi-card">
+      <div class="hero-copy">
 
-      <div class="kpi-label">
-        BUSINESS HEALTH
-      </div>
-
-      <div class="kpi-value health"
-           id="healthScore">
-        78
-      </div>
-
-      <div class="kpi-meta"
-           id="healthStatus">
-        STABLE
-      </div>
-
-    </div>
-
-
-    <div class="kpi-card danger">
-
-      <div class="kpi-label">
-        REVENUE AT RISK
-      </div>
-
-      <div class="kpi-value"
-           id="revenueRisk">
-        $2.40M
-      </div>
-
-      <div class="kpi-meta">
-        CURRENT EXPOSURE
-      </div>
-
-    </div>
-
-
-    <div class="kpi-card opportunity">
-
-      <div class="kpi-label">
-        RECOVERABLE REVENUE
-      </div>
-
-      <div class="kpi-value"
-           id="recoverableRevenue">
-        $730K
-      </div>
-
-      <div class="kpi-meta">
-        AI ESTIMATE
-      </div>
-
-    </div>
-
-
-    <div class="kpi-card">
-
-      <div class="kpi-label">
-        CUSTOMERS AT RISK
-      </div>
-
-      <div class="kpi-value"
-           id="customersRisk">
-        18,420
-      </div>
-
-      <div class="kpi-meta">
-        BEHAVIORAL EXPOSURE
-      </div>
-
-    </div>
-
-
-    <div class="kpi-card">
-
-      <div class="kpi-label">
-        AI CONFIDENCE
-      </div>
-
-      <div class="kpi-value confidence"
-           id="aiConfidence">
-        91%
-      </div>
-
-      <div class="kpi-meta">
-        DECISION SIGNAL
-      </div>
-
-    </div>
-
-  </section>
-
-
-  <!-- =========================
-       CEO ALERT
-  ========================== -->
-
-  <section class="ceo-alert">
-
-    <div class="alert-icon">
-      !
-    </div>
-
-    <div class="alert-content">
-
-      <div class="alert-label">
-        CEO PRIORITY ALERT
-      </div>
-
-      <h2 id="alertTitle">
-        Revenue exposure detected across multiple signals.
-      </h2>
-
-      <p id="alertDescription">
-        NEXUS recommends protecting existing revenue before
-        increasing acquisition spend.
-      </p>
-
-    </div>
-
-    <div class="alert-score">
-
-      <span>PRIORITY</span>
-
-      <strong id="priorityLevel">
-        HIGH
-      </strong>
-
-    </div>
-
-  </section>
-
-
-  <!-- =========================
-       MAIN GRID
-  ========================== -->
-
-  <main class="command-grid">
-
-
-    <!-- ======================
-         LIVE SIGNALS
-    ======================= -->
-
-    <section class="panel signals-panel">
-
-      <div class="panel-header">
-
-        <div>
-          <span class="panel-label">
-            LIVE BUSINESS SIGNALS
-          </span>
-
-          <h3>
-            What is changing?
-          </h3>
+        <div class="eyebrow">
+          AUTONOMOUS REVENUE INTELLIGENCE · V10.1
         </div>
 
-        <span class="live-badge">
-          ● LIVE
-        </span>
+        <h1>
+          Turn business signals into
+          <span>executive decisions.</span>
+        </h1>
+
+        <p>
+          NEXUS identifies revenue exposure, predicts recovery
+          opportunities and recommends the highest-value action
+          before the problem becomes expensive.
+        </p>
+
+        <div class="hero-actions">
+
+          <button class="primary" onclick="runSimulation()">
+            ▶ RUN LIVE SIMULATION
+          </button>
+
+          <button class="secondary" onclick="openLeadForm()">
+            REQUEST EXECUTIVE DEMO →
+          </button>
+
+        </div>
+
+        <div class="trust-line">
+          <span>● ENTERPRISE DEMO</span>
+          <span>AI DECISION ENGINE</span>
+          <span>SIMULATION MODE</span>
+        </div>
 
       </div>
 
 
-      <!-- Conversion -->
+      <!-- HEALTH -->
+      <div class="health-card">
 
-      <div class="signal">
+        <div class="health-label">
+          BUSINESS HEALTH
+        </div>
 
-        <div class="signal-info">
+        <div class="health-number" id="healthScore">
+          82
+        </div>
 
+        <div class="health-meter">
+          <div id="healthBar"></div>
+        </div>
+
+        <div class="health-status">
+          <i></i>
+          <strong id="healthStatus">
+            SYSTEM STABLE
+          </strong>
+        </div>
+
+        <small>
+          AI confidence <b id="confidence">91%</b>
+        </small>
+
+      </div>
+
+    </section>
+
+
+    <!-- KPI -->
+    <section class="kpis">
+
+      <div class="kpi">
+        <span>REVENUE AT RISK</span>
+        <strong id="revenueRisk">$2.40M</strong>
+        <small>Estimated exposure</small>
+      </div>
+
+      <div class="kpi opportunity">
+        <span>RECOVERABLE REVENUE</span>
+        <strong id="recoverable">$730K</strong>
+        <small>Recovery opportunity</small>
+      </div>
+
+      <div class="kpi">
+        <span>CUSTOMERS AT RISK</span>
+        <strong id="customers">18,420</strong>
+        <small>Behavioral exposure</small>
+      </div>
+
+      <div class="kpi">
+        <span>AI PRIORITY</span>
+        <strong id="priority">HIGH</strong>
+        <small id="priorityText">Conversion recovery</small>
+      </div>
+
+    </section>
+
+
+    <!-- INTELLIGENCE -->
+    <section class="workspace">
+
+      <!-- SIGNALS -->
+      <div class="panel">
+
+        <div class="panel-head">
           <div>
-            <strong>Conversion</strong>
-            <small>Checkout performance</small>
+            <label>LIVE SIGNAL INTELLIGENCE</label>
+            <h2>Business pressure map</h2>
           </div>
 
-          <b id="conversionValue">
-            2.84%
-          </b>
+          <span class="tag">● LIVE</span>
+        </div>
 
+
+        <div class="signals">
+
+          <div class="signal">
+            <div>
+              <span>CONVERSION</span>
+              <strong id="conversionValue">2.84%</strong>
+            </div>
+
+            <input
+              id="conversion"
+              type="range"
+              min="1"
+              max="6"
+              step=".01"
+              value="2.84"
+              oninput="updateDashboard()">
+
+            <small id="conversionStatus">
+              HIGH RISK
+            </small>
+          </div>
+
+
+          <div class="signal">
+            <div>
+              <span>CANCELLATION</span>
+              <strong id="cancelValue">8.7%</strong>
+            </div>
+
+            <input
+              id="cancellation"
+              type="range"
+              min="0"
+              max="20"
+              step=".1"
+              value="8.7"
+              oninput="updateDashboard()">
+
+            <small id="cancelStatus">
+              HIGH
+            </small>
+          </div>
+
+
+          <div class="signal">
+            <div>
+              <span>FULFILLMENT</span>
+              <strong id="fulfillValue">12.4%</strong>
+            </div>
+
+            <input
+              id="fulfillment"
+              type="range"
+              min="0"
+              max="30"
+              step=".1"
+              value="12.4"
+              oninput="updateDashboard()">
+
+            <small id="fulfillStatus">
+              HIGH
+            </small>
+          </div>
+
+
+          <div class="signal">
+            <div>
+              <span>RESPONSE DELAY</span>
+              <strong id="responseValue">31%</strong>
+            </div>
+
+            <input
+              id="response"
+              type="range"
+              min="0"
+              max="100"
+              value="31"
+              oninput="updateDashboard()">
+
+            <small id="responseStatus">
+              WATCH
+            </small>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- AI DECISION -->
+      <div class="panel decision">
+
+        <div class="panel-head">
+
+          <div>
+            <label>AI DECISION ENGINE</label>
+            <h2>Highest-value next move</h2>
+          </div>
+
+          <span class="ai">AI</span>
+
+        </div>
+
+
+        <div class="recommendation">
+
+          <div class="bolt">⚡</div>
+
+          <div>
+            <strong id="decision">
+              Recover high-intent conversions
+            </strong>
+
+            <p id="decisionText">
+              Prioritize checkout recovery before increasing
+              acquisition spend.
+            </p>
+          </div>
+
+        </div>
+
+
+        <div class="decision-bottom">
+
+          <div>
+            <span>PRIORITY RECOVERY</span>
+            <strong id="priorityRecovery">$150K</strong>
+          </div>
+
+          <div>
+            <span>CONFIDENCE</span>
+            <strong>87%</strong>
+          </div>
+
+        </div>
+
+        <button
+          class="execute"
+          onclick="executeStrategy()">
+          EXECUTE RECOMMENDED STRATEGY →
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- SIMULATION -->
+    <section class="simulation">
+
+      <div>
+        <label>WHAT-IF SIMULATION</label>
+
+        <h2>
+          Show the CEO what improvement is worth.
+        </h2>
+
+        <p>
+          Adjust conversion performance and see the estimated
+          business health improvement in real time.
+        </p>
+      </div>
+
+
+      <div class="sim-control">
+
+        <div class="sim-top">
+          <span>TARGET CONVERSION</span>
+          <strong id="targetValue">4.20%</strong>
         </div>
 
         <input
-          id="conversionInput"
+          id="targetConversion"
           type="range"
-          min="0.5"
+          min="1"
           max="6"
-          step="0.01"
-          value="2.84"
-        >
+          step=".01"
+          value="4.2"
+          oninput="runSimulation(false)">
 
-        <div class="signal-footer">
-
-          <span>Status</span>
-
-          <strong id="conversionStatus">
-            HIGH
-          </strong>
-
-        </div>
-
-      </div>
-
-
-      <!-- Cancellation -->
-
-      <div class="signal">
-
-        <div class="signal-info">
-
-          <div>
-            <strong>Cancellation</strong>
-            <small>Order retention</small>
-          </div>
-
-          <b id="cancellationValue">
-            8.7%
-          </b>
-
-        </div>
-
-        <input
-          id="cancellationInput"
-          type="range"
-          min="0"
-          max="20"
-          step="0.1"
-          value="8.7"
-        >
-
-        <div class="signal-footer">
-
-          <span>Status</span>
-
-          <strong id="cancellationStatus">
-            HIGH
-          </strong>
-
-        </div>
-
-      </div>
-
-
-      <!-- Fulfillment -->
-
-      <div class="signal">
-
-        <div class="signal-info">
-
-          <div>
-            <strong>Fulfillment</strong>
-            <small>Delivery SLA</small>
-          </div>
-
-          <b id="fulfillmentValue">
-            12.4%
-          </b>
-
-        </div>
-
-        <input
-          id="fulfillmentInput"
-          type="range"
-          min="0"
-          max="30"
-          step="0.1"
-          value="12.4"
-        >
-
-        <div class="signal-footer">
-
-          <span>Status</span>
-
-          <strong id="fulfillmentStatus">
-            HIGH
-          </strong>
-
-        </div>
-
-      </div>
-
-
-      <!-- Response -->
-
-      <div class="signal">
-
-        <div class="signal-info">
-
-          <div>
-            <strong>Response Time</strong>
-            <small>Customer engagement</small>
-          </div>
-
-          <b id="responseValue">
-            +31%
-          </b>
-
-        </div>
-
-        <input
-          id="responseInput"
-          type="range"
-          min="0"
-          max="100"
-          step="1"
-          value="31"
-        >
-
-        <div class="signal-footer">
-
-          <span>Status</span>
-
-          <strong id="responseStatus">
-            WATCH
-          </strong>
-
+        <div class="sim-result">
+          <span>PROJECTED HEALTH</span>
+          <strong id="simHealth">91</strong>
+          <small>/ 100</small>
         </div>
 
       </div>
@@ -403,348 +362,114 @@
     </section>
 
 
-    <!-- ======================
-         AI DECISION
-    ======================= -->
+    <!-- EXECUTIVE CTA -->
+    <section class="executive-cta">
 
-    <section class="panel decision-panel">
+      <div>
 
-      <div class="panel-header">
+        <label>EXECUTIVE INTELLIGENCE</label>
 
-        <div>
-          <span class="panel-label">
-            AI DECISION ENGINE
-          </span>
+        <h2>
+          See what NEXUS could uncover
+          inside your business.
+        </h2>
 
-          <h3>
-            Highest-value next move
-          </h3>
-        </div>
-
-        <span class="ai-badge">
-          AI
-        </span>
+        <p>
+          Connect your business data and move from static
+          reporting to autonomous decision intelligence.
+        </p>
 
       </div>
 
-
-      <div class="decision-main">
-
-        <div class="decision-icon">
-          ⚡
-        </div>
-
-        <div>
-
-          <span class="critical-label">
-            RECOMMENDED PRIORITY
-          </span>
-
-          <h2 id="decisionTitle">
-            Recover high-intent lost conversions
-          </h2>
-
-          <p id="decisionDescription">
-            Prioritize checkout recovery and fast-response
-            workflows before increasing acquisition spend.
-          </p>
-
-        </div>
-
-      </div>
-
-
-      <div class="decision-stats">
-
-        <div>
-          <span>EXPECTED RECOVERY</span>
-
-          <strong id="decisionRecovery">
-            $150K
-          </strong>
-        </div>
-
-        <div>
-          <span>CONFIDENCE</span>
-
-          <strong id="decisionConfidence">
-            87%
-          </strong>
-        </div>
-
-      </div>
-
-
-      <button
-        class="primary-btn"
-        id="approveButton"
-        onclick="approveStrategy()"
-      >
-        APPROVE AI STRATEGY →
+      <button onclick="openLeadForm()">
+        REQUEST EXECUTIVE DEMO →
       </button>
-
-      <div
-        class="execution-status"
-        id="executionStatus"
-      >
-        Awaiting CEO decision.
-      </div>
-
-    </section>
-
-
-    <!-- ======================
-         WHAT IF
-    ======================= -->
-
-    <section class="panel whatif-panel">
-
-      <div class="panel-header">
-
-        <div>
-          <span class="panel-label">
-            WHAT-IF SIMULATOR
-          </span>
-
-          <h3>
-            Potential business upside
-          </h3>
-        </div>
-
-        <span class="simulation-badge">
-          SIMULATION
-        </span>
-
-      </div>
-
-
-      <div class="whatif-controls">
-
-        <div class="slider-control">
-
-          <div class="slider-title">
-
-            <span>
-              Target Conversion
-            </span>
-
-            <strong id="targetConversionValue">
-              4.20%
-            </strong>
-
-          </div>
-
-          <input
-            id="targetConversion"
-            type="range"
-            min="1"
-            max="6"
-            step="0.01"
-            value="4.2"
-          >
-
-        </div>
-
-
-        <div class="slider-control">
-
-          <div class="slider-title">
-
-            <span>
-              Target Cancellation
-            </span>
-
-            <strong id="targetCancellationValue">
-              5.0%
-            </strong>
-
-          </div>
-
-          <input
-            id="targetCancellation"
-            type="range"
-            min="0"
-            max="20"
-            step="0.1"
-            value="5"
-          >
-
-        </div>
-
-      </div>
-
-
-      <div class="simulation-result">
-
-        <div>
-          <span>
-            SIMULATED HEALTH
-          </span>
-
-          <strong id="simulatedHealth">
-            91
-          </strong>
-        </div>
-
-        <div>
-          <span>
-            POTENTIAL UPSIDE
-          </span>
-
-          <strong id="potentialUpside">
-            +$1.70M
-          </strong>
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- ======================
-         AI ACTION
-    ======================= -->
-
-    <section class="panel action-panel">
-
-      <div class="panel-header">
-
-        <div>
-          <span class="panel-label">
-            AI ACTION CENTER
-          </span>
-
-          <h3>
-            Turn decision into execution
-          </h3>
-        </div>
-
-        <span class="action-badge">
-          READY
-        </span>
-
-      </div>
-
-
-      <div class="action-main">
-
-        <div class="action-icon">
-          ✓
-        </div>
-
-        <div>
-
-          <strong>
-            Recover Abandoned Demand
-          </strong>
-
-          <p>
-            Launch a targeted recovery workflow for
-            high-intent prospects.
-          </p>
-
-        </div>
-
-      </div>
-
-
-      <button
-        class="action-btn"
-        onclick="runRecoveryAction()"
-      >
-        RUN RECOVERY ACTION
-      </button>
-
-
-      <div
-        class="action-result"
-        id="actionResult"
-      >
-        AI action center ready.
-      </div>
 
     </section>
 
   </main>
 
 
-  <!-- =========================
-       ASK NEXUS
-  ========================== -->
-
-  <section class="analyst">
-
-    <div class="analyst-title">
-
-      <div class="nx-mini">
-        NX
-      </div>
-
-      <div>
-
-        <strong>
-          ASK NEXUS
-        </strong>
-
-        <span>
-          Executive AI Analyst
-        </span>
-
-      </div>
-
-    </div>
-
-
-    <div class="analyst-input">
-
-      <input
-        id="analystInput"
-        type="text"
-        autocomplete="off"
-        placeholder="Ask: What should I focus on first?"
-      >
-
-      <button onclick="askNexus()">
-        ANALYZE →
-      </button>
-
-    </div>
-
-
-    <div
-      class="analyst-response"
-      id="aiResponse"
-    >
-      NEXUS is monitoring your business signals.
-      Ask a strategic question to receive a recommendation.
-    </div>
-
-  </section>
-
-
-  <!-- =========================
-       FOOTER
-  ========================== -->
-
-  <footer class="footer">
-
-    <span>
-      NEXUS COMMAND AI · V10 CEO
-    </span>
-
-    <span>
-      ● Intelligence Engine Online
-    </span>
-
-    <span>
-      Enterprise Demonstration
-    </span>
-
+  <footer>
+    <strong>NEXUS COMMAND AI · V10.1</strong>
+    <span>Executive Decision Intelligence Platform · 2026</span>
   </footer>
 
 </div>
 
+
+<!-- ================= POPUP ================= -->
+
+<div
+  class="modal"
+  id="leadModal"
+  onclick="closeOutside(event)">
+
+  <div class="modal-box">
+
+    <button class="close" onclick="closeLeadForm()">
+      ×
+    </button>
+
+    <div class="modal-label">
+      EXECUTIVE ACCESS
+    </div>
+
+    <h2>
+      Request a private NEXUS demo.
+    </h2>
+
+    <p>
+      Tell us where NEXUS could create the most value
+      inside your business.
+    </p>
+
+    <form onsubmit="submitLead(event)">
+
+      <input
+        id="leadName"
+        type="text"
+        placeholder="Full Name"
+        required>
+
+      <input
+        id="leadCompany"
+        type="text"
+        placeholder="Company"
+        required>
+
+      <input
+        id="leadEmail"
+        type="email"
+        placeholder="Business Email"
+        required>
+
+      <select id="leadInterest" required>
+        <option value="">Primary Interest</option>
+        <option>Revenue Intelligence</option>
+        <option>AI Automation</option>
+        <option>Revenue Recovery</option>
+        <option>Enterprise AI</option>
+      </select>
+
+      <button type="submit">
+        SEND EXECUTIVE REQUEST →
+      </button>
+
+    </form>
+
+    <small class="form-note">
+      Demo environment · No payment required
+    </small>
+
+  </div>
+
+</div>
+
+
+<div id="toast"></div>
+
 <script src="script.js"></script>
 
 </body>
- </html>
+  </html>
