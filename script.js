@@ -1213,4 +1213,383 @@ document.addEventListener(
 
         showToast(
           "AI Analyst ready.",
-          "succ
+          "succ          "success"
+        );
+      }
+    }
+
+    if (event.key === "Escape") {
+      if (analystInput) {
+        analystInput.blur();
+      }
+    }
+  }
+);
+
+
+/* =========================================================
+   ACTION CENTER
+========================================================= */
+
+function runAction(type) {
+
+  const result = calculateSignals();
+
+  const messages = {
+
+    recovery:
+      "Recovery workflow activated. High-intent lost conversions have been prioritized.",
+
+    response:
+      "Response optimization activated. Slow-response opportunities have been prioritized.",
+
+    fulfillment:
+      "Fulfillment stabilization activated. SLA risk has been prioritized."
+  };
+
+  const message =
+    messages[type] ||
+    "AI action executed successfully.";
+
+  const actionResult =
+    $("actionResult");
+
+  if (actionResult) {
+    actionResult.textContent =
+      message +
+      " Estimated opportunity: " +
+      money(result.recovery * 0.20) +
+      ".";
+  }
+
+  showToast(
+    message,
+    "success"
+  );
+}
+
+
+/* =========================================================
+   WHAT-IF SIMULATOR
+========================================================= */
+
+function setupWhatIfSimulator() {
+
+  const targetConversion =
+    $("targetConversion");
+
+  const targetCancellation =
+    $("targetCancellation");
+
+  const targetConversionValue =
+    $("targetConversionValue");
+
+  const targetCancellationValue =
+    $("targetCancellationValue");
+
+  const simulatedHealth =
+    $("simulatedHealth");
+
+  function updateSimulation() {
+
+    const conversion =
+      numberValue(targetConversion, 4.2);
+
+    const cancellation =
+      numberValue(targetCancellation, 5);
+
+    if (targetConversionValue) {
+      targetConversionValue.textContent =
+        conversion.toFixed(2) + "%";
+    }
+
+    if (targetCancellationValue) {
+      targetCancellationValue.textContent =
+        cancellation.toFixed(1) + "%";
+    }
+
+    const current =
+      calculateSignals();
+
+    const simulation =
+      calculateSimulation(
+        conversion,
+        cancellation,
+        current.fulfillment,
+        current.response
+      );
+
+    if (simulatedHealth) {
+      simulatedHealth.textContent =
+        simulation.health;
+    }
+  }
+
+  if (targetConversion) {
+    targetConversion.addEventListener(
+      "input",
+      updateSimulation
+    );
+  }
+
+  if (targetCancellation) {
+    targetCancellation.addEventListener(
+      "input",
+      updateSimulation
+    );
+  }
+
+  updateSimulation();
+}
+
+
+/* =========================================================
+   STATUS LABELS
+========================================================= */
+
+function updateStatusLabels(result) {
+
+  const conversionStatus =
+    $("conversionStatus");
+
+  const cancellationStatus =
+    $("cancellationStatus");
+
+  const fulfillmentStatus =
+    $("fulfillmentStatus");
+
+  const responseStatus =
+    $("responseStatus");
+
+  if (conversionStatus) {
+
+    conversionStatus.textContent =
+      result.conversion < 2
+        ? "CRITICAL"
+        : result.conversion < 3
+          ? "HIGH"
+          : result.conversion < 4
+            ? "WATCH"
+            : "HEALTHY";
+  }
+
+  if (cancellationStatus) {
+
+    cancellationStatus.textContent =
+      result.cancellation >= 12
+        ? "CRITICAL"
+        : result.cancellation >= 8
+          ? "HIGH"
+          : result.cancellation >= 5
+            ? "WATCH"
+            : "HEALTHY";
+  }
+
+  if (fulfillmentStatus) {
+
+    fulfillmentStatus.textContent =
+      result.fulfillment >= 20
+        ? "CRITICAL"
+        : result.fulfillment >= 10
+          ? "HIGH"
+          : result.fulfillment >= 5
+            ? "WATCH"
+            : "HEALTHY";
+  }
+
+  if (responseStatus) {
+
+    responseStatus.textContent =
+      result.response >= 60
+        ? "CRITICAL"
+        : result.response >= 30
+          ? "WATCH"
+          : result.response >= 15
+            ? "LOW"
+            : "HEALTHY";
+  }
+}
+
+
+/* =========================================================
+   RISK EXPOSURE BREAKDOWN
+========================================================= */
+
+function updateRiskExposure(result) {
+
+  const conversionExposure =
+    $("conversionExposure");
+
+  const fulfillmentExposure =
+    $("fulfillmentExposure");
+
+  const cancellationExposure =
+    $("cancellationExposure");
+
+  const responseExposure =
+    $("responseExposure");
+
+  const totalRisk =
+    Math.max(result.risk, 1);
+
+  const conversionPart =
+    result.conversion < 3.8
+      ? ((3.8 - result.conversion) / 3.3) * 35
+      : 0;
+
+  const cancellationPart =
+    (result.cancellation / 20) * 25;
+
+  const fulfillmentPart =
+    (result.fulfillment / 30) * 20;
+
+  const responsePart =
+    (result.response / 100) * 20;
+
+  const totalExposure =
+    result.exposure;
+
+  if (conversionExposure) {
+    conversionExposure.textContent =
+      money(
+        totalExposure *
+        (conversionPart / totalRisk)
+      );
+  }
+
+  if (fulfillmentExposure) {
+    fulfillmentExposure.textContent =
+      money(
+        totalExposure *
+        (fulfillmentPart / totalRisk)
+      );
+  }
+
+  if (cancellationExposure) {
+    cancellationExposure.textContent =
+      money(
+        totalExposure *
+        (cancellationPart / totalRisk)
+      );
+  }
+
+  if (responseExposure) {
+    responseExposure.textContent =
+      money(
+        totalExposure *
+        (responsePart / totalRisk)
+      );
+  }
+}
+
+
+/* =========================================================
+   ALERT ENGINE
+========================================================= */
+
+function updateExecutiveAlert(result) {
+
+  const title =
+    $("alertTitle");
+
+  const description =
+    $("alertDescription");
+
+  const healthStatus =
+    $("healthStatus");
+
+  if (result.health >= 80) {
+
+    if (title) {
+      title.textContent =
+        "Business signals are currently within a healthy range.";
+    }
+
+    if (description) {
+      description.textContent =
+        "NEXUS recommends monitoring performance and protecting current conversion efficiency.";
+    }
+
+    if (healthStatus) {
+      healthStatus.textContent =
+        "SYSTEM HEALTHY";
+    }
+
+  } else if (result.health >= 60) {
+
+    if (title) {
+      title.textContent =
+        "Revenue exposure requires executive attention.";
+    }
+
+    if (description) {
+      description.textContent =
+        "Several operating signals indicate measurable recovery potential.";
+    }
+
+    if (healthStatus) {
+      healthStatus.textContent =
+        "SYSTEM STABLE";
+    }
+
+  } else {
+
+    if (title) {
+      title.textContent =
+        "Critical revenue risk detected.";
+    }
+
+    if (description) {
+      description.textContent =
+        "Immediate intervention is recommended across the highest-risk signals.";
+    }
+
+    if (healthStatus) {
+      healthStatus.textContent =
+        "HIGH RISK";
+    }
+  }
+}
+
+
+/* =========================================================
+   MASTER REFRESH
+========================================================= */
+
+function refreshNexus() {
+
+  const result =
+    calculateSignals();
+
+  updateStatusLabels(result);
+
+  updateRiskExposure(result);
+
+  updateExecutiveAlert(result);
+
+  return result;
+}
+
+
+/* =========================================================
+   INITIALIZATION
+========================================================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  () => {
+
+    setupNavigation();
+
+    setupScrollSpy();
+
+    setupWhatIfSimulator();
+
+    refreshNexus();
+
+    showToast(
+      "NEXUS COMMAND AI V8 online.",
+      "success"
+    );
+  }
+);
