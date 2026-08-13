@@ -1,7 +1,7 @@
  /* =========================================================
    NEXUS COMMAND AI — V8.1
    Enterprise Autonomous Decision Intelligence Engine
-   Corrected Production Demo Script
+   Corrected + Stable Production Demo
 ========================================================= */
 
 "use strict";
@@ -18,8 +18,7 @@ const CONFIG = {
   minHealth: 0,
   maxHealth: 100,
 
-  simulationDelay: 1200,
-  toastDuration: 3500
+  simulationDelay: 1400
 };
 
 
@@ -37,7 +36,7 @@ const qsa = (selector) =>
 
 
 /* =========================================================
-   SAFE UTILITIES
+   UTILITIES
 ========================================================= */
 
 function clamp(value, min, max) {
@@ -77,7 +76,7 @@ function numberValue(element, fallback = 0) {
 }
 
 
-function safeText(element, value) {
+function setText(element, value) {
 
   if (element) {
     element.textContent = value;
@@ -85,17 +84,11 @@ function safeText(element, value) {
 }
 
 
-function formatNumber(value) {
-
-  return Number(value || 0).toLocaleString("en-US");
-}
-
-
 /* =========================================================
    DOM REFERENCES
 ========================================================= */
 
-/* Signal Inputs */
+/* Inputs */
 
 const conversionInput =
   $("conversionInput");
@@ -110,7 +103,7 @@ const responseInput =
   $("responseInput");
 
 
-/* Signal Values */
+/* Signal values */
 
 const conversionValue =
   $("conversionValue");
@@ -125,7 +118,7 @@ const responseValue =
   $("responseValue");
 
 
-/* Signal Status */
+/* Signal status */
 
 const conversionStatus =
   $("conversionStatus");
@@ -140,7 +133,7 @@ const responseStatus =
   $("responseStatus");
 
 
-/* Health */
+/* Main health */
 
 const healthScore =
   $("healthScore");
@@ -155,7 +148,7 @@ const healthBadge =
   $("healthBadge");
 
 
-/* KPI */
+/* Revenue */
 
 const revenueRisk =
   $("revenueRisk");
@@ -167,22 +160,28 @@ const customersRisk =
   $("customersRisk");
 
 
-/* Alert */
-
-const alertTitle =
-  $("alertTitle");
-
-const alertDescription =
-  $("alertDescription");
+/* AI confidence */
 
 const confidenceValue =
   $("confidenceValue");
 
-const confidence =
-  $("confidence");
+const decisionConfidence =
+  $("decisionConfidence");
 
 
-/* Risk Exposure */
+/* AI decision */
+
+const decisionTitle =
+  $("decisionTitle");
+
+const decisionDescription =
+  $("decisionDescription");
+
+const decisionRecovery =
+  $("decisionRecovery");
+
+
+/* Risk exposure */
 
 const conversionExposure =
   $("conversionExposure");
@@ -197,19 +196,13 @@ const responseExposure =
   $("responseExposure");
 
 
-/* AI Decision */
+/* Executive alert */
 
-const decisionTitle =
-  $("decisionTitle");
+const alertTitle =
+  $("alertTitle");
 
-const decisionDescription =
-  $("decisionDescription");
-
-const decisionRecovery =
-  $("decisionRecovery");
-
-const decisionConfidence =
-  $("decisionConfidence");
+const alertDescription =
+  $("alertDescription");
 
 
 /* Forecast */
@@ -223,15 +216,6 @@ const recoveryPercent =
 const recoveryProgress =
   $("recoveryProgress");
 
-const roiNumber =
-  $("roiNumber");
-
-
-/* Action */
-
-const actionResult =
-  $("actionResult");
-
 
 /* Analyst */
 
@@ -242,7 +226,13 @@ const analystInput =
   $("analystInput");
 
 
-/* Simulator */
+/* Action result */
+
+const actionResult =
+  $("actionResult");
+
+
+/* What-if simulator */
 
 const targetConversion =
   $("targetConversion");
@@ -258,6 +248,79 @@ const targetCancellationValue =
 
 const simulatedHealth =
   $("simulatedHealth");
+
+
+/* =========================================================
+   SIGNAL STATUS ENGINE
+========================================================= */
+
+function getSignalStatus(
+  type,
+  value
+) {
+
+  if (type === "conversion") {
+
+    if (value < 2.5)
+      return "CRITICAL";
+
+    if (value < 3.5)
+      return "HIGH";
+
+    if (value < 4.2)
+      return "WATCH";
+
+    return "HEALTHY";
+  }
+
+
+  if (type === "cancellation") {
+
+    if (value >= 12)
+      return "CRITICAL";
+
+    if (value >= 8)
+      return "HIGH";
+
+    if (value >= 5)
+      return "WATCH";
+
+    return "HEALTHY";
+  }
+
+
+  if (type === "fulfillment") {
+
+    if (value >= 20)
+      return "CRITICAL";
+
+    if (value >= 12)
+      return "HIGH";
+
+    if (value >= 7)
+      return "WATCH";
+
+    return "HEALTHY";
+  }
+
+
+  if (type === "response") {
+
+    if (value >= 60)
+      return "CRITICAL";
+
+    if (value >= 30)
+      return "HIGH";
+
+    if (value >= 15)
+      return "WATCH";
+
+    return "HEALTHY";
+  }
+
+
+  return "WATCH";
+}
 
 
 /* =========================================================
@@ -291,9 +354,9 @@ function calculateSignals() {
     );
 
 
-  /* -------------------------------------------------------
+  /* -----------------------------------------
      INDIVIDUAL RISK
-  ------------------------------------------------------- */
+  ----------------------------------------- */
 
   const conversionRisk =
     clamp(
@@ -302,7 +365,6 @@ function calculateSignals() {
       35
     );
 
-
   const cancellationRisk =
     clamp(
       (cancellation / 20) * 25,
@@ -310,14 +372,12 @@ function calculateSignals() {
       25
     );
 
-
   const fulfillmentRisk =
     clamp(
       (fulfillment / 30) * 20,
       0,
       20
     );
-
 
   const responseRisk =
     clamp(
@@ -327,9 +387,9 @@ function calculateSignals() {
     );
 
 
-  /* -------------------------------------------------------
+  /* -----------------------------------------
      TOTAL RISK
-  ------------------------------------------------------- */
+  ----------------------------------------- */
 
   const risk =
     Math.round(
@@ -344,37 +404,35 @@ function calculateSignals() {
     );
 
 
-  /* -------------------------------------------------------
+  /* -----------------------------------------
      REVENUE EXPOSURE
-  ------------------------------------------------------- */
+  ----------------------------------------- */
 
   const exposureMultiplier =
     0.55 +
     (risk / 100) * 0.75;
-
 
   const exposure =
     CONFIG.baseRevenue *
     exposureMultiplier;
 
 
-  /* -------------------------------------------------------
+  /* -----------------------------------------
      RECOVERY
-  ------------------------------------------------------- */
+  ----------------------------------------- */
 
   const recoveryRate =
     CONFIG.baseRecoveryRate +
     (risk / 100) * 0.12;
-
 
   const recovery =
     exposure *
     recoveryRate;
 
 
-  /* -------------------------------------------------------
+  /* -----------------------------------------
      HEALTH
-  ------------------------------------------------------- */
+  ----------------------------------------- */
 
   const health =
     Math.round(
@@ -386,9 +444,9 @@ function calculateSignals() {
     );
 
 
-  /* -------------------------------------------------------
+  /* -----------------------------------------
      CUSTOMERS AT RISK
-  ------------------------------------------------------- */
+  ----------------------------------------- */
 
   const customers =
     Math.round(
@@ -400,9 +458,9 @@ function calculateSignals() {
     );
 
 
-  /* -------------------------------------------------------
+  /* -----------------------------------------
      AI CONFIDENCE
-  ------------------------------------------------------- */
+  ----------------------------------------- */
 
   const confidenceScore =
     Math.round(
@@ -414,10 +472,6 @@ function calculateSignals() {
       )
     );
 
-
-  /* -------------------------------------------------------
-     UPDATE UI
-  ------------------------------------------------------- */
 
   updateSignalValues(
     conversion,
@@ -446,30 +500,29 @@ function calculateSignals() {
 
 
   updateRiskExposure(
-    conversionRisk,
-    cancellationRisk,
-    fulfillmentRisk,
-    responseRisk
-  );
-
-
-  updateDecision(
-    conversionRisk,
-    cancellationRisk,
-    fulfillmentRisk,
-    responseRisk,
-    recovery,
-    confidenceScore
-  );
-
-
-  updateAlert(
-    risk,
-    health,
     conversion,
     cancellation,
     fulfillment,
     response
+  );
+
+
+  updateExecutiveAlert(
+    risk,
+    health,
+    exposure,
+    recovery
+  );
+
+
+  updateDecision(
+    risk,
+    conversion,
+    cancellation,
+    fulfillment,
+    response,
+    recovery,
+    confidenceScore
   );
 
 
@@ -478,12 +531,6 @@ function calculateSignals() {
     cancellation,
     fulfillment,
     response,
-
-    conversionRisk,
-    cancellationRisk,
-    fulfillmentRisk,
-    responseRisk,
-
     risk,
     exposure,
     recovery,
@@ -505,25 +552,22 @@ function updateSignalValues(
   response
 ) {
 
-  safeText(
+  setText(
     conversionValue,
     conversion.toFixed(2) + "%"
   );
 
-
-  safeText(
+  setText(
     cancellationValue,
     cancellation.toFixed(1) + "%"
   );
 
-
-  safeText(
+  setText(
     fulfillmentValue,
     fulfillment.toFixed(1) + "%"
   );
 
-
-  safeText(
+  setText(
     responseValue,
     "+" + Math.round(response) + "%"
   );
@@ -541,45 +585,681 @@ function updateSignalStatuses(
   response
 ) {
 
-  /* Conversion */
+  setText(
+    conversionStatus,
+    getSignalStatus(
+      "conversion",
+      conversion
+    )
+  );
 
-  if (conversion <= 2.5) {
+  setText(
+    cancellationStatus,
+    getSignalStatus(
+      "cancellation",
+      cancellation
+    )
+  );
 
-    safeText(
-      conversionStatus,
-      "CRITICAL"
-    );
+  setText(
+    fulfillmentStatus,
+    getSignalStatus(
+      "fulfillment",
+      fulfillment
+    )
+  );
 
-  } else if (conversion <= 3.5) {
+  setText(
+    responseStatus,
+    getSignalStatus(
+      "response",
+      response
+    )
+  );
+}
 
-    safeText(
-      conversionStatus,
-      "HIGH"
-    );
 
-  } else if (conversion <= 4.2) {
+/* =========================================================
+   RESULTS
+========================================================= */
 
-    safeText(
-      conversionStatus,
-      "WATCH"
-    );
+function updateResults(
+  risk,
+  exposure,
+  recovery,
+  health,
+  customers,
+  confidenceScore
+) {
 
-  } else {
+  setText(
+    revenueRisk,
+    money(exposure)
+  );
 
-    safeText(
-      conversionStatus,
-      "STRONG"
-    );
+  setText(
+    recoverableRevenue,
+    money(recovery)
+  );
+
+  setText(
+    customersRisk,
+    customers.toLocaleString()
+  );
+
+
+  /* -----------------------------------------
+     HEALTH TEXT
+  ----------------------------------------- */
+
+  let healthLabel =
+    "Critical";
+
+  let badgeLabel =
+    "HIGH RISK";
+
+  let statusLabel =
+    "SYSTEM CRITICAL";
+
+
+  if (health >= 80) {
+
+    healthLabel =
+      "Strong";
+
+    badgeLabel =
+      "STRONG";
+
+    statusLabel =
+      "SYSTEM STABLE";
+
+  }
+
+  else if (health >= 60) {
+
+    healthLabel =
+      "Good";
+
+    badgeLabel =
+      "ATTENTION";
+
+    statusLabel =
+      "SYSTEM WATCH";
+
+  }
+
+  else if (health >= 40) {
+
+    healthLabel =
+      "Attention";
+
+    badgeLabel =
+      "HIGH RISK";
+
+    statusLabel =
+      "SYSTEM AT RISK";
   }
 
 
-  /* Cancellation */
+  setText(
+    healthScore,
+    health
+  );
 
-  if (cancellation >= 12) {
+  setText(
+    healthText,
+    healthLabel
+  );
 
-    safeText(
-      cancellationStatus,
-      "CRITICAL"
+  setText(
+    healthBadge,
+    badgeLabel
+  );
+
+  setText(
+    healthStatus,
+    statusLabel
+  );
+
+
+  /* -----------------------------------------
+     CONFIDENCE
+  ----------------------------------------- */
+
+  setText(
+    confidenceValue,
+    confidenceScore + "%"
+  );
+
+  setText(
+    decisionConfidence,
+    Math.max(
+      82,
+      confidenceScore - 4
+    ) + "%"
+  );
+
+
+  /* -----------------------------------------
+     PRIORITY RECOVERY
+  ----------------------------------------- */
+
+  setText(
+    decisionRecovery,
+    money(recovery * 0.20)
+  );
+
+
+  /* -----------------------------------------
+     FORECAST
+  ----------------------------------------- */
+
+  const recoveryPct =
+    Math.round(
+      clamp(
+        (recovery / Math.max(exposure, 1)) * 100,
+        0,
+        100
+      )
     );
 
-  } else
+
+  setText(
+    recoveryPercent,
+    recoveryPct + "%"
+  );
+
+
+  if (recoveryProgress) {
+
+    recoveryProgress.style.width =
+      recoveryPct + "%";
+  }
+
+
+  const forecast =
+    CONFIG.baseRevenue +
+    recovery;
+
+
+  setText(
+    forecastNumber,
+    money(forecast)
+  );
+}
+
+
+/* =========================================================
+   RISK EXPOSURE BREAKDOWN
+========================================================= */
+
+function updateRiskExposure(
+  conversion,
+  cancellation,
+  fulfillment,
+  response
+) {
+
+  const conversionExposure =
+    CONFIG.baseRevenue *
+    clamp(
+      ((3.8 - conversion) / 3.3),
+      0,
+      1
+    ) *
+    0.35;
+
+
+  const fulfillmentExposure =
+    CONFIG.baseRevenue *
+    clamp(
+      fulfillment / 30,
+      0,
+      1
+    ) *
+    0.20;
+
+
+  const cancellationExposure =
+    CONFIG.baseRevenue *
+    clamp(
+      cancellation / 20,
+      0,
+      1
+    ) *
+    0.25;
+
+
+  const responseExposure =
+    CONFIG.baseRevenue *
+    clamp(
+      response / 100,
+      0,
+      1
+    ) *
+    0.20;
+
+
+  setText(
+    conversionExposure,
+    money(conversionExposure)
+  );
+
+  setText(
+    fulfillmentExposure,
+    money(fulfillmentExposure)
+  );
+
+  setText(
+    cancellationExposure,
+    money(cancellationExposure)
+  );
+
+  setText(
+    responseExposure,
+    money(responseExposure)
+  );
+}
+
+
+/* =========================================================
+   EXECUTIVE ALERT
+========================================================= */
+
+function updateExecutiveAlert(
+  risk,
+  health,
+  exposure,
+  recovery
+) {
+
+  if (!alertTitle) return;
+
+
+  if (risk >= 70) {
+
+    setText(
+      alertTitle,
+      "Critical revenue exposure detected."
+    );
+
+    setText(
+      alertDescription,
+      "Multiple business signals are creating significant financial risk. Immediate intervention is recommended."
+    );
+
+  }
+
+  else if (risk >= 45) {
+
+    setText(
+      alertTitle,
+      "Revenue exposure requires management attention."
+    );
+
+    setText(
+      alertDescription,
+      "Several operational signals are weakening performance. Recovery opportunities are available."
+    );
+
+  }
+
+  else {
+
+    setText(
+      alertTitle,
+      "Business signals are operating within a healthier range."
+    );
+
+    setText(
+      alertDescription,
+      "Current conditions indicate lower modeled exposure with measurable recovery potential."
+    );
+  }
+}
+
+
+/* =========================================================
+   AI DECISION ENGINE
+========================================================= */
+
+function updateDecision(
+  risk,
+  conversion,
+  cancellation,
+  fulfillment,
+  response,
+  recovery,
+  confidenceScore
+) {
+
+  if (!decisionTitle) return;
+
+
+  let title =
+    "Optimize the highest-impact revenue signal";
+
+  let description =
+    "Focus resources on the operational driver with the strongest financial impact.";
+
+
+  /* Highest priority */
+
+  if (
+    conversion < 3.2 &&
+    conversion <= cancellation / 3
+  ) {
+
+    title =
+      "Recover high-intent lost conversions";
+
+    description =
+      "Prioritize checkout recovery, abandoned demand and high-intent customer follow-up before increasing acquisition spend.";
+  }
+
+  else if (
+    fulfillment >= 15
+  ) {
+
+    title =
+      "Stabilize fulfillment performance";
+
+    description =
+      "Resolve delivery SLA pressure and prioritize orders most likely to become cancellations or churn.";
+  }
+
+  else if (
+    cancellation >= 10
+  ) {
+
+    title =
+      "Reduce cancellation leakage";
+
+    description =
+      "Identify cancellation drivers and deploy retention interventions before customers exit the funnel.";
+  }
+
+  else if (
+    response >= 40
+  ) {
+
+    title =
+      "Accelerate customer response";
+
+    description =
+      "Prioritize high-intent conversations and reduce response delays with automated first-touch workflows.";
+  }
+
+  else if (risk < 30) {
+
+    title =
+      "Scale what is already working";
+
+    description =
+      "Business risk is relatively low. Focus on controlled growth while continuously monitoring revenue signals.";
+  }
+
+
+  setText(
+    decisionTitle,
+    title
+  );
+
+  setText(
+    decisionDescription,
+    description
+  );
+}
+
+
+/* =========================================================
+   INPUT EVENTS
+========================================================= */
+
+[
+  conversionInput,
+  cancellationInput,
+  fulfillmentInput,
+  responseInput
+]
+.forEach((input) => {
+
+  if (!input) return;
+
+  input.addEventListener(
+    "input",
+    calculateSignals
+  );
+
+});
+
+
+/* =========================================================
+   INVESTIGATE BUSINESS RISK
+========================================================= */
+
+function investigateRisk() {
+
+  const result =
+    calculateSignals();
+
+
+  const message =
+    "NEXUS investigation complete — Risk " +
+    result.risk +
+    "/100 · Exposure " +
+    money(result.exposure) +
+    " · Recovery " +
+    money(result.recovery);
+
+
+  showToast(
+    message,
+    "risk"
+  );
+
+
+  const riskSection =
+    $("risk");
+
+  if (riskSection) {
+
+    riskSection.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
+  }
+}
+
+
+/* =========================================================
+   EXECUTE AI ACTION
+========================================================= */
+
+function executeAction() {
+
+  const result =
+    calculateSignals();
+
+
+  const priorityRecovery =
+    result.recovery * 0.20;
+
+
+  const action =
+    "AI ACTION READY — Prioritize conversion recovery, reduce cancellation friction and investigate fulfillment SLA failures. Immediate modeled recovery opportunity: " +
+    money(priorityRecovery) +
+    ".";
+
+
+  setText(
+    aiResponse,
+    action
+  );
+
+
+  setText(
+    actionResult,
+    "✓ AI strategy generated successfully. Recommended priority: revenue recovery."
+  );
+
+
+  showToast(
+    "AI Action Plan generated successfully.",
+    "success"
+  );
+
+
+  const actionSection =
+    $("actions");
+
+  if (actionSection) {
+
+    actionSection.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
+  }
+}
+
+
+/* =========================================================
+   ACTION CENTER
+========================================================= */
+
+function runAction(type) {
+
+  const result =
+    calculateSignals();
+
+
+  let message = "";
+
+
+  if (type === "recovery") {
+
+    message =
+      "Recovery workflow activated for high-intent prospects. Estimated opportunity: " +
+      money(result.recovery * 0.20) +
+      ".";
+
+  }
+
+  else if (type === "response") {
+
+    message =
+      "Response-leakage workflow activated. High-intent conversations should receive priority follow-up.";
+
+  }
+
+  else if (type === "fulfillment") {
+
+    message =
+      "Fulfillment stabilization workflow activated. SLA-risk orders should be prioritized.";
+
+  }
+
+  else {
+
+    message =
+      "AI operational workflow activated.";
+  }
+
+
+  setText(
+    actionResult,
+    "✓ " + message
+  );
+
+
+  showToast(
+    message,
+    "success"
+  );
+}
+
+
+/* =========================================================
+   AI ANALYST
+========================================================= */
+
+function askAnalyst() {
+
+  const input =
+    analystInput
+      ? analystInput.value.trim()
+      : "";
+
+
+  if (!input) {
+
+    showToast(
+      "Enter a business question first.",
+      "warning"
+    );
+
+    return;
+  }
+
+
+  const result =
+    calculateSignals();
+
+
+  const query =
+    input.toLowerCase();
+
+
+  let response =
+    "NEXUS ANALYST: ";
+
+
+  if (
+    query.includes("risk") ||
+    query.includes("danger")
+  ) {
+
+    response +=
+      "Current modeled business risk is " +
+      result.risk +
+      "/100 with estimated revenue exposure of " +
+      money(result.exposure) +
+      ". Focus on the highest-impact operational signal first.";
+
+  }
+
+
+  else if (
+    query.includes("revenue") ||
+    query.includes("money") ||
+    query.includes("recover")
+  ) {
+
+    response +=
+      "Estimated recoverable revenue is " +
+      money(result.recovery) +
+      ". The strongest modeled opportunities are conversion recovery, fulfillment improvement and cancellation reduction.";
+
+  }
+
+
+  else if (
+    query.includes("customer") ||
+    query.includes("customers")
+  ) {
+
+    response +=
+      result.customers.toLocaleString() +
+      " customers are currently within the elevated-risk model.";
+
+  }
+
+
+  else if (
+    query.includes("action") ||
+    query.includes("what should") ||
+    query.includes("focus")
+  ) {
+
+    response +=
+      "Recommended next move: address the highest-impa
