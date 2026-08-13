@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -10,7 +10,7 @@
 
   <meta
     name="description"
-    content="NEXUS COMMAND AI V6 — Enterprise Signal Intelligence and Autonomous Decision Command Center."
+    content="NEXUS COMMAND AI V7 — Enterprise Decision Intelligence, Risk Detection, Revenue Recovery and Business Scenario Intelligence."
   >
 
   <meta
@@ -18,7 +18,12 @@
     content="#05080d"
   >
 
-  <title>NEXUS COMMAND AI — V6</title>
+  <meta
+    name="robots"
+    content="index, follow"
+  >
+
+  <title>NEXUS COMMAND AI — V7</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
 
@@ -50,15 +55,13 @@
       </div>
 
       <div>
-
         <div class="brand-name">
           NEXUS COMMAND
         </div>
 
         <div class="brand-subtitle">
-          AUTONOMOUS INTELLIGENCE
+          ENTERPRISE DECISION INTELLIGENCE
         </div>
-
       </div>
 
     </div>
@@ -66,58 +69,37 @@
 
     <nav class="navigation">
 
-      <a
-        href="#command"
-        class="nav-item active"
-      >
+      <a href="#command" class="nav-item active">
         <span>⌂</span>
         <span>Command Center</span>
       </a>
 
-      <a
-        href="#signals"
-        class="nav-item"
-      >
+      <a href="#signals" class="nav-item">
         <span>◉</span>
         <span>Live Signals</span>
       </a>
 
-      <a
-        href="#risk"
-        class="nav-item"
-      >
+      <a href="#risk" class="nav-item">
         <span>◈</span>
         <span>Risk Intelligence</span>
       </a>
 
-      <a
-        href="#actions"
-        class="nav-item"
-      >
+      <a href="#actions" class="nav-item">
         <span>⚡</span>
         <span>AI Actions</span>
       </a>
 
-      <a
-        href="#forecast"
-        class="nav-item"
-      >
+      <a href="#forecast" class="nav-item">
         <span>↗</span>
         <span>Revenue Forecast</span>
       </a>
 
-      <a
-        href="#simulator"
-        class="nav-item"
-      >
+      <a href="#simulator" class="nav-item">
         <span>◇</span>
         <span>What-If Simulator</span>
       </a>
 
-      <a
-        href="#analyst"
-        class="nav-item"
-      >
+      <a href="#analyst" class="nav-item">
         <span>✦</span>
         <span>AI Analyst</span>
       </a>
@@ -133,7 +115,7 @@
 
         <div>
           <strong>INTELLIGENCE ENGINE</strong>
-          <small>ONLINE · V6.0</small>
+          <small>ONLINE · V7.0</small>
         </div>
 
       </div>
@@ -144,7 +126,7 @@
 
 
   <!-- =====================================================
-       MAIN
+       MAIN CONTENT
   ====================================================== -->
 
   <main class="main-content">
@@ -159,7 +141,7 @@
       <div>
 
         <div class="eyebrow">
-          NEXUS COMMAND AI · V6.0
+          NEXUS COMMAND AI · V7.0
         </div>
 
         <h1>
@@ -177,11 +159,8 @@
       <div class="topbar-actions">
 
         <div class="live-indicator">
-
           <span></span>
-
           LIVE INTELLIGENCE
-
         </div>
 
         <div class="command-avatar">
@@ -199,11 +178,11 @@
 
     <div class="demo-notice">
 
-      <strong>V6 DEMONSTRATION ENVIRONMENT</strong>
+      <strong>V7 DEMONSTRATION ENVIRONMENT</strong>
 
       <span>
-        Financial values are simulated. Connect enterprise
-        data sources for production intelligence.
+        Financial values and intelligence outputs are simulated.
+        Connect verified enterprise data sources for production use.
       </span>
 
     </div>
@@ -230,15 +209,16 @@
         </h2>
 
         <p>
-          NEXUS correlates business signals and converts
-          fragmented operational data into prioritized
-          executive decisions.
+          NEXUS correlates business signals, estimates financial
+          exposure and converts fragmented operational data into
+          prioritized executive decisions.
         </p>
 
 
         <div class="hero-actions">
 
           <button
+            type="button"
             class="primary-button"
             onclick="investigateRisk()"
           >
@@ -246,6 +226,7 @@
           </button>
 
           <button
+            type="button"
             class="secondary-button"
             onclick="executeAction()"
           >
@@ -296,11 +277,11 @@
           EARLY WARNING DETECTED
         </div>
 
-        <h3>
+        <h3 id="alertTitle">
           Revenue exposure is increasing across multiple signals.
         </h3>
 
-        <p>
+        <p id="alertDescription">
           NEXUS detected correlated changes in conversion,
           cancellation, fulfillment and response behavior.
         </p>
@@ -328,6 +309,7 @@
     ==================================================== -->
 
     <section class="kpi-grid">
+
 
       <!-- REVENUE RISK -->
 
@@ -447,7 +429,7 @@
 
 
     <!-- ===================================================
-         SIGNAL INTELLIGENCE
+         LIVE SIGNAL INTELLIGENCE
     ==================================================== -->
 
     <section
@@ -489,15 +471,13 @@
               CONVERSION
             </span>
 
-            <b>
+            <b id="conversionStatus">
               CRITICAL
             </b>
 
           </div>
 
-          <strong
-            id="conversionValue"
-          >
+          <strong id="conversionValue">
             2.84%
           </strong>
 
@@ -508,6 +488,7 @@
             max="6"
             step="0.01"
             value="2.84"
+            aria-label="Conversion rate"
           >
 
           <small>
@@ -527,15 +508,13 @@
               CANCELLATION
             </span>
 
-            <b>
+            <b id="cancellationStatus">
               HIGH
             </b>
 
           </div>
 
-          <strong
-            id="cancellationValue"
-          >
+          <strong id="cancellationValue">
             8.7%
           </strong>
 
@@ -546,6 +525,7 @@
             max="20"
             step="0.1"
             value="8.7"
+            aria-label="Cancellation rate"
           >
 
           <small>
@@ -565,15 +545,13 @@
               FULFILLMENT
             </span>
 
-            <b>
+            <b id="fulfillmentStatus">
               HIGH
             </b>
 
           </div>
 
-          <strong
-            id="fulfillmentValue"
-          >
+          <strong id="fulfillmentValue">
             12.4%
           </strong>
 
@@ -584,6 +562,7 @@
             max="30"
             step="0.1"
             value="12.4"
+            aria-label="Fulfillment delay"
           >
 
           <small>
@@ -603,15 +582,13 @@
               RESPONSE TIME
             </span>
 
-            <b>
+            <b id="responseStatus">
               WATCH
             </b>
 
           </div>
 
-          <strong
-            id="responseValue"
-          >
+          <strong id="responseValue">
             +31%
           </strong>
 
@@ -622,6 +599,7 @@
             max="100"
             step="1"
             value="31"
+            aria-label="Response delay"
           >
 
           <small>
@@ -663,6 +641,10 @@
 
           </div>
 
+          <span class="live-tag">
+            LIVE
+          </span>
+
         </div>
 
 
@@ -674,7 +656,6 @@
             <span class="risk-dot critical"></span>
 
             <div>
-
               <strong>
                 Conversion Decline
               </strong>
@@ -682,14 +663,13 @@
               <small>
                 Checkout performance
               </small>
-
             </div>
 
-            <b>
+            <b id="conversionRiskMoney">
               $840K
             </b>
 
-            <em>
+            <em class="critical-text">
               CRITICAL
             </em>
 
@@ -701,7 +681,6 @@
             <span class="risk-dot high"></span>
 
             <div>
-
               <strong>
                 Fulfillment Delays
               </strong>
@@ -709,14 +688,13 @@
               <small>
                 Delivery SLA
               </small>
-
             </div>
 
-            <b>
+            <b id="fulfillmentRiskMoney">
               $520K
             </b>
 
-            <em>
+            <em class="high-text">
               HIGH
             </em>
 
@@ -728,5 +706,433 @@
             <span class="risk-dot medium"></span>
 
             <div>
+              <strong>
+                Customer Churn Signals
+              </strong>
 
-              <
+              <small>
+                High-value activity decline
+              </small>
+            </div>
+
+            <b id="churnRiskMoney">
+              $310K
+            </b>
+
+            <em class="medium-text">
+              MEDIUM
+            </em>
+
+          </div>
+
+
+          <div class="risk-row">
+
+            <span class="risk-dot low"></span>
+
+            <div>
+              <strong>
+                Support Backlog
+              </strong>
+
+              <small>
+                Response-time signal
+              </small>
+            </div>
+
+            <b id="supportRiskMoney">
+              $82K
+            </b>
+
+            <em class="low-text">
+              LOW
+            </em>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- AI DECISION ENGINE -->
+
+      <div
+        class="panel"
+        id="actions"
+      >
+
+        <div class="section-heading">
+
+          <div>
+
+            <label>
+              AI DECISION ENGINE
+            </label>
+
+            <h2>
+              What should happen next?
+            </h2>
+
+          </div>
+
+          <span class="ready-tag">
+            ● READY
+          </span>
+
+        </div>
+
+
+        <div class="decision-card">
+
+          <div class="decision-number">
+            01
+          </div>
+
+          <div>
+
+            <span class="priority-label">
+              PRIORITY ACTION
+            </span>
+
+            <h3 id="decisionTitle">
+              Recover high-intent opportunities
+            </h3>
+
+            <p id="decisionDescription">
+              NEXUS identified a high-value recovery opportunity
+              based on current business signals.
+            </p>
+
+            <div class="decision-meta">
+
+              <span>
+                Recovery
+                <b id="decisionRecovery">
+                  $145K
+                </b>
+              </span>
+
+              <span>
+                Confidence
+                <b id="decisionConfidence">
+                  89%
+                </b>
+              </span>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="action-button"
+          onclick="executeAction()"
+        >
+          Review AI Action →
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- ===================================================
+         REVENUE FORECAST
+    ==================================================== -->
+
+    <section
+      class="panel forecast-panel"
+      id="forecast"
+    >
+
+      <div class="section-heading">
+
+        <div>
+
+          <label>
+            REVENUE FORECAST
+          </label>
+
+          <h2>
+            Recovery trajectory
+          </h2>
+
+        </div>
+
+        <span class="live-tag">
+          MODEL
+        </span>
+
+      </div>
+
+
+      <div class="forecast-grid">
+
+
+        <div class="forecast-card">
+
+          <span>
+            CURRENT EXPOSURE
+          </span>
+
+          <strong id="liveExposure">
+            $2.40M
+          </strong>
+
+          <small>
+            Estimated exposure
+          </small>
+
+        </div>
+
+
+        <div class="forecast-card">
+
+          <span>
+            RECOVERY POTENTIAL
+          </span>
+
+          <strong id="liveRecovery">
+            $730K
+          </strong>
+
+          <small>
+            Estimated recoverable value
+          </small>
+
+        </div>
+
+
+        <div class="forecast-card">
+
+          <span>
+            RECOVERY RATE
+          </span>
+
+          <strong id="recoveryPercent">
+            30%
+          </strong>
+
+          <div class="progress-track">
+
+            <div
+              class="progress-bar"
+              id="recoveryProgress"
+              style="width:30%"
+            ></div>
+
+          </div>
+
+        </div>
+
+
+        <div class="forecast-card">
+
+          <span>
+            12-MONTH OUTLOOK
+          </span>
+
+          <strong id="forecastNumber">
+            $8.76M
+          </strong>
+
+          <small>
+            Simulated opportunity
+          </small>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ===================================================
+         WHAT-IF SIMULATOR
+    ==================================================== -->
+
+    <section
+      class="panel"
+      id="simulator"
+    >
+
+      <div class="section-heading">
+
+        <div>
+
+          <label>
+            WHAT-IF SIMULATOR
+          </label>
+
+          <h2>
+            Model a business improvement scenario
+          </h2>
+
+        </div>
+
+        <span class="live-tag">
+          SIMULATION
+        </span>
+
+      </div>
+
+
+      <div class="scenario-grid">
+
+
+        <button
+          type="button"
+          class="scenario-card"
+          onclick="runScenario('recovery')"
+        >
+
+          <span>
+            SCENARIO 01
+          </span>
+
+          <strong>
+            Recovery Push
+          </strong>
+
+          <small>
+            Improve conversion and reduce cancellations.
+          </small>
+
+        </button>
+
+
+        <button
+          type="button"
+          class="scenario-card"
+          onclick="runScenario('growth')"
+        >
+
+          <span>
+            SCENARIO 02
+          </span>
+
+          <strong>
+            Growth Mode
+          </strong>
+
+          <small>
+            Improve conversion while maintaining operations.
+          </small>
+
+        </button>
+
+
+        <button
+          type="button"
+          class="scenario-card"
+          onclick="runScenario('crisis')"
+        >
+
+          <span>
+            SCENARIO 03
+          </span>
+
+          <strong>
+            Crisis Test
+          </strong>
+
+          <small>
+            Simulate worsening operational conditions.
+          </small>
+
+        </button>
+
+      </div>
+
+
+      <div
+        class="scenario-result"
+        id="scenarioResult"
+      >
+
+        Select a scenario to generate a simulated
+        executive outcome.
+
+      </div>
+
+    </section>
+
+
+    <!-- ===================================================
+         AI ANALYST
+    ==================================================== -->
+
+    <section
+      class="panel analyst-panel"
+      id="analyst"
+    >
+
+      <div class="section-heading">
+
+        <div>
+
+          <label>
+            AI ANALYST
+          </label>
+
+          <h2>
+            Ask the intelligence engine
+          </h2>
+
+        </div>
+
+        <span class="ready-tag">
+          READY
+        </span>
+
+      </div>
+
+
+      <div class="analyst-box">
+
+        <input
+          type="text"
+          id="analystInput"
+          placeholder="Ask: What is my biggest revenue risk?"
+          autocomplete="off"
+        >
+
+        <button
+          type="button"
+          class="primary-button"
+          onclick="askAnalyst()"
+        >
+          Analyze →
+        </button>
+
+      </div>
+
+
+      <div
+        class="ai-response"
+        id="aiResponse"
+      >
+
+        <span class="response-label">
+          NEXUS ANALYSIS
+        </span>
+
+        <p>
+          Ask a business question to generate a simulated
+          executive intelligence response.
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <!-- ===================================================
+         ROI
+    ==================================================== -->
+
+    <section cl
