@@ -1,1095 +1,958 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
+ /* =========================================================
+   NEXUS COMMAND AI — V8.2
+   WORKING INTERACTIVE DECISION INTELLIGENCE ENGINE
+========================================================= */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  /* =========================
+     CORE STATE
+  ========================= */
+
+  const nexusState = {
+    riskScore: 68,
+    healthScore: 78,
+    revenueAtRisk: 2400000,
+    recoverableRevenue: 730000,
+    customersAtRisk: 18420,
+    actionsExecuted: 0,
+    scanCount: 0,
+
+    signals: {
+      conversion: 2.84,
+      cancellation: 8.7,
+      fulfillment: 12.4,
+      response: 31
+    }
+  };
+
+  /* =========================
+     HELPERS
+  ========================= */
+
+  const $ = id => document.getElementById(id);
+
+  const money = value => {
+    if (value >= 1000000) {
+      return "$" + (value / 1000000).toFixed(2) + "M";
+    }
+
+    if (value >= 1000) {
+      return "$" + Math.round(value / 1000) + "K";
+    }
+
+    return "$" + Math.round(value).toLocaleString();
+  };
+
+  function toast(message, type = "success") {
+
+    const old = document.querySelector(".nexus-toast");
+    if (old) old.remove();
+
+    const el = document.createElement("div");
+
+    el.className = "nexus-toast";
+    el.textContent = message;
+
+    let border = "rgba(255,255,255,.18)";
+
+    if (type === "danger") border = "#ff4d6d";
+    if (type === "warning") border = "#ffb020";
+    if (type === "success") border = "#00e6b8";
+
+    el.style.cssText = `
+      position:fixed;
+      right:20px;
+      bottom:20px;
+      z-index:99999;
+      padding:15px 20px;
+      border-radius:12px;
+      background:#101827;
+      color:white;
+      border:1px solid ${border};
+      box-shadow:0 15px 40px rgba(0,0,0,.4);
+      font-weight:700;
+      max-width:360px;
+      animation:nexusToast .3s ease;
+    `;
+
+    document.body.appendChild(el);
+
+    setTimeout(() => {
+      el.style.opacity = "0";
+      el.style.transform = "translateY(10px)";
+      el.style.transition = ".3s ease";
+    }, 2500);
+
+    setTimeout(() => el.remove(), 3000);
+  }
+
+  /* =========================
+     STYLE
+  ========================= */
+
+  const style = document.createElement("style");
+
+  style.textContent = `
+    @keyframes nexusToast {
+      from {
+        opacity:0;
+        transform:translateY(20px);
+      }
+      to {
+        opacity:1;
+        transform:translateY(0);
+      }
+    }
+
+    .nexus-active {
+      transform:translateY(-2px);
+      transition:.25s ease;
+    }
+
+    .nexus-pulse {
+      animation:nexusPulse .5s ease;
+    }
+
+    @keyframes nexusPulse {
+      0% { transform:scale(1); }
+      50% { transform:scale(1.04); }
+      100% { transform:scale(1); }
+    }
+  `;
+
+  document.head.appendChild(style);
+
+  /* =========================
+     CALCULATE BUSINESS HEALTH
+  ========================= */
+
+  function calculateHealth() {
+
+    const c = nexusState.signals.conversion;
+    const ca = nexusState.signals.cancellation;
+    const f = nexusState.signals.fulfillment;
+    const r = nexusState.signals.response;
+
+    let score = 100;
+
+    score -= Math.max(0, (4 - c) * 8);
+    score -= ca * 1.5;
+    score -= f * 0.8;
+    score -= r * 0.25;
+
+    score = Math.round(
+      Math.max(20, Math.min(98, score))
+    );
+
+    nexusState.healthScore = score;
+    nexusState.riskScore = 100 - score;
+
+    return score;
+  }
+
+  /* =========================
+     UPDATE DASHBOARD
+  ========================= */
+
+  function updateDashboard() {
+
+    const health = calculateHealth();
+
+    const c = nexusState.signals.conversion;
+    const ca = nexusState.signals.cancellation;
+    const f = nexusState.signals.fulfillment;
+    const r = nexusState.signals.response;
+
+    /* Revenue calculations */
+
+    const riskMultiplier =
+      Math.max(
+        0.55,
+        Math.min(
+          1.45,
+          0.8 +
+          (ca / 20) +
+          (f / 30) +
+          (r / 150) +
+          ((4 - c) / 10)
+        )
+      );
+
+    nexusState.revenueAtRisk =
+      Math.round(2400000 * riskMultiplier);
+
+    nexusState.recoverableRevenue =
+      Math.round(
+        nexusState.revenueAtRisk *
+        (0.22 + (nexusState.riskScore / 500))
+      );
+
+    nexusState.customersAtRisk =
+      Math.round(
+        9000 +
+        nexusState.riskScore * 130
+      );
+
+    /* KPI */
+
+    if ($("healthScore"))
+      $("healthScore").textContent = health;
+
+    if ($("customersRisk"))
+      $("customersRisk").textContent =
+        nexusState.customersAtRisk.toLocaleString();
+
+    if ($("revenueRisk"))
+      $("revenueRisk").textContent =
+        money(nexusState.revenueAtRisk);
+
+    if ($("recoverableRevenue"))
+      $("recoverableRevenue").textContent =
+        money(nexusState.recoverableRevenue);
+
+    if ($("forecastNumber"))
+      $("forecastNumber").textContent =
+        money(nexusState.recoverableRevenue);
+
+    /* Health status */
+
+    let status = "SYSTEM STABLE";
+    let healthText = "Excellent";
+
+    if (health < 85) {
+      status = "SYSTEM STABLE";
+      healthText = "Good";
+    }
+
+    if (health < 70) {
+      status = "ATTENTION REQUIRED";
+      healthText = "Attention";
+    }
+
+    if (health < 50) {
+      status = "HIGH RISK";
+      healthText = "Critical";
+    }
+
+    if ($("healthStatus"))
+      $("healthStatus").textContent = status;
+
+    if ($("healthText"))
+      $("healthText").textContent = healthText;
+
+    if ($("healthBadge"))
+      $("healthBadge").textContent =
+        health >= 75 ? "STABLE" :
+        health >= 50 ? "ATTENTION" :
+        "CRITICAL";
+
+    /* =========================
+       SIGNAL VALUES
+    ========================= */
+
+    if ($("conversionValue"))
+      $("conversionValue").textContent =
+        c.toFixed(2) + "%";
+
+    if ($("cancellationValue"))
+      $("cancellationValue").textContent =
+        ca.toFixed(1) + "%";
+
+    if ($("fulfillmentValue"))
+      $("fulfillmentValue").textContent =
+        f.toFixed(1) + "%";
+
+    if ($("responseValue"))
+      $("responseValue").textContent =
+        "+" + Math.round(r) + "%";
+
+    /* =========================
+       SIGNAL STATUS
+    ========================= */
+
+    setStatus(
+      $("conversionStatus"),
+      c < 2.5 ? "CRITICAL" :
+      c < 3.5 ? "HIGH" :
+      "STABLE"
+    );
+
+    setStatus(
+      $("cancellationStatus"),
+      ca > 10 ? "CRITICAL" :
+      ca > 7 ? "HIGH" :
+      ca > 4 ? "WATCH" :
+      "STABLE"
+    );
+
+    setStatus(
+      $("fulfillmentStatus"),
+      f > 18 ? "CRITICAL" :
+      f > 10 ? "HIGH" :
+      f > 5 ? "WATCH" :
+      "STABLE"
+    );
+
+    setStatus(
+      $("responseStatus"),
+      r > 50 ? "CRITICAL" :
+      r > 25 ? "WATCH" :
+      "STABLE"
+    );
+
+    /* =========================
+       EXPOSURE
+    ========================= */
+
+    const conversionExposure =
+      Math.round(
+        nexusState.revenueAtRisk *
+        Math.max(.15, (4 - c) / 5)
+      );
+
+    const fulfillmentExposure =
+      Math.round(
+        nexusState.revenueAtRisk *
+        (f / 100) *
+        .35
+      );
+
+    const cancellationExposure =
+      Math.round(
+        nexusState.revenueAtRisk *
+        (ca / 100) *
+        .25
+      );
+
+    const responseExposure =
+      Math.round(
+        nexusState.revenueAtRisk *
+        (r / 100) *
+        .12
+      );
+
+    if ($("conversionExposure"))
+      $("conversionExposure").textContent =
+        money(conversionExposure);
+
+    if ($("fulfillmentExposure"))
+      $("fulfillmentExposure").textContent =
+        money(fulfillmentExposure);
+
+    if ($("cancellationExposure"))
+      $("cancellationExposure").textContent =
+        money(cancellationExposure);
+
+    if ($("responseExposure"))
+      $("responseExposure").textContent =
+        money(responseExposure);
+
+    /* =========================
+       RECOVERY FORECAST
+    ========================= */
+
+    const recoveryPercent = Math.round(
+      Math.min(
+        85,
+        20 + nexusState.riskScore * .35
+      )
+    );
+
+    if ($("recoveryPercent"))
+      $("recoveryPercent").textContent =
+        recoveryPercent + "%";
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    if ($("recoveryProgress"))
+      $("recoveryProgress").style.width =
+        recoveryPercent + "%";
 
-  <meta
-    name="description"
-    content="NEXUS COMMAND AI V8 — Enterprise Revenue Risk, Recovery and Decision Intelligence Platform."
-  >
+    /* =========================
+       AI DECISION
+    ========================= */
 
-  <meta name="theme-color" content="#05080d">
+    updateDecision();
 
-  <title>NEXUS COMMAND AI — V8</title>
+    /* =========================
+       ALERT
+    ========================= */
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
+    if ($("alertTitle") && $("alertDescription")) {
 
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
-    rel="stylesheet"
-  >
+      if (nexusState.riskScore >= 55) {
 
-  <link rel="stylesheet" href="style.css">
-</head>
+        $("alertTitle").textContent =
+          "High revenue exposure detected across multiple signals.";
 
-<body>
+        $("alertDescription").textContent =
+          "NEXUS recommends immediate intervention before additional acquisition spend.";
 
-<div class="app-shell">
+      } else if (nexusState.riskScore >= 35) {
 
-  <!-- =====================================================
-       SIDEBAR
-  ====================================================== -->
+        $("alertTitle").textContent =
+          "Moderate revenue leakage is developing.";
 
-  <aside class="sidebar">
+        $("alertDescription").textContent =
+          "Monitor conversion, cancellation and response signals closely.";
 
-    <div class="brand">
+      } else {
 
-      <div class="brand-mark">NX</div>
+        $("alertTitle").textContent =
+          "Business signals are operating within a healthy range.";
 
-      <div>
-        <div class="brand-name">NEXUS COMMAND</div>
-        <div class="brand-subtitle">REVENUE INTELLIGENCE</div>
-      </div>
+        $("alertDescription").textContent =
+          "Current conditions indicate lower immediate revenue exposure.";
+      }
+    }
+  }
 
-    </div>
+  function setStatus(element, value) {
+    if (element) element.textContent = value;
+  }
 
-    <nav class="navigation">
+  /* =========================
+     AI DECISION ENGINE
+  ========================= */
 
-      <a href="#command" class="nav-item active">
-        <span>⌂</span>
-        <span>Command Center</span>
-      </a>
+  function updateDecision() {
 
-      <a href="#signals" class="nav-item">
-        <span>◉</span>
-        <span>Live Signals</span>
-      </a>
+    const c = nexusState.signals.conversion;
+    const ca = nexusState.signals.cancellation;
+    const f = nexusState.signals.fulfillment;
+    const r = nexusState.signals.response;
 
-      <a href="#risk" class="nav-item">
-        <span>◈</span>
-        <span>Risk Intelligence</span>
-      </a>
+    let title;
+    let description;
+    let recovery;
 
-      <a href="#actions" class="nav-item">
-        <span>⚡</span>
-        <span>AI Actions</span>
-      </a>
+    if (c < 2.8) {
 
-      <a href="#forecast" class="nav-item">
-        <span>↗</span>
-        <span>Revenue Forecast</span>
-      </a>
+      title = "Recover high-intent lost conversions";
 
-      <a href="#simulator" class="nav-item">
-        <span>◇</span>
-        <span>What-If Simulator</span>
-      </a>
+      description =
+        "Prioritize checkout recovery and fast-response workflows before increasing acquisition spend.";
 
-      <a href="#analyst" class="nav-item">
-        <span>✦</span>
-        <span>AI Analyst</span>
-      </a>
+      recovery = Math.round(
+        nexusState.recoverableRevenue * .30
+      );
 
-    </nav>
+    } else if (ca > 9) {
 
-    <div class="sidebar-bottom">
+      title = "Reduce cancellation leakage";
 
-      <div class="system-status">
+      description =
+        "Focus on retention, cancellation prevention and proactive customer intervention.";
 
-        <span class="status-dot"></span>
+      recovery = Math.round(
+        nexusState.recoverableRevenue * .25
+      );
 
-        <div>
-          <strong>INTELLIGENCE ENGINE</strong>
-          <small>ONLINE · V8.0</small>
-        </div>
+    } else if (f > 12) {
 
-      </div>
+      title = "Stabilize fulfillment performance";
 
-    </div>
+      description =
+        "Reduce SLA pressure and prioritize delayed orders before they become churn events.";
 
-  </aside>
+      recovery = Math.round(
+        nexusState.recoverableRevenue * .22
+      );
 
+    } else if (r > 30) {
 
-  <!-- =====================================================
-       MAIN CONTENT
-  ====================================================== -->
+      title = "Accelerate customer response";
 
-  <main class="main-content">
+      description =
+        "Prioritize slow-response conversations and automate first-touch engagement.";
 
-    <!-- TOPBAR -->
+      recovery = Math.round(
+        nexusState.recoverableRevenue * .18
+      );
 
-    <header class="topbar">
+    } else {
 
-      <div>
+      title = "Optimize healthy revenue growth";
 
-        <div class="eyebrow">
-          NEXUS COMMAND AI · V8.0
-        </div>
+      description =
+        "Signals are stable. Focus on improving conversion while protecting customer experience.";
 
-        <h1>
-          Enterprise
-          <span>Decision Intelligence</span>
-        </h1>
+      recovery = Math.round(
+        nexusState.recoverableRevenue * .15
+      );
+    }
 
-        <p class="top-description">
-          Detect revenue risk. Discover recovery opportunities.
-          Make faster executive decisions.
-        </p>
+    if ($("decisionTitle"))
+      $("decisionTitle").textContent = title;
 
-      </div>
+    if ($("decisionDescription"))
+      $("decisionDescription").textContent = description;
 
-      <div class="topbar-actions">
+    if ($("decisionRecovery"))
+      $("decisionRecovery").textContent = money(recovery);
 
-        <div class="live-indicator">
-          <span></span>
-          LIVE INTELLIGENCE
-        </div>
+    if ($("decisionConfidence"))
+      $("decisionConfidence").textContent =
+        Math.round(78 + nexusState.healthScore * .12) + "%";
 
-        <div class="command-avatar">
-          NX
-        </div>
+    if ($("confidenceValue"))
+      $("confidenceValue").textContent =
+        Math.round(75 + nexusState.healthScore * .16) + "%";
+  }
 
-      </div>
+  /* =========================
+     BUSINESS RISK SCANNER
+  ========================= */
 
-    </header>
+  window.investigateRisk = function () {
 
+    nexusState.scanCount++;
 
-    <!-- DEMO NOTICE -->
+    toast(
+      "NEXUS is scanning live business signals...",
+      "warning"
+    );
 
-    <div class="demo-notice">
+    setTimeout(() => {
 
-      <strong>V8 ENTERPRISE DEMO</strong>
+      updateDashboard();
 
-      <span>
-        Simulation environment · Financial values are estimates
-        until connected to real business data.
-      </span>
+      const health = nexusState.healthScore;
 
-    </div>
+      toast(
+        `Scan complete — Business Health ${health}/100`,
+        health < 50 ? "danger" : "success"
+      );
 
+      const panel = $("signals");
 
-    <!-- =====================================================
-         COMMAND HERO
-    ====================================================== -->
+      if (panel) {
 
-    <section class="command-hero" id="command">
+        panel.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+      }
 
-      <div class="hero-content">
+    }, 900);
+  };
 
-        <div class="hero-kicker">
-          AUTONOMOUS REVENUE SIGNAL ENGINE
-        </div>
+  /* =========================
+     EXECUTE RECOMMENDED AI ACTION
+  ========================= */
 
-        <h2>
-          Find the revenue
-          <span>your business is losing.</span>
-        </h2>
+  window.executeAction = function () {
 
-        <p>
-          NEXUS correlates conversion, cancellation,
-          fulfillment and response signals to identify
-          hidden revenue exposure and prioritize recovery.
-        </p>
+    nexusState.actionsExecuted++;
 
-        <div class="hero-actions">
+    const recovery =
+      Math.round(
+        nexusState.recoverableRevenue * .12
+      );
 
-          <button
-            class="primary-button"
-            onclick="investigateRisk()"
-          >
-            Investigate Business Risk →
-          </button>
+    const result =
+      $("actionResult");
 
-          <button
-            class="secondary-button"
-            onclick="executeAction()"
-          >
-            Generate AI Action
-          </button>
+    if (result) {
 
-        </div>
+      result.textContent =
+        `AI strategy executed successfully. Estimated recovery opportunity: ${money(recovery)}.`;
 
-      </div>
+      result.classList.add("nexus-pulse");
 
+      setTimeout(() => {
+        result.classList.remove("nexus-pulse");
+      }, 600);
+    }
 
-      <div class="hero-score">
+    toast(
+      "AI strategy executed successfully.",
+      "success"
+    );
+  };
 
-        <div class="score-label">
-          BUSINESS HEALTH
-        </div>
+  /* =========================
+     ACTION CENTER
+  ========================= */
 
-        <div
-          class="big-score"
-          id="healthScore"
-        >
-          78
-        </div>
+  window.runAction = function (type) {
 
-        <div class="score-status">
-          <span></span>
-          <strong id="healthStatus">
-            SYSTEM STABLE
-          </strong>
-        </div>
+    const actions = {
 
-      </div>
+      recovery: {
+        title: "Abandoned Demand Recovery",
+        message:
+          "Recovery workflow activated for high-intent prospects."
+      },
 
-    </section>
+      response: {
+        title: "Response Leakage Reduction",
+        message:
+          "Priority response workflow activated."
+      },
 
+      fulfillment: {
+        title: "Fulfillment Stabilization",
+        message:
+          "SLA risk monitoring and intervention workflow activated."
+      }
 
-    <!-- =====================================================
-         EXECUTIVE ALERT
-    ====================================================== -->
+    };
 
-    <section class="executive-alert">
+    const action = actions[type];
 
-      <div class="alert-symbol">
-        !
-      </div>
+    if (!action) return;
 
-      <div class="alert-main">
+    nexusState.actionsExecuted++;
 
-        <div class="alert-kicker">
-          EARLY WARNING SYSTEM
-        </div>
+    if ($("actionResult")) {
 
-        <h3 id="alertTitle">
-          Revenue exposure detected across multiple signals.
-        </h3>
+      $("actionResult").textContent =
+        `${action.title}: ${action.message}`;
 
-        <p id="alertDescription">
-          Adjust the live signals below to simulate different
-          business conditions.
-        </p>
+      $("actionResult").classList.add(
+        "nexus-pulse"
+      );
 
-      </div>
+      setTimeout(() => {
+        $("actionResult").classList.remove(
+          "nexus-pulse"
+        );
+      }, 600);
+    }
 
-      <div class="alert-confidence">
+    toast(
+      action.message,
+      "success"
+    );
+  };
 
-        <small>AI CONFIDENCE</small>
+  /* =========================
+     LIVE SIGNAL CONTROLS
+  ========================= */
 
-        <strong id="confidenceValue">
-          91%
-        </strong>
+  function connectSignal(inputId, key) {
 
-      </div>
+    const input = $(inputId);
 
-    </section>
+    if (!input) return;
 
+    input.addEventListener("input", () => {
 
-    <!-- =====================================================
-         KPI GRID
-    ====================================================== -->
+      nexusState.signals[key] =
+        Number(input.value);
 
-    <section class="kpi-grid">
+      updateDashboard();
+    });
+  }
 
-      <div class="kpi-card">
+  connectSignal(
+    "conversionInput",
+    "conversion"
+  );
 
-        <div class="kpi-top">
-          <span>REVENUE AT RISK</span>
-          <b class="risk-badge">HIGH</b>
-        </div>
+  connectSignal(
+    "cancellationInput",
+    "cancellation"
+  );
 
-        <strong id="revenueRisk">
-          $2.40M
-        </strong>
+  connectSignal(
+    "fulfillmentInput",
+    "fulfillment"
+  );
 
-        <small>
-          Estimated financial exposure
-        </small>
+  connectSignal(
+    "responseInput",
+    "response"
+  );
 
-      </div>
+  /* =========================
+     WHAT-IF SIMULATOR
+  ========================= */
 
+  function updateSimulator() {
 
-      <div class="kpi-card">
+    const conversion =
+      Number(
+        $("targetConversion")?.value || 4.2
+      );
 
-        <div class="kpi-top">
-          <span>RECOVERABLE REVENUE</span>
-          <b class="opportunity-badge">OPPORTUNITY</b>
-        </div>
+    const cancellation =
+      Number(
+        $("targetCancellation")?.value || 5
+      );
 
-        <strong id="recoverableRevenue">
-          $730K
-        </strong>
+    if ($("targetConversionValue"))
+      $("targetConversionValue").textContent =
+        conversion.toFixed(2) + "%";
 
-        <small>
-          Estimated recovery potential
-        </small>
+    if ($("targetCancellationValue"))
+      $("targetCancellationValue").textContent =
+        cancellation.toFixed(1) + "%";
 
-      </div>
+    let simulated =
+      100;
 
+    simulated -=
+      Math.max(
+        0,
+        (4.5 - conversion) * 7
+      );
 
-      <div class="kpi-card">
+    simulated -=
+      cancellation * 1.1;
 
-        <div class="kpi-top">
-          <span>CUSTOMERS AT RISK</span>
-          <b class="risk-badge">WATCH</b>
-        </div>
+    simulated -=
+      nexusState.signals.fulfillment * .35;
 
-        <strong id="customersRisk">
-          18,420
-        </strong>
+    simulated -=
+      nexusState.signals.response * .12;
 
-        <small>
-          Behavioral risk exposure
-        </small>
+    simulated = Math.round(
+      Math.max(
+        20,
+        Math.min(99, simulated)
+      )
+    );
 
-      </div>
+    if ($("simulatedHealth"))
+      $("simulatedHealth").textContent =
+        simulated;
+  }
 
+  $("targetConversion")?.addEventListener(
+    "input",
+    updateSimulator
+  );
 
-      <div class="kpi-card">
+  $("targetCancellation")?.addEventListener(
+    "input",
+    updateSimulator
+  );
 
-        <div class="kpi-top">
-          <span>BUSINESS HEALTH</span>
+  /* =========================
+     AI ANALYST
+  ========================= */
 
-          <b
-            id="healthBadge"
-            class="attention-badge"
-          >
-            ATTENTION
-          </b>
+  window.askAnalyst = function () {
 
-        </div>
+    const input = $("analystInput");
+    const response = $("aiResponse");
 
-        <div class="health-inline">
+    if (!input || !response) return;
 
-          <strong id="healthText">
-            Good
-          </strong>
+    const question =
+      input.value.trim().toLowerCase();
 
-          <span>
-            Dynamic intelligence score
-          </span>
+    if (!question) {
 
-        </div>
+      response.textContent =
+        "Ask me about revenue risk, recovery, customers or your next best action.";
 
-      </div>
+      toast(
+        "Enter a question for NEXUS.",
+        "warning"
+      );
 
-    </section>
+      return;
+    }
 
+    let answer;
 
-    <!-- =====================================================
-         LIVE SIGNALS
-    ====================================================== -->
+    if (
+      question.includes("risk") ||
+      question.includes("danger")
+    ) {
 
-    <section class="panel" id="signals">
+      answer =
+        `Current business risk is ${nexusState.riskScore}/100. The highest priority signal is ${getTopRisk()}.`;
 
-      <div class="section-heading">
+    } else if (
+      question.includes("revenue") ||
+      question.includes("money")
+    ) {
 
-        <div>
-          <label>LIVE SIGNAL INTELLIGENCE</label>
+      answer =
+        `Estimated revenue at risk is ${money(nexusState.revenueAtRisk)}, with approximately ${money(nexusState.recoverableRevenue)} potentially recoverable.`;
 
-          <h2>
-            What is changing inside the business?
-          </h2>
-        </div>
+    } else if (
+      question.includes("focus") ||
+      question.includes("first") ||
+      question.includes("action")
+    ) {
 
-        <span class="live-tag">
-          ● LIVE
-        </span>
+      answer =
+        `Your next best move is: ${$("decisionTitle")?.textContent || "prioritize the highest-risk revenue signal"}.`;
 
-      </div>
+    } else if (
+      question.includes("customer")
+    ) {
 
+      answer =
+        `${nexusState.customersAtRisk.toLocaleString()} customers are currently estimated to be exposed to behavioral risk.`;
 
-      <div class="signal-grid">
+    } else {
 
+      answer =
+        `NEXUS recommends focusing on ${getTopRisk()} first. Current business health is ${nexusState.healthScore}/100.`;
+    }
 
-        <!-- CONVERSION -->
+    response.textContent = answer;
 
-        <div class="signal-card">
+    response.classList.add(
+      "nexus-pulse"
+    );
 
-          <div class="signal-card-top">
+    setTimeout(() => {
+      response.classList.remove(
+        "nexus-pulse"
+      );
+    }, 600);
 
-            <span>CONVERSION</span>
+    toast(
+      "NEXUS analysis generated.",
+      "success"
+    );
+  };
 
-            <b id="conversionStatus">
-              CRITICAL
-            </b>
+  function getTopRisk() {
 
-          </div>
+    const signals = [
+      {
+        name: "conversion decline",
+        score:
+          Math.max(0, 4 - nexusState.signals.conversion) * 10
+      },
+      {
+        name: "cancellation leakage",
+        score:
+          nexusState.signals.cancellation
+      },
+      {
+        name: "fulfillment delays",
+        score:
+          nexusState.signals.fulfillment
+      },
+      {
+        name: "response delay",
+        score:
+          nexusState.signals.response * .35
+      }
+    ];
 
-          <strong id="conversionValue">
-            2.84%
-          </strong>
+    signals.sort(
+      (a, b) => b.score - a.score
+    );
 
-          <input
-            id="conversionInput"
-            type="range"
-            min="0.5"
-            max="6"
-            step="0.01"
-            value="2.84"
-          >
+    return signals[0].name;
+  }
 
-          <small>
-            Checkout performance
-          </small>
+  /* =========================
+     ENTER KEY FOR AI ANALYST
+  ========================= */
 
-        </div>
+  $("analystInput")?.addEventListener(
+    "keydown",
+    event => {
 
+      if (event.key === "Enter") {
+        event.preventDefault();
+        window.askAnalyst();
+      }
 
-        <!-- CANCELLATION -->
+    }
+  );
 
-        <div class="signal-card">
+  /* =========================
+     SMOOTH NAVIGATION
+  ========================= */
 
-          <div class="signal-card-top">
+  document
+    .querySelectorAll('a[href^="#"]')
+    .forEach(link => {
 
-            <span>CANCELLATION</span>
+      link.addEventListener(
+        "click",
+        event => {
 
-            <b id="cancellationStatus">
-              HIGH
-            </b>
+          const id =
+            link.getAttribute("href");
 
-          </div>
+          if (!id || id === "#") return;
 
-          <strong id="cancellationValue">
-            8.7%
-          </strong>
+          const target =
+            document.querySelector(id);
 
-          <input
-            id="cancellationInput"
-            type="range"
-            min="0"
-            max="20"
-            step="0.1"
-            value="8.7"
-          >
+          if (!target) return;
 
-          <small>
-            Order cancellation signal
-          </small>
+          event.preventDefault();
 
-        </div>
+          target.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+          });
+        }
+      );
 
+    });
 
-        <!-- FULFILLMENT -->
+  /* =========================
+     SCROLL SPY
+  ========================= */
 
-        <div class="signal-card">
+  const sections =
+    document.querySelectorAll(
+      "section[id]"
+    );
 
-          <div class="signal-card-top">
+  const navLinks =
+    document.querySelectorAll(
+      ".nav-item"
+    );
 
-            <span>FULFILLMENT</span>
+  window.addEventListener(
+    "scroll",
+    () => {
 
-            <b id="fulfillmentStatus">
-              HIGH
-            </b>
+      let current = "";
 
-          </div>
+      sections.forEach(section => {
 
-          <strong id="fulfillmentValue">
-            12.4%
-          </strong>
+        const top =
+          section.offsetTop - 180;
 
-          <input
-            id="fulfillmentInput"
-            type="range"
-            min="0"
-            max="30"
-            step="0.1"
-            value="12.4"
-          >
+        if (
+          window.scrollY >= top
+        ) {
+          current = section.id;
+        }
 
-          <small>
-            Delivery SLA exposure
-          </small>
+      });
 
-        </div>
+      navLinks.forEach(link => {
 
+        link.classList.remove(
+          "active"
+        );
 
-        <!-- RESPONSE -->
+        if (
+          link.getAttribute("href") ===
+          "#" + current
+        ) {
 
-        <div class="signal-card">
+          link.classList.add(
+            "active"
+          );
+        }
 
-          <div class="signal-card-top">
+      });
 
-            <span>RESPONSE TIME</span>
+    },
+    { passive: true }
+  );
 
-            <b id="responseStatus">
-              WATCH
-            </b>
+  /* =========================
+     INITIALIZE
+  ========================= */
 
-          </div>
-
-          <strong id="responseValue">
-            +31%
-          </strong>
-
-          <input
-            id="responseInput"
-            type="range"
-            min="0"
-            max="100"
-            step="1"
-            value="31"
-          >
-
-          <small>
-            Customer response delay
-          </small>
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- =====================================================
-         RISK INTELLIGENCE + AI DECISION
-    ====================================================== -->
-
-    <section class="two-column" id="risk">
-
-
-      <!-- RISK -->
-
-      <div class="panel">
-
-        <div class="section-heading">
-
-          <div>
-
-            <label>RISK INTELLIGENCE</label>
-
-            <h2>
-              Where revenue is exposed
-            </h2>
-
-          </div>
-
-        </div>
-
-
-        <div class="risk-list">
-
-
-          <div class="risk-row">
-
-            <span class="risk-dot critical"></span>
-
-            <div>
-              <strong>Conversion Decline</strong>
-              <small>Checkout performance</small>
-            </div>
-
-            <b id="conversionExposure">
-              $840K
-            </b>
-
-            <em>CRITICAL</em>
-
-          </div>
-
-
-          <div class="risk-row">
-
-            <span class="risk-dot high"></span>
-
-            <div>
-              <strong>Fulfillment Delays</strong>
-              <small>Delivery SLA</small>
-            </div>
-
-            <b id="fulfillmentExposure">
-              $520K
-            </b>
-
-            <em>HIGH</em>
-
-          </div>
-
-
-          <div class="risk-row">
-
-            <span class="risk-dot medium"></span>
-
-            <div>
-              <strong>Cancellation Leakage</strong>
-              <small>Order retention</small>
-            </div>
-
-            <b id="cancellationExposure">
-              $390K
-            </b>
-
-            <em>MEDIUM</em>
-
-          </div>
-
-
-          <div class="risk-row">
-
-            <span class="risk-dot watch"></span>
-
-            <div>
-              <strong>Response Delay</strong>
-              <small>Customer engagement</small>
-            </div>
-
-            <b id="responseExposure">
-              $250K
-            </b>
-
-            <em>WATCH</em>
-
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <!-- AI DECISION -->
-
-      <div class="panel ai-decision-panel">
-
-        <div class="section-heading">
-
-          <div>
-
-            <label>AI DECISION ENGINE</label>
-
-            <h2>
-              Highest-value next move
-            </h2>
-
-          </div>
-
-          <span class="ai-badge">
-            AI
-          </span>
-
-        </div>
-
-
-        <div class="decision-box">
-
-          <div class="decision-icon">
-            ⚡
-          </div>
-
-          <div>
-
-            <strong id="decisionTitle">
-              Recover high-intent lost conversions
-            </strong>
-
-            <p id="decisionDescription">
-              Prioritize checkout recovery and fast-response
-              workflows before increasing acquisition spend.
-            </p>
-
-          </div>
-
-        </div>
-
-
-        <div class="decision-metrics">
-
-          <div>
-
-            <span>PRIORITY RECOVERY</span>
-
-            <strong id="decisionRecovery">
-              $150K
-            </strong>
-
-          </div>
-
-          <div>
-
-            <span>CONFIDENCE</span>
-
-            <strong id="decisionConfidence">
-              87%
-            </strong>
-
-          </div>
-
-        </div>
-
-
-        <button
-          class="full-button"
-          onclick="executeAction()"
-        >
-          Execute Recommended Strategy →
-        </button>
-
-      </div>
-
-    </section>
-
-
-    <!-- =====================================================
-         AI ACTIONS
-    ====================================================== -->
-
-    <section class="panel" id="actions">
-
-      <div class="section-heading">
-
-        <div>
-
-          <label>AI ACTION CENTER</label>
-
-          <h2>
-            Turn intelligence into execution.
-          </h2>
-
-        </div>
-
-      </div>
-
-
-      <div class="action-grid">
-
-
-        <div class="action-card">
-
-          <div class="action-number">
-            01
-          </div>
-
-          <div>
-
-            <strong>
-              Recover Abandoned Demand
-            </strong>
-
-            <p>
-              Trigger targeted recovery workflows for
-              high-intent prospects.
-            </p>
-
-          </div>
-
-          <button onclick="runAction('recovery')">
-            Run Action
-          </button>
-
-        </div>
-
-
-        <div class="action-card">
-
-          <div class="action-number">
-            02
-          </div>
-
-          <div>
-
-            <strong>
-              Reduce Response Leakage
-            </strong>
-
-            <p>
-              Prioritize slow-response conversations and
-              automate first-touch engagement.
-            </p>
-
-          </div>
-
-          <button onclick="runAction('response')">
-            Run Action
-          </button>
-
-        </div>
-
-
-        <div class="action-card">
-
-          <div class="action-number">
-            03
-          </div>
-
-          <div>
-
-            <strong>
-              Stabilize Fulfillment
-            </strong>
-
-            <p>
-              Identify SLA pressure before it becomes
-              customer churn.
-            </p>
-
-          </div>
-
-          <button onclick="runAction('fulfillment')">
-            Run Action
-          </button>
-
-        </div>
-
-      </div>
-
-
-      <div
-        class="action-result"
-        id="actionResult"
-      >
-        AI action center ready.
-      </div>
-
-    </section>
-
-
-    <!-- =====================================================
-         REVENUE FORECAST
-    ====================================================== -->
-
-    <section class="panel" id="forecast">
-
-      <div class="section-heading">
-
-        <div>
-
-          <label>REVENUE FORECAST</label>
-
-          <h2>
-            Recovery opportunity over the next cycle.
-          </h2>
-
-        </div>
-
-      </div>
-
-
-      <div class="forecast-grid">
-
-        <div class="forecast-main">
-
-          <span>
-            PROJECTED RECOVERABLE VALUE
-          </span>
-
-          <strong id="forecastNumber">
-            $730K
-          </strong>
-
-          <p>
-            Dynamic estimate based on current signal
-            conditions and recovery probability.
-          </p>
-
-        </div>
-
-
-        <div class="forecast-progress">
-
-          <div class="progress-header">
-
-            <span>
-              RECOVERY POTENTIAL
-            </span>
-
-            <strong id="recoveryPercent">
-              30%
-            </strong>
-
-          </div>
-
-          <div class="progress-track">
-
-            <div
-              id="recoveryProgress"
-              class="progress-bar"
-              style="width:30%"
-            ></div>
-
-          </div>
-
-          <small>
-            Higher risk creates a larger intervention
-            opportunity.
-          </small>
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- =====================================================
-         WHAT IF SIMULATOR
-    ====================================================== -->
-
-    <section class="panel" id="simulator">
-
-      <div class="section-heading">
-
-        <div>
-
-          <label>WHAT-IF SIMULATOR</label>
-
-          <h2>
-            See what happens if the business improves.
-          </h2>
-
-        </div>
-
-        <span class="simulation-tag">
-          SIMULATION
-        </span>
-
-      </div>
-
-
-      <div class="simulator-grid">
-
-
-        <div class="simulator-control">
-
-          <label>
-            TARGET CONVERSION
-          </label>
-
-          <div class="simulator-value">
-            <strong id="targetConversionValue">
-              4.20%
-            </strong>
-          </div>
-
-          <input
-            id="targetConversion"
-            type="range"
-            min="1"
-            max="6"
-            step="0.01"
-            value="4.2"
-          >
-
-        </div>
-
-
-        <div class="simulator-control">
-
-          <label>
-            TARGET CANCELLATION
-          </label>
-
-          <div class="simulator-value">
-            <strong id="targetCancellationValue">
-              5.0%
-            </strong>
-          </div>
-
-          <input
-            id="targetCancellation"
-            type="range"
-            min="0"
-            max="20"
-            step="0.1"
-            value="5"
-          >
-
-        </div>
-
-
-        <div class="simulator-result">
-
-          <span>
-            SIMULATED HEALTH
-          </span>
-
-          <strong id="simulatedHealth">
-            91
-          </strong>
-
-          <small>
-            Compared with current business conditions.
-          </small>
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- =====================================================
-         AI ANALYST
-    ====================================================== -->
-
-    <section class="panel analyst-panel" id="analyst">
-
-      <div class="section-heading">
-
-        <div>
-
-          <label>AI ANALYST</label>
-
-          <h2>
-            Ask NEXUS what to do next.
-          </h2>
-
-        </div>
-
-        <span class="ai-badge">
-          ONLINE
-        </span>
-
-      </div>
-
-
-      <div class="analyst-box">
-
-        <div class="analyst-icon">
-          NX
-        </div>
-
-        <div class="analyst-content">
-
-          <p id="aiResponse">
-            I am monitoring your business signals.
-            Ask me about revenue risk, recovery,
-            customers or your next best action.
-          </p>
-
-          <div class="analyst-input-row">
-
-            <input
-              id="analystInput"
-              type="text"
-              placeholder="Ask: Where should I focus first?"
-              autocomplete="off"
-            >
-
-            <button onclick="askAnalyst()">
-              Ask NEXUS →
-            </button>
-
-          </div>
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- =====================================================
-         FOOTER
-    ====================================================== -->
-
-    <footer class="footer">
-
-      <div>
-        NEXUS COMMAND AI · V8.0
-      </div>
-
-      <span>
-        Enterprise Revenue Intelligence Demonstration
-      </span>
-
-      <span>
-        © 2026 NEXUS
-      </span>
-
-    </footer>
-
-  </main>
-
-</div>
-
-
-
-
-<script src="script.js"></script>
-
-</body>
-</html>
+  updateDashboard();
+ 
