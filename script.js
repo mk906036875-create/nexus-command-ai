@@ -1,13 +1,12 @@
-/* =========================================================
-   NEXUS COMMAND AI — V10.1
-   CEO EDITION
-   LIVE SIMULATION + EXECUTIVE LEAD FORM
+ /* =========================================================
+   NEXUS COMMAND AI — V10.2
+   EXECUTIVE INTELLIGENCE EDITION
+   Dynamic Revenue Intelligence + What-If Engine
 ========================================================= */
 
 document.addEventListener("DOMContentLoaded", () => {
-
   updateDashboard();
-
+  runSimulation(false);
 });
 
 
@@ -15,18 +14,18 @@ document.addEventListener("DOMContentLoaded", () => {
    HELPERS
 ========================= */
 
-function $(id){
+function $(id) {
   return document.getElementById(id);
 }
 
 
-function money(value){
+function money(value) {
 
-  if(value >= 1000000){
+  if (value >= 1000000) {
     return "$" + (value / 1000000).toFixed(2) + "M";
   }
 
-  if(value >= 1000){
+  if (value >= 1000) {
     return "$" + Math.round(value / 1000) + "K";
   }
 
@@ -38,118 +37,135 @@ function money(value){
    DASHBOARD ENGINE
 ========================= */
 
-function updateDashboard(){
+function updateDashboard() {
 
-  const conversion =
-    parseFloat($("conversion").value);
-
-  const cancellation =
-    parseFloat($("cancellation").value);
-
-  const fulfillment =
-    parseFloat($("fulfillment").value);
-
-  const response =
-    parseFloat($("response").value);
+  const conversion = parseFloat($("conversion").value);
+  const cancellation = parseFloat($("cancellation").value);
+  const fulfillment = parseFloat($("fulfillment").value);
+  const response = parseFloat($("response").value);
 
 
-  /* HEALTH MODEL */
+  /* =========================
+     BUSINESS HEALTH
+  ========================= */
 
   let health = 100;
 
-  health -= Math.max(
-    0,
-    (4 - conversion) * 8
-  );
-
+  health -= Math.max(0, (4 - conversion) * 8);
   health -= cancellation * 1.4;
-
-  health -= fulfillment * .7;
-
-  health -= response * .22;
+  health -= fulfillment * 0.7;
+  health -= response * 0.22;
 
   health = Math.round(
-    Math.max(
-      20,
-      Math.min(98, health)
-    )
+    Math.max(20, Math.min(98, health))
   );
 
 
   const risk = 100 - health;
 
 
-  /* FINANCIAL MODEL */
+  /* =========================
+     REVENUE INTELLIGENCE
+  ========================= */
 
-  const revenueRisk =
-    Math.round(
-      1800000 + risk * 18000
-    );
+  const baseRevenueRisk = 1800000;
 
-  const recoverable =
-    Math.round(
-      revenueRisk *
-      (.20 + risk / 500)
-    );
-
-  const customers =
-    Math.round(
-      9000 + risk * 130
-    );
+  const revenueRisk = Math.round(
+    baseRevenueRisk + risk * 18000
+  );
 
 
-  /* KPI */
+  const recoveryRate = Math.min(
+    0.48,
+    0.20 + risk / 500
+  );
+
+
+  const recoverable = Math.round(
+    revenueRisk * recoveryRate
+  );
+
+
+  const customers = Math.round(
+    9000 + risk * 130
+  );
+
+
+  const recoveryPriority = Math.round(
+    recoverable * 0.25
+  );
+
+
+  /* =========================
+     KPI UPDATE
+  ========================= */
 
   $("healthScore").textContent = health;
 
   $("healthBar").style.width =
     health + "%";
 
+
   $("revenueRisk").textContent =
     money(revenueRisk);
 
+
   $("recoverable").textContent =
     money(recoverable);
+
 
   $("customers").textContent =
     customers.toLocaleString();
 
 
-  /* HEALTH */
+  $("priorityRecovery").textContent =
+    money(recoveryPriority);
 
-  if(health >= 75){
+
+  /* =========================
+     HEALTH STATUS
+  ========================= */
+
+  if (health >= 80) {
 
     $("healthStatus").textContent =
       "SYSTEM STABLE";
 
-  }else if(health >= 50){
+  } else if (health >= 60) {
 
     $("healthStatus").textContent =
       "ATTENTION REQUIRED";
 
-  }else{
+  } else {
 
     $("healthStatus").textContent =
       "HIGH RISK";
   }
 
 
-  /* SIGNAL VALUES */
+  /* =========================
+     SIGNAL VALUES
+  ========================= */
 
   $("conversionValue").textContent =
     conversion.toFixed(2) + "%";
 
+
   $("cancelValue").textContent =
     cancellation.toFixed(1) + "%";
 
+
   $("fulfillValue").textContent =
     fulfillment.toFixed(1) + "%";
+
 
   $("responseValue").textContent =
     response.toFixed(0) + "%";
 
 
-  /* SIGNAL STATUS */
+  /* =========================
+     SIGNAL STATUS
+  ========================= */
 
   $("conversionStatus").textContent =
     conversion < 2.5
@@ -187,13 +203,15 @@ function updateDashboard(){
       : "STABLE";
 
 
-  /* AI DECISION */
+  /* =========================
+     AI DECISION ENGINE
+  ========================= */
 
   let decision =
     "Optimize healthy revenue growth";
 
   let decisionText =
-    "Signals are stable. Focus on conversion and retention.";
+    "Signals are stable. Focus on conversion, retention and controlled growth.";
 
   let priority =
     "MEDIUM";
@@ -202,13 +220,13 @@ function updateDashboard(){
     "Growth optimization";
 
 
-  if(conversion < 2.8){
+  if (conversion < 2.8) {
 
     decision =
       "Recover high-intent conversions";
 
     decisionText =
-      "Prioritize checkout recovery before increasing acquisition spend.";
+      "Checkout friction is creating revenue exposure. Prioritize conversion recovery before increasing acquisition spend.";
 
     priority =
       "HIGH";
@@ -216,13 +234,14 @@ function updateDashboard(){
     priorityText =
       "Conversion recovery";
 
-  }else if(cancellation > 9){
+
+  } else if (cancellation > 9) {
 
     decision =
       "Reduce cancellation leakage";
 
     decisionText =
-      "Focus on retention and proactive cancellation prevention.";
+      "Customer cancellations are creating avoidable revenue loss. Activate proactive retention actions.";
 
     priority =
       "HIGH";
@@ -230,13 +249,14 @@ function updateDashboard(){
     priorityText =
       "Retention recovery";
 
-  }else if(fulfillment > 12){
+
+  } else if (fulfillment > 12) {
 
     decision =
       "Stabilize fulfillment performance";
 
     decisionText =
-      "Reduce SLA pressure before it becomes customer churn.";
+      "Fulfillment pressure may increase customer churn. Reduce SLA risk before scaling demand.";
 
     priority =
       "HIGH";
@@ -244,63 +264,164 @@ function updateDashboard(){
     priorityText =
       "Fulfillment recovery";
 
+
+  } else if (response > 40) {
+
+    decision =
+      "Accelerate response operations";
+
+    decisionText =
+      "Slow response performance is creating potential customer and revenue leakage.";
+
+    priority =
+      "MEDIUM";
+
+    priorityText =
+      "Response optimization";
   }
 
 
   $("decision").textContent =
     decision;
 
+
   $("decisionText").textContent =
     decisionText;
+
 
   $("priority").textContent =
     priority;
 
+
   $("priorityText").textContent =
     priorityText;
 
-  $("priorityRecovery").textContent =
-    money(recoverable * .25);
 
+  /* =========================
+     AI CONFIDENCE
+  ========================= */
+
+  const confidence =
+    Math.round(
+      Math.max(
+        72,
+        Math.min(
+          97,
+          94 - risk * 0.08
+        )
+      )
+    );
+
+
+  if ($("confidence")) {
+
+    $("confidence").textContent =
+      confidence + "%";
+
+  }
 }
 
 
 /* =========================
-   LIVE SIMULATION
+   WHAT-IF SIMULATION
 ========================= */
 
-function runSimulation(showToast = true){
+function runSimulation(showToast = true) {
 
   const target =
-    parseFloat($("targetConversion").value);
+    parseFloat(
+      $("targetConversion").value
+    );
+
 
   $("targetValue").textContent =
     target.toFixed(2) + "%";
 
 
-  let simulated =
-    100 -
-    Math.max(0,(4.5-target)*10);
+  /* =========================
+     PROJECTED HEALTH
+  ========================= */
+
+  let simulatedHealth =
+    100 - Math.max(
+      0,
+      (4.5 - target) * 10
+    );
 
 
-  simulated =
+  simulatedHealth =
     Math.round(
-      Math.max(55,Math.min(98,simulated))
+      Math.max(
+        55,
+        Math.min(
+          98,
+          simulatedHealth
+        )
+      )
     );
 
 
   $("simHealth").textContent =
-    simulated;
+    simulatedHealth;
 
 
-  if(showToast){
+  /* =========================
+     REVENUE IMPACT
+  ========================= */
+
+  const currentConversion =
+    parseFloat(
+      $("conversion").value
+    );
+
+
+  const improvement =
+    Math.max(
+      0,
+      target - currentConversion
+    );
+
+
+  const monthlyRevenueOpportunity =
+    Math.round(
+      improvement * 185000
+    );
+
+
+  /* =========================
+     EXECUTIVE INSIGHT
+  ========================= */
+
+  let message;
+
+
+  if (improvement >= 1) {
+
+    message =
+      "Strong recovery scenario — conversion improvement could unlock approximately " +
+      money(monthlyRevenueOpportunity) +
+      " in additional monthly revenue potential.";
+
+  } else if (improvement >= 0.5) {
+
+    message =
+      "Positive recovery scenario — measurable revenue upside is available.";
+
+  } else {
+
+    message =
+      "Limited improvement — focus on fixing the highest-risk signal first.";
+  }
+
+
+  if (showToast) {
 
     showToastMessage(
-      "NEXUS simulation complete — executive scenario updated."
+      "NEXUS simulation complete — " +
+      message
     );
 
   }
-
 }
 
 
@@ -308,16 +429,19 @@ function runSimulation(showToast = true){
    EXECUTE STRATEGY
 ========================= */
 
-function executeStrategy(){
+function executeStrategy() {
 
   const button =
     document.querySelector(".execute");
 
+
   button.textContent =
     "✓ STRATEGY EXECUTED";
 
+
   button.style.background =
     "#75f5d5";
+
 
   showToastMessage(
     "AI strategy executed successfully in simulation mode."
@@ -329,11 +453,11 @@ function executeStrategy(){
     button.textContent =
       "EXECUTE RECOMMENDED STRATEGY →";
 
+
     button.style.background =
       "";
 
-  },3500);
-
+  }, 3500);
 }
 
 
@@ -341,34 +465,32 @@ function executeStrategy(){
    MODAL
 ========================= */
 
-function openLeadForm(){
+function openLeadForm() {
 
   $("leadModal").classList.add("show");
+
 
   setTimeout(() => {
 
     $("leadName").focus();
 
-  },100);
-
+  }, 100);
 }
 
 
-function closeLeadForm(){
+function closeLeadForm() {
 
   $("leadModal").classList.remove("show");
-
 }
 
 
-function closeOutside(event){
+function closeOutside(event) {
 
-  if(event.target === $("leadModal")){
+  if (event.target === $("leadModal")) {
 
     closeLeadForm();
 
   }
-
 }
 
 
@@ -376,7 +498,7 @@ function closeOutside(event){
    LEAD SUBMISSION
 ========================= */
 
-function submitLead(event){
+function submitLead(event) {
 
   event.preventDefault();
 
@@ -384,17 +506,25 @@ function submitLead(event){
   const name =
     $("leadName").value.trim();
 
+
   const company =
     $("leadCompany").value.trim();
 
+
   const email =
     $("leadEmail").value.trim();
+
 
   const interest =
     $("leadInterest").value;
 
 
-  if(!name || !company || !email || !interest){
+  if (
+    !name ||
+    !company ||
+    !email ||
+    !interest
+  ) {
 
     showToastMessage(
       "Please complete all executive request fields."
@@ -405,11 +535,9 @@ function submitLead(event){
 
 
   /*
-     DEMO MODE
-
-     This creates a mailto request.
-     Replace the email below with your
-     real business email.
+    IMPORTANT:
+    Replace this email with your
+    real business email.
   */
 
   const destination =
@@ -420,6 +548,7 @@ function submitLead(event){
     ) +
     "&body=" +
     encodeURIComponent(
+      "NEXUS COMMAND AI Executive Demo Request\n\n" +
       "Name: " + name +
       "\nCompany: " + company +
       "\nEmail: " + email +
@@ -437,7 +566,6 @@ function submitLead(event){
 
 
   closeLeadForm();
-
 }
 
 
@@ -445,21 +573,26 @@ function submitLead(event){
    TOAST
 ========================= */
 
-function showToastMessage(message){
+function showToastMessage(message) {
 
   const container =
     $("toast");
 
+
   container.innerHTML = "";
+
 
   const toast =
     document.createElement("div");
 
+
   toast.className =
     "toast";
 
+
   toast.textContent =
     message;
+
 
   container.appendChild(toast);
 
@@ -469,15 +602,14 @@ function showToastMessage(message){
     toast.style.opacity =
       "0";
 
-  },2800);
+  }, 2800);
 
 
   setTimeout(() => {
 
     toast.remove();
 
-  },3300);
-
+  }, 3300);
 }
 
 
@@ -489,7 +621,7 @@ document.addEventListener(
   "keydown",
   event => {
 
-    if(event.key === "Escape"){
+    if (event.key === "Escape") {
 
       closeLeadForm();
 
