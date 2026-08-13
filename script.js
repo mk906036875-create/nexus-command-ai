@@ -1,233 +1,341 @@
-/* =========================================================
-   NEXUS COMMAND AI — V8.1
-   ENTERPRISE AUTONOMOUS DECISION INTELLIGENCE ENGINE
-   WORKING INTERACTIVE SCRIPT
+ /* =========================================================
+   NEXUS COMMAND AI — V8.2
+   FULL WORKING INTERACTIVE ENGINE
 ========================================================= */
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  /* =========================
-     CORE STATE
-  ========================= */
-
-  const nexusState = {
-    riskScore: 68,
-    healthScore: 82,
-    revenueAtRisk: 2400000,
-    recoverableRevenue: 730000,
-    actionsExecuted: 0,
-    scanCount: 0
+  const state = {
+    conversion: 2.84,
+    cancellation: 8.7,
+    fulfillment: 12.4,
+    response: 31,
+    actions: 0
   };
 
+  const $ = id => document.getElementById(id);
+
   /* =========================
-     HELPERS
+     TOAST
   ========================= */
 
-  const $ = (selector) => document.querySelector(selector);
+  function toast(message) {
 
-  const $$ = (selector) => document.querySelectorAll(selector);
+    const old = document.querySelector(".nexus-toast");
+    if (old) old.remove();
 
-  function toast(message, type = "success") {
-    let existing = $(".nexus-toast");
+    const box = document.createElement("div");
 
-    if (!existing) {
-      existing = document.createElement("div");
-      existing.className = "nexus-toast";
-      document.body.appendChild(existing);
-    }
+    box.className = "nexus-toast";
+    box.textContent = message;
 
-    existing.textContent = message;
-
-    existing.style.cssText = `
+    box.style.cssText = `
       position:fixed;
       right:20px;
       bottom:20px;
       z-index:99999;
-      padding:15px 20px;
-      border-radius:12px;
       background:#101827;
-      color:#fff;
-      border:1px solid rgba(255,255,255,.15);
-      box-shadow:0 10px 35px rgba(0,0,0,.35);
-      font-weight:600;
-      max-width:360px;
-      animation:nexusToast .3s ease;
+      color:white;
+      padding:15px 20px;
+      border:1px solid #00e6b8;
+      border-radius:12px;
+      font-weight:700;
+      box-shadow:0 15px 40px rgba(0,0,0,.4);
+      transition:.3s;
     `;
 
-    if (type === "danger") {
-      existing.style.borderColor = "#ff4d6d";
-    }
-
-    if (type === "warning") {
-      existing.style.borderColor = "#ffb020";
-    }
+    document.body.appendChild(box);
 
     setTimeout(() => {
-      existing.style.opacity = "0";
-    }, 2800);
+      box.style.opacity = "0";
+    }, 2500);
 
-    setTimeout(() => {
-      existing.remove();
-    }, 3300);
+    setTimeout(() => box.remove(), 3000);
   }
 
-  function formatMoney(value) {
+  /* =========================
+     MONEY
+  ========================= */
+
+  function money(value) {
+
     if (value >= 1000000) {
       return "$" + (value / 1000000).toFixed(2) + "M";
     }
 
     if (value >= 1000) {
-      return "$" + (value / 1000).toFixed(0) + "K";
+      return "$" + Math.round(value / 1000) + "K";
     }
 
-    return "$" + value.toLocaleString();
-  }
-
-  function animateNumber(element, start, end, duration = 900) {
-    if (!element) return;
-
-    const startTime = performance.now();
-
-    function update(currentTime) {
-      const progress = Math.min(
-        (currentTime - startTime) / duration,
-        1
-      );
-
-      const value = Math.floor(
-        start + (end - start) * progress
-      );
-
-      element.textContent = value.toLocaleString();
-
-      if (progress < 1) {
-        requestAnimationFrame(update);
-      }
-    }
-
-    requestAnimationFrame(update);
+    return "$" + Math.round(value);
   }
 
   /* =========================
-     ADD TOAST ANIMATION
+     CALCULATE
   ========================= */
 
-  const style = document.createElement("style");
+  function calculate() {
 
-  style.textContent = `
-    @keyframes nexusToast {
-      from {
-        transform:translateY(20px);
-        opacity:0;
-      }
-      to {
-        transform:translateY(0);
-        opacity:1;
-      }
-    }
+    let health = 100;
 
-    .nexus-active {
-      transform:translateY(-2px);
-      transition:.25s ease;
-    }
-
-    .nexus-pulse {
-      animation:nexusPulse 1s ease;
-    }
-
-    @keyframes nexusPulse {
-      0% { transform:scale(1); }
-      50% { transform:scale(1.04); }
-      100% { transform:scale(1); }
-    }
-  `;
-
-  document.head.appendChild(style);
-
-  /* =========================
-     NAVIGATION
-  ========================= */
-
-  $$("a[href^='#']").forEach(link => {
-
-    link.addEventListener("click", (event) => {
-
-      const targetId = link.getAttribute("href");
-
-      if (!targetId || targetId === "#") return;
-
-      const target = document.querySelector(targetId);
-
-      if (target) {
-        event.preventDefault();
-
-        target.scrollIntoView({
-          behavior: "smooth",
-          block: "start"
-        });
-      }
-
-    });
-
-  });
-
-  /* =========================
-     SCROLL SPY
-  ========================= */
-
-  const sections = $$("section[id]");
-  const navLinks = $$("a[href^='#']");
-
-  window.addEventListener("scroll", () => {
-
-    let current = "";
-
-    sections.forEach(section => {
-
-      const top = section.offsetTop - 150;
-
-      if (window.scrollY >= top) {
-        current = section.id;
-      }
-
-    });
-
-    navLinks.forEach(link => {
-
-      link.classList.remove("active");
-
-      if (link.getAttribute("href") === "#" + current) {
-        link.classList.add("active");
-      }
-
-    });
-
-  });
-
-  /* =========================
-     BUSINESS RISK SCANNER
-  ========================= */
-
-  function runRiskScan() {
-
-    nexusState.scanCount++;
-
-    toast(
-      "NEXUS is scanning business signals...",
-      "warning"
+    health -= Math.max(
+      0,
+      (4 - state.conversion) * 8
     );
 
-    setTimeout(() => {
+    health -= state.cancellation * 1.4;
 
-      const riskChange =
-        Math.floor(Math.random() * 11) - 5;
+    health -= state.fulfillment * .7;
 
-      nexusState.riskScore = Math.max(
-        35,
-        Math.min(
-          92,
-          nexusState.riskScore + riskChange
-        )
+    health -= state.response * .22;
+
+    health = Math.round(
+      Math.max(
+        20,
+        Math.min(98, health)
+      )
+    );
+
+    const risk = 100 - health;
+
+    const revenueRisk =
+      Math.round(
+        1800000 + risk * 18000
       );
 
-      nexusState
+    const recoverable =
+      Math.round(
+        revenueRisk * (.20 + risk / 500)
+      );
+
+    const customers =
+      Math.round(
+        9000 + risk * 130
+      );
+
+    /* =========================
+       MAIN KPI
+    ========================= */
+
+    if ($("healthScore"))
+      $("healthScore").textContent = health;
+
+    if ($("revenueRisk"))
+      $("revenueRisk").textContent =
+        money(revenueRisk);
+
+    if ($("recoverableRevenue"))
+      $("recoverableRevenue").textContent =
+        money(recoverable);
+
+    if ($("customersRisk"))
+      $("customersRisk").textContent =
+        customers.toLocaleString();
+
+    if ($("forecastNumber"))
+      $("forecastNumber").textContent =
+        money(recoverable);
+
+    /* =========================
+       HEALTH STATUS
+    ========================= */
+
+    let status = "SYSTEM STABLE";
+    let healthText = "Good";
+
+    if (health < 70) {
+      status = "ATTENTION REQUIRED";
+      healthText = "Attention";
+    }
+
+    if (health < 50) {
+      status = "HIGH RISK";
+      healthText = "Critical";
+    }
+
+    if ($("healthStatus"))
+      $("healthStatus").textContent = status;
+
+    if ($("healthText"))
+      $("healthText").textContent = healthText;
+
+    if ($("healthBadge"))
+      $("healthBadge").textContent =
+        health >= 70 ? "STABLE" :
+        health >= 50 ? "ATTENTION" :
+        "CRITICAL";
+
+    /* =========================
+       SIGNAL VALUES
+    ========================= */
+
+    if ($("conversionValue"))
+      $("conversionValue").textContent =
+        state.conversion.toFixed(2) + "%";
+
+    if ($("cancellationValue"))
+      $("cancellationValue").textContent =
+        state.cancellation.toFixed(1) + "%";
+
+    if ($("fulfillmentValue"))
+      $("fulfillmentValue").textContent =
+        state.fulfillment.toFixed(1) + "%";
+
+    if ($("responseValue"))
+      $("responseValue").textContent =
+        "+" + state.response + "%";
+
+    /* =========================
+       SIGNAL STATUS
+    ========================= */
+
+    if ($("conversionStatus"))
+      $("conversionStatus").textContent =
+        state.conversion < 2.5 ? "CRITICAL" :
+        state.conversion < 3.5 ? "HIGH" :
+        "STABLE";
+
+    if ($("cancellationStatus"))
+      $("cancellationStatus").textContent =
+        state.cancellation > 10 ? "CRITICAL" :
+        state.cancellation > 7 ? "HIGH" :
+        state.cancellation > 4 ? "WATCH" :
+        "STABLE";
+
+    if ($("fulfillmentStatus"))
+      $("fulfillmentStatus").textContent =
+        state.fulfillment > 18 ? "CRITICAL" :
+        state.fulfillment > 10 ? "HIGH" :
+        state.fulfillment > 5 ? "WATCH" :
+        "STABLE";
+
+    if ($("responseStatus"))
+      $("responseStatus").textContent =
+        state.response > 50 ? "CRITICAL" :
+        state.response > 25 ? "WATCH" :
+        "STABLE";
+
+    /* =========================
+       RISK EXPOSURE
+    ========================= */
+
+    if ($("conversionExposure"))
+      $("conversionExposure").textContent =
+        money(revenueRisk * .30);
+
+    if ($("fulfillmentExposure"))
+      $("fulfillmentExposure").textContent =
+        money(revenueRisk * .20);
+
+    if ($("cancellationExposure"))
+      $("cancellationExposure").textContent =
+        money(revenueRisk * .15);
+
+    if ($("responseExposure"))
+      $("responseExposure").textContent =
+        money(revenueRisk * .10);
+
+    /* =========================
+       RECOVERY
+    ========================= */
+
+    const recovery =
+      Math.min(
+        85,
+        Math.round(20 + risk * .45)
+      );
+
+    if ($("recoveryPercent"))
+      $("recoveryPercent").textContent =
+        recovery + "%";
+
+    if ($("recoveryProgress"))
+      $("recoveryProgress").style.width =
+        recovery + "%";
+
+    /* =========================
+       AI DECISION
+    ========================= */
+
+    updateDecision(recoverable);
+
+    /* =========================
+       ALERT
+    ========================= */
+
+    if ($("alertTitle")) {
+
+      $("alertTitle").textContent =
+        risk >= 50
+        ? "High revenue exposure detected across multiple signals."
+        : risk >= 30
+        ? "Moderate revenue leakage is developing."
+        : "Business signals are operating within a healthy range.";
+    }
+
+    if ($("alertDescription")) {
+
+      $("alertDescription").textContent =
+        risk >= 50
+        ? "NEXUS recommends immediate intervention."
+        : "Continue monitoring live business signals.";
+    }
+  }
+
+  /* =========================
+     AI DECISION
+  ========================= */
+
+  function updateDecision(recoverable) {
+
+    let title;
+    let description;
+
+    if (state.conversion < 2.8) {
+
+      title = "Recover high-intent lost conversions";
+
+      description =
+        "Prioritize checkout recovery and fast-response workflows.";
+
+    } else if (state.cancellation > 9) {
+
+      title = "Reduce cancellation leakage";
+
+      description =
+        "Focus on retention and proactive cancellation prevention.";
+
+    } else if (state.fulfillment > 12) {
+
+      title = "Stabilize fulfillment performance";
+
+      description =
+        "Reduce SLA pressure before it becomes customer churn.";
+
+    } else {
+
+      title = "Optimize healthy revenue growth";
+
+      description =
+        "Signals are stable. Focus on conversion and retention.";
+    }
+
+    if ($("decisionTitle"))
+      $("decisionTitle").textContent = title;
+
+    if ($("decisionDescription"))
+      $("decisionDescription").textContent =
+        description;
+
+    if ($("decisionRecovery"))
+      $("decisionRecovery").textContent =
+        money(recoverable * .25);
+
+    if ($("decisionConfidence"))
+      $("decisionConfidence").textContent =
+        "87%";
+  }
+
+  /* =========================
+     RISK SCAN
+  =================
