@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>NEXUS COMMAND AI | Enterprise Signal Intelligence</title>
+  <title>NEXUS COMMAND AI | Revenue Intelligence</title>
 
   <meta
     name="description"
-    content="NEXUS COMMAND AI — Enterprise signal intelligence, risk detection and recovery decision platform."
+    content="NEXUS COMMAND AI — Revenue intelligence, business risk detection and recovery decision platform."
   >
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,9 +26,7 @@
 
 <div class="app-shell">
 
-  <!-- =====================================================
-       SIDEBAR
-  ====================================================== -->
+  <!-- SIDEBAR -->
 
   <aside class="sidebar">
 
@@ -44,7 +42,7 @@
         </div>
 
         <div class="brand-subtitle">
-          ENTERPRISE INTELLIGENCE
+          REVENUE INTELLIGENCE
         </div>
       </div>
 
@@ -58,9 +56,9 @@
         <span>Command Center</span>
       </a>
 
-      <a href="#signals" class="nav-item">
+      <a href="#scanner" class="nav-item">
         <span>◉</span>
-        <span>Live Signals</span>
+        <span>Revenue Scanner</span>
       </a>
 
       <a href="#risk" class="nav-item">
@@ -68,9 +66,9 @@
         <span>Risk Intelligence</span>
       </a>
 
-      <a href="#signal-lab" class="nav-item">
+      <a href="#signals" class="nav-item">
         <span>◌</span>
-        <span>Signal Lab</span>
+        <span>Signal Engine</span>
       </a>
 
       <a href="#actions" class="nav-item">
@@ -93,14 +91,14 @@
         <span class="status-dot"></span>
 
         <div>
-          <strong>Signal Engine Online</strong>
-          <small>V3 monitoring active</small>
+          <strong>Revenue Engine Online</strong>
+          <small>V4 scanner active</small>
         </div>
 
       </div>
 
       <div class="version">
-        NEXUS V3.0
+        NEXUS V4.0
       </div>
 
     </div>
@@ -108,31 +106,29 @@
   </aside>
 
 
-  <!-- =====================================================
-       MAIN
-  ====================================================== -->
+  <!-- MAIN -->
 
   <main class="main-content">
 
 
-    <!-- TOP BAR -->
+    <!-- HEADER -->
 
     <header class="topbar">
 
       <div>
 
         <div class="eyebrow">
-          NEXUS COMMAND AI · V3
+          NEXUS COMMAND AI · V4
         </div>
 
         <h1>
-          Business Intelligence
-          <span>Before the Crisis</span>
+          Find Hidden Revenue.
+          <span>Recover What Others Miss.</span>
         </h1>
 
         <p class="top-description">
-          Detect connected business signals, quantify exposure
-          and prioritize recovery opportunities.
+          Scan business records, identify revenue leakage,
+          quantify exposure and prioritize recovery opportunities.
         </p>
 
       </div>
@@ -142,7 +138,7 @@
 
         <div class="live-status">
           <span></span>
-          LIVE SIGNAL ENGINE
+          ENGINE ONLINE
         </div>
 
         <div class="avatar">
@@ -154,69 +150,522 @@
     </header>
 
 
-    <!-- DEMO NOTICE -->
+    <!-- NOTICE -->
 
     <div class="demo-notice">
 
-      <strong>DEMO ENVIRONMENT</strong>
+      <strong>V4 DEMO</strong>
 
       <span>
-        All financial values and signals are simulated for product demonstration.
+        Upload a CSV file or run the built-in sample dataset.
+        Results are calculated locally in this demo.
       </span>
 
     </div>
 
 
     <!-- =====================================================
-         COMMAND ALERT
+         REVENUE INTELLIGENCE SCANNER
     ====================================================== -->
 
-    <section class="command-alert" id="signals">
+    <section
+      class="scanner-panel"
+      id="scanner"
+    >
+
+      <div class="scanner-header">
+
+        <div>
+
+          <div class="scanner-label">
+            REVENUE INTELLIGENCE SCANNER
+          </div>
+
+          <h2>
+            Detect hidden revenue leakage
+          </h2>
+
+          <p>
+            Upload business data and let NEXUS identify
+            suspicious patterns, risk signals and recovery opportunities.
+          </p>
+
+        </div>
+
+        <div class="scanner-status">
+          READY
+        </div>
+
+      </div>
+
+
+      <!-- UPLOAD AREA -->
+
+      <div
+        class="upload-zone"
+        id="uploadZone"
+      >
+
+        <div class="upload-icon">
+          ↑
+        </div>
+
+        <h3>
+          Drop your business CSV here
+        </h3>
+
+        <p>
+          Or select a CSV file from your device
+        </p>
+
+
+        <label class="upload-button">
+
+          Choose CSV File
+
+          <input
+            id="csvFile"
+            type="file"
+            accept=".csv,text/csv"
+            hidden
+          >
+
+        </label>
+
+
+        <small>
+          Recommended columns: revenue, status, conversion,
+          cancellation, response_time
+        </small>
+
+      </div>
+
+
+      <!-- SAMPLE -->
+
+      <div class="scanner-actions">
+
+        <button
+          class="secondary-button"
+          onclick="runSampleScan()"
+        >
+          Run Sample Business Scan
+        </button>
+
+        <button
+          class="primary-button"
+          id="scanButton"
+          onclick="scanUploadedData()"
+        >
+          Scan Business Data →
+        </button>
+
+      </div>
+
+
+      <!-- SCAN STATUS -->
+
+      <div
+        id="scanStatus"
+        class="scan-status"
+      >
+        Scanner ready. Upload data or run the sample scan.
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         SCAN RESULTS
+    ====================================================== -->
+
+    <section
+      class="scan-results"
+      id="dashboard"
+    >
+
+      <div class="result-card">
+
+        <span>
+          RECORDS SCANNED
+        </span>
+
+        <strong id="recordsScanned">
+          0
+        </strong>
+
+        <small>
+          Business records analyzed
+        </small>
+
+      </div>
+
+
+      <div class="result-card danger-card">
+
+        <span>
+          REVENUE AT RISK
+        </span>
+
+        <strong id="scannerRevenueRisk">
+          $0
+        </strong>
+
+        <small>
+          Detected exposure
+        </small>
+
+      </div>
+
+
+      <div class="result-card success-card">
+
+        <span>
+          RECOVERY OPPORTUNITY
+        </span>
+
+        <strong id="scannerRecovery">
+          $0
+        </strong>
+
+        <small>
+          Estimated recoverable value
+        </small>
+
+      </div>
+
+
+      <div class="result-card">
+
+        <span>
+          HIGH-RISK RECORDS
+        </span>
+
+        <strong id="highRiskRecords">
+          0
+        </strong>
+
+        <small>
+          Priority cases
+        </small>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         EXECUTIVE SIGNAL
+    ====================================================== -->
+
+    <section class="executive-alert">
 
       <div class="alert-icon">
         !
       </div>
 
-
-      <div class="alert-content">
+      <div>
 
         <div class="alert-label">
-          BUSINESS SIGNAL DETECTED
+          NEXUS EXECUTIVE SIGNAL
         </div>
 
-        <h2>
-          Multiple connected signals indicate elevated revenue exposure.
+        <h2 id="executiveSignal">
+          No business data has been scanned yet.
         </h2>
 
-        <p>
-          NEXUS detected changes across conversion, cancellations,
-          fulfillment and response-time indicators.
+        <p id="executiveDescription">
+          Upload a CSV or run the sample scan to generate
+          a revenue intelligence assessment.
         </p>
 
       </div>
 
+    </section>
 
-      <div class="alert-action">
 
-        <div class="confidence-box">
+    <!-- =====================================================
+         RISK INTELLIGENCE
+    ====================================================== -->
 
-          <small>
-            AI CONFIDENCE
-          </small>
+    <section
+      class="two-column"
+      id="risk"
+    >
 
-          <strong id="confidence">
-            91%
-          </strong>
+      <article class="panel">
+
+        <div class="panel-heading">
+
+          <div>
+
+            <label>
+              REVENUE LEAKAGE
+            </label>
+
+            <h3>
+              Where money may be escaping
+            </h3>
+
+          </div>
+
+          <span class="mini-status">
+            SCAN
+          </span>
+
+        </div>
+
+
+        <div
+          id="leakageList"
+          class="leakage-list"
+        >
+
+          <div class="empty-state">
+            Run a scan to identify leakage patterns.
+          </div>
+
+        </div>
+
+      </article>
+
+
+      <!-- AI PRIORITY -->
+
+      <article
+        class="panel"
+        id="actions"
+      >
+
+        <div class="panel-heading">
+
+          <div>
+
+            <label>
+              AI PRIORITY ENGINE
+            </label>
+
+            <h3>
+              What should happen first?
+            </h3>
+
+          </div>
+
+          <span class="ready-status">
+            READY
+          </span>
+
+        </div>
+
+
+        <div
+          id="priorityAction"
+          class="priority-action"
+        >
+
+          <div class="priority-number">
+            01
+          </div>
+
+          <div>
+
+            <span>
+              WAITING FOR SCAN
+            </span>
+
+            <h4>
+              No priority action generated
+            </h4>
+
+            <p>
+              NEXUS will generate a recovery priority
+              after analyzing business records.
+            </p>
+
+          </div>
 
         </div>
 
 
         <button
-          class="primary-button"
-          onclick="investigateRisk()"
+          class="action-button"
+          onclick="generateRecoveryPlan()"
         >
-          Investigate Risk →
+          Generate Recovery Plan →
         </button>
+
+      </article>
+
+    </section>
+
+
+    <!-- =====================================================
+         SIGNAL ENGINE
+    ====================================================== -->
+
+    <section
+      class="panel"
+      id="signals"
+    >
+
+      <div class="panel-heading">
+
+        <div>
+
+          <label>
+            SIGNAL ENGINE
+          </label>
+
+          <h3>
+            Business risk indicators
+          </h3>
+
+        </div>
+
+        <span class="mini-status">
+          LIVE
+        </span>
+
+      </div>
+
+
+      <div class="signal-grid">
+
+
+        <div class="signal-control">
+
+          <div class="signal-control-top">
+
+            <div>
+
+              <strong>
+                Conversion Rate
+              </strong>
+
+              <small>
+                Lower conversion can increase leakage.
+              </small>
+
+            </div>
+
+            <b id="conversionValue">
+              2.84%
+            </b>
+
+          </div>
+
+          <input
+            id="conversionInput"
+            type="range"
+            min="0.5"
+            max="5"
+            step="0.01"
+            value="2.84"
+          >
+
+        </div>
+
+
+        <div class="signal-control">
+
+          <div class="signal-control-top">
+
+            <div>
+
+              <strong>
+                Cancellation Rate
+              </strong>
+
+              <small>
+                Higher cancellations increase exposure.
+              </small>
+
+            </div>
+
+            <b id="cancellationValue">
+              8.7%
+            </b>
+
+          </div>
+
+          <input
+            id="cancellationInput"
+            type="range"
+            min="0"
+            max="20"
+            step="0.1"
+            value="8.7"
+          >
+
+        </div>
+
+
+        <div class="signal-control">
+
+          <div class="signal-control-top">
+
+            <div>
+
+              <strong>
+                Fulfillment Delay
+              </strong>
+
+              <small>
+                Higher delays increase customer risk.
+              </small>
+
+            </div>
+
+            <b id="fulfillmentValue">
+              12.4%
+            </b>
+
+          </div>
+
+          <input
+            id="fulfillmentInput"
+            type="range"
+            min="0"
+            max="30"
+            step="0.1"
+            value="12.4"
+          >
+
+        </div>
+
+
+        <div class="signal-control">
+
+          <div class="signal-control-top">
+
+            <div>
+
+              <strong>
+                Response Time
+              </strong>
+
+              <small>
+                Higher response time can increase leakage.
+              </small>
+
+            </div>
+
+            <b id="responseValue">
+              +31%
+            </b>
+
+          </div>
+
+          <input
+            id="responseInput"
+            type="range"
+            min="0"
+            max="100"
+            step="1"
+            value="31"
+          >
+
+        </div>
 
       </div>
 
@@ -224,146 +673,171 @@
 
 
     <!-- =====================================================
-         KPI GRID
+         RECOVERY
     ====================================================== -->
 
-    <section class="kpi-grid" id="dashboard">
+    <section
+      class="panel recovery-panel"
+      id="recovery"
+    >
 
+      <div class="panel-heading">
 
-      <!-- REVENUE -->
+        <div>
 
-      <article class="kpi-card">
+          <label>
+            RECOVERY & ROI
+          </label>
 
-        <div class="kpi-header">
-
-          <span>
-            REVENUE AT RISK
-          </span>
-
-          <b class="badge danger">
-            HIGH
-          </b>
-
-        </div>
-
-        <strong id="revenueRisk">
-          $2.40M
-        </strong>
-
-        <small>
-          Calculated business exposure
-        </small>
-
-      </article>
-
-
-      <!-- RECOVERY -->
-
-      <article class="kpi-card">
-
-        <div class="kpi-header">
-
-          <span>
-            RECOVERABLE REVENUE
-          </span>
-
-          <b class="badge success">
-            OPPORTUNITY
-          </b>
+          <h3>
+            Convert detected leakage into action
+          </h3>
 
         </div>
 
-        <strong id="recoverableRevenue">
-          $730K
-        </strong>
-
-        <small>
-          Estimated recovery potential
-        </small>
-
-      </article>
+      </div>
 
 
-      <!-- CUSTOMERS -->
+      <div class="recovery-grid">
 
-      <article class="kpi-card">
-
-        <div class="kpi-header">
+        <div class="recovery-stat">
 
           <span>
-            CUSTOMERS AT RISK
+            RECOVERY OPPORTUNITY
           </span>
 
-          <b class="badge danger">
-            HIGH
-          </b>
+          <strong id="roiNumber">
+            $0
+          </strong>
 
-        </div>
-
-        <strong id="customersRisk">
-          18,420
-        </strong>
-
-        <small>
-          Modeled affected population
-        </small>
-
-      </article>
-
-
-      <!-- HEALTH -->
-
-      <article class="kpi-card health-card">
-
-        <div class="kpi-header">
-
-          <span>
-            BUSINESS HEALTH
-          </span>
-
-          <b id="healthBadge" class="badge warning">
-            ATTENTION
-          </b>
+          <small>
+            Based on latest scan
+          </small>
 
         </div>
 
 
-        <div class="health-display">
+        <div class="recovery-stat">
 
-          <div class="health-circle">
+          <span>
+            RECOVERY RATE
+          </span>
 
-            <strong id="healthScore">
-              78
-            </strong>
+          <strong id="recoveryPercent">
+            0%
+          </strong>
 
-            <span>
-              /100
-            </span>
+          <div class="progress">
 
-          </div>
-
-
-          <div>
-
-            <strong id="healthText">
-              Good
-            </strong>
-
-            <small>
-              Dynamic health score
-            </small>
+            <div
+              id="recoveryProgress"
+              class="progress-bar"
+              style="width:0%"
+            ></div>
 
           </div>
 
         </div>
 
-      </article>
+
+        <div class="recovery-stat">
+
+          <span>
+            NEXT BEST ACTION
+          </span>
+
+          <strong id="nextBestAction">
+            SCAN
+          </strong>
+
+          <small>
+            Generate a recovery plan after scanning.
+          </small>
+
+        </div>
+
+      </div>
 
     </section>
 
 
     <!-- =====================================================
-         LIVE COMMAND METRICS
+         AI ANALYST
     ====================================================== -->
 
-    <section class="command
+    <section class="panel ai-command">
+
+      <div class="panel-heading">
+
+        <div>
+
+          <label>
+            NEXUS AI ANALYST
+          </label>
+
+          <h3>
+            Ask about your detected business risk
+          </h3>
+
+        </div>
+
+        <span class="ready-status">
+          READY
+        </span>
+
+      </div>
+
+
+      <div class="ai-input-row">
+
+        <input
+          id="aiQuestion"
+          type="text"
+          placeholder="Example: Where are we losing the most money?"
+          autocomplete="off"
+        >
+
+        <button
+          class="primary-button"
+          onclick="askCommander()"
+        >
+          Analyze →
+        </button>
+
+      </div>
+
+
+      <div
+        id="aiResponse"
+        class="ai-response"
+      >
+        Run a scan first. NEXUS will use the scan results
+        to generate a business intelligence response.
+      </div>
+
+    </section>
+
+
+    <!-- FOOTER -->
+
+    <footer class="footer">
+
+      <div>
+        NEXUS COMMAND AI · Revenue Intelligence Platform
+      </div>
+
+      <div>
+        V4.0 · Demo Environment
+      </div>
+
+    </footer>
+
+  </main>
+
+</div>
+
+
+<script src="script.js"></script>
+
+</body>
+         </html>
